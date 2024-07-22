@@ -17,38 +17,81 @@ import Divider from '@mui/material/Divider';
 import FlagOutlinedIcon from '@mui/icons-material/FlagOutlined';
 import Tooltip from '@mui/material/Tooltip';
 import Skeleton from '@mui/material/Skeleton';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
-export default function Swipe() {
+export default function Swipe({currentPage, setCurrentPage}: {currentPage?: any, setCurrentPage?: any}) {
     const [imageLoaded, setImageLoaded] = useState(false);
+    const [dragStart, setDragStart] = useState<number>(NaN);
+    const [dragCurrent, setDragCurrent] = useState<number>(NaN);
+
     const cardRef = useRef<HTMLDivElement>(null);
+    const backgroundRef = useRef<HTMLDivElement>(null);
+
+    // расстояние по горизонтали, на которое нужно протянуть карточку с анкетой вправо или влево, чтобы послать симпатию или пропустить анкету
+    const diffForDecision = 120;
+
+    // полосы по бокам, которые появляются на фоне, когда по горизонтали карточку тянут на расстояние >= diffForDecision, и символизируют действие
+    // в зависимости от направления свайпа
+    const [acceptColor, rejectColor] = ['green', 'red'];
+    const decisionStripeWidth = 100;
+
+    // скорости перемещения и вращения карточки
+    const [cardDragSpeed, cardRotationSpeed] = [2.5, 1/15];
+
     function handleCardDrag(ev: any) {
-        /*if (cardRef.current) {
-            if(ev.type == 'touchstart' || ev.type == 'touchmove' || ev.type == 'touchend' || ev.type == 'touchcancel'){
-                
-                var x = ev.changedTouches[0].clientX;
-            } else {
-                var x = ev.clientX;
+        const touchTypes = ['touchstart', 'touchmove', 'touchend', 'touchcancel'];
+        const x = touchTypes.includes(ev.type) ? ev.changedTouches[0].clientX : ev.clientX;
+        
+        backgroundRef.current!.style["boxShadow"] = (() => {
+            if (Math.abs(dragCurrent - dragStart) >= diffForDecision) {
+                return `inset ${decisionStripeWidth * (dragCurrent > dragStart ? -1 : 1)}px 0 100px -100px ${dragCurrent > dragStart ? acceptColor : rejectColor}`;
             }
-            cardRef.current.style.marginLeft = `${x}px`;
+            return '';
+        })()
+        
+        setDragCurrent(x);
+    }
+    function handleDragStart(ev: React.DragEvent<HTMLDivElement>): void {
+        setDragStart(ev.clientX)
+    }
+    function handleTouchStart(ev: React.TouchEvent<HTMLDivElement>): void {
+        setDragStart(ev.changedTouches[0].clientX)
+    }
+    function handleTouchEnd(ev: React.TouchEvent<HTMLDivElement>): void {
+        if (Math.abs(dragCurrent - dragStart) < diffForDecision) {
+            setDragCurrent(0)
+        }
+    }
+    function handleDragEnd(ev: React.DragEvent<HTMLDivElement>): void {
+        if (Math.abs(dragCurrent - dragStart) < diffForDecision) {
+            setDragCurrent(0)
         }
         
-        console.log(`${x}px`)*/
+        // оставляет карточку на месте после драга
+        //setDragCurrent(ev.clientX)
     }
-    function handleTouchMove(ev: React.TouchEvent<HTMLDivElement>): void {
-        handleCardDrag(ev)
-    }
-    function handleDrag(ev: React.DragEvent<HTMLDivElement>): void {
-        handleCardDrag(ev)
-    }
+    useEffect(() => {
+        const cardStyle = cardRef.current!.style;
+
+        [cardStyle.marginLeft, cardStyle.transform] = (() => {
+            return dragCurrent !== 0 ? [`${(dragCurrent - dragStart) * cardDragSpeed}px`, `rotate(${(dragCurrent - dragStart) * cardRotationSpeed}deg)`] : ['0px', 'rotate(0deg)']
+        })();
+
+        if (dragCurrent === 0) {
+            backgroundRef.current!.style["boxShadow"] = ''
+        }
+    }, [dragCurrent])
+    useEffect(() => {
+        //setCurrentPage('swipe');
+    }, []);
     return (
         <>
-            <Stack sx={{ flexGrow: 1 }}>
+            <Stack sx={{ flexGrow: 1, overflow:'hidden' }}>
                 <Box sx={{flexGrow: 1}}>
-                    <Grid container spacing={0} style={{alignItems: "center", height: '100%', width: '100%'}}>
-                        <Grid item sx={{width: '100%', backgroundColor: 'none', display:'flex', justifyContent:'center'}} p={2} justifyContent="center">
-                            <div draggable="true" onDrag={handleDrag} onTouchMove={handleTouchMove} ref={cardRef}>
-                            <Card  sx={{maxWidth: '600px', maxHeight: '620px', overflowY: 'scroll'}}>
+                    <Grid container spacing={0} style={{alignItems: "center", height: '100%', width: '100%', transition: '0.2s'}} ref={backgroundRef}>
+                        <Grid item sx={{width: '100%', backgroundColor: 'none', display:'flex', justifyContent:'center'}} p={2}>
+                            <div draggable="true" onDrag={handleCardDrag} onTouchMove={handleCardDrag} onDragStart={handleDragStart} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} onDragEnd={handleDragEnd} ref={cardRef}>
+                            <Card sx={{width: '90vw', maxWidth: '600px', maxHeight: '620px', overflowY: 'scroll'}}>
                                 {!imageLoaded && <Skeleton variant="rectangular" height={400} />}
                                 <CardMedia
                                     component="img"
@@ -120,12 +163,12 @@ export default function Swipe() {
                         <Grid item md={12} sx={{width: '100%'}}>
                             <Stack direction="row" justifyContent="center" spacing={10} sx={{width: '100%'}}>
                                 <Tooltip title="Пропустить анкету">
-                                    <IconButton color="error" size="large">
+                                    <IconButton color="error" size="large" sx={{border: '1px solid'}}>
                                         <CloseIcon />
                                     </IconButton>
                                 </Tooltip>
                                 <Tooltip title="Отправить симпатию">
-                                    <IconButton color="success" size="large">
+                                    <IconButton color="success" size="large" sx={{border: '1px solid'}}>
                                         <CheckIcon />
                                     </IconButton>
                                 </Tooltip>

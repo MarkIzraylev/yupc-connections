@@ -12,7 +12,7 @@ import Groups3Icon from "@mui/icons-material/Groups3";
 import { Link } from "react-router-dom";
 import Tooltip from '@mui/material/Tooltip';
 
-export default function Header() {
+export default function Header({currentPage, setCurrentPage}) {
   return (
     <Box>
       <AppBar position="static" sx={{backdropFilter: 'blur(30px)'}}>
@@ -30,7 +30,7 @@ export default function Header() {
             <MenuIcon />
           </IconButton>*/}
           <Box sx={{ flexGrow: 1, textAlign: "center" }}>
-            <Link to="/">
+            <Link to="/" onClick={() => setCurrentPage('about-us')}>
                 <Tooltip title="Перейти на главную">
                     <IconButton
                         size="large"
