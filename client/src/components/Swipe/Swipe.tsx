@@ -91,12 +91,12 @@ export default function Swipe({currentPage, setCurrentPage}: {currentPage?: any,
                     <Grid container spacing={0} style={{alignItems: "center", height: '100%', width: '100%', transition: '0.2s'}} ref={backgroundRef}>
                         <Grid item sx={{width: '100%', backgroundColor: 'none', display:'flex', justifyContent:'center'}} p={2}>
                             <div draggable="true" onDrag={handleCardDrag} onTouchMove={handleCardDrag} onDragStart={handleDragStart} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} onDragEnd={handleDragEnd} ref={cardRef}>
-                            <Card sx={{width: '90vw', maxWidth: '600px', maxHeight: '620px', overflowY: 'scroll'}}>
-                                {!imageLoaded && <Skeleton variant="rectangular" height={400} />}
+                            <Card sx={{width: '90vw', maxWidth: '570px', height: '65vh', minHeight: '370px', overflowY: 'scroll'}}>
+                                {!imageLoaded && <Skeleton variant="rectangular" height='400px' />}
                                 <CardMedia
                                     component="img"
                                     alt="Изображение пользователя"
-                                    height="400"
+                                    height='400px'
                                     
                                     image={Mikhail}
                                     sx={{
