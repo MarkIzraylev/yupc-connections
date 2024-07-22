@@ -38,24 +38,33 @@ export default function Swipe({currentPage, setCurrentPage}: {currentPage?: any,
     // скорости перемещения и вращения карточки
     const [cardDragSpeed, cardRotationSpeed] = [2.5, 1/15];
 
+    // расстояние по горизонтали, при преодолении которого перетаскиванием карточки анкеты, начинает свое движение карточка анкеты
+    // оно нужно, чтобы небольшие движения по горизонтали при прокручивании анкеты не мешали восприятию информации
+    const cardDragThreshold = 40;
+
     function handleCardDrag(ev: any) {
         const touchTypes = ['touchstart', 'touchmove', 'touchend', 'touchcancel'];
         const x = touchTypes.includes(ev.type) ? ev.changedTouches[0].clientX : ev.clientX;
         
         backgroundRef.current!.style["boxShadow"] = (() => {
             if (Math.abs(dragCurrent - dragStart) >= diffForDecision) {
+                console.log(dragCurrent, dragStart)
                 return `inset ${decisionStripeWidth * (dragCurrent > dragStart ? -1 : 1)}px 0 100px -100px ${dragCurrent > dragStart ? acceptColor : rejectColor}`;
             }
             return '';
         })()
         
-        setDragCurrent(x);
+        if(Math.abs(dragStart - x) >= cardDragThreshold) {
+            setDragCurrent(x)
+        }
     }
     function handleDragStart(ev: React.DragEvent<HTMLDivElement>): void {
         setDragStart(ev.clientX)
+        setDragCurrent(ev.clientX)
     }
     function handleTouchStart(ev: React.TouchEvent<HTMLDivElement>): void {
         setDragStart(ev.changedTouches[0].clientX)
+        setDragCurrent(ev.changedTouches[0].clientX)
     }
     function handleTouchEnd(ev: React.TouchEvent<HTMLDivElement>): void {
         if (Math.abs(dragCurrent - dragStart) < diffForDecision) {
