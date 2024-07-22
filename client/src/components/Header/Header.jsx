@@ -15,7 +15,7 @@ import Tooltip from '@mui/material/Tooltip';
 export default function Header({currentPage, setCurrentPage}) {
   return (
     <Box>
-      <AppBar position="static" sx={{backdropFilter: 'blur(30px)'}}>
+      <AppBar position="static" sx={{backdropFilter: 'blur(30px)', boxShadow: 'none', backgroundImage: 'none'}}>
         <Toolbar>
           {/*  credit:
                         <a target="_blank" href="https://icons8.com/icon/k3UpsZXWEcc2/people">People</a> иконка от <a target="_blank" href="https://icons8.com">Icons8</a>
