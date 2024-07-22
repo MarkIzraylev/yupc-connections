@@ -63,18 +63,19 @@ const theme = createTheme({
 });
 
 export default function Root() {
+  const [currentPage, setCurrentPage] = React.useState("about-us");
   return (
     <ThemeProvider theme={theme}>
         <CssBaseline />
         
-        <Container maxWidth={false} maxHeight={false} disableGutters sx={{
+        <Container maxWidth={false} /*maxHeight={false}*/ disableGutters sx={{
             display: 'flex',
             flexDirection: 'column',
             height: '100vh',
         }}>
-            <Header />
-            <Outlet />
-            <Footer />
+            <Header currentPage={currentPage} setCurrentPage={setCurrentPage} />
+            <Outlet currentPage={currentPage} setCurrentPage={setCurrentPage} />
+            <Footer currentPage={currentPage} setCurrentPage={setCurrentPage}/>
         </Container>
         
         

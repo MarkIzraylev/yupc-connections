@@ -11,17 +11,17 @@ import VolunteerActivismOutlinedIcon from '@mui/icons-material/VolunteerActivism
 import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
 import { Link, useNavigate } from 'react-router-dom';
 import Tooltip from '@mui/material/Tooltip';
+import { Dispatch } from 'react';
 
-export default function Footer({}) {
-  const [value, setValue] = React.useState("recents");
-    const navigate = useNavigate();
-  const handleChange = (event: React.SyntheticEvent, newValue: React.SetStateAction<string>) => {
-    setValue(newValue);
+export default function Footer({currentPage, setCurrentPage}) {
+  const navigate = useNavigate();
+  const handleChange = (event, newValue) => {
+    setCurrentPage(newValue);
     navigate('/' + newValue, {replace: true})
   };
 
   return (
-    <BottomNavigation sx={{ width: 1 }} value={value} onChange={handleChange}>
+    <BottomNavigation sx={{ width: 1 }} value={currentPage} onChange={handleChange}>
       <BottomNavigationAction
         label="СВАЙПЫ"
         value="swipe"
