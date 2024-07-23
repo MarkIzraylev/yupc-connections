@@ -33,9 +33,9 @@ class UserAdmin(admin.ModelAdmin):
         'user_permissions',
     )
 
-    # поля, которые мы сможем только читать
-    readonly_fields = ('description','hobbies','last_login','date_joined','is_search_friend','image','is_search_love',
-                       'is_boy','password','username','vk_contact','tg_contact')
+    # # поля, которые мы сможем только читать
+    # readonly_fields = ('description','hobbies','last_login','date_joined','is_search_friend','image','is_search_love',
+    #                    'is_boy','password','username','vk_contact','tg_contact')
     inlines = (ComplaintInlineAdmin,)
 
     # поля, по которым будет доступен поиск
