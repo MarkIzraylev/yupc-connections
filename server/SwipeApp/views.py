@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import User, Swipe
-from .serializer import UserSerializer
+from .serializer import UserSerializer, SwipeUserSerializer
 # Create your views here.
 
 class UsersAPIView(APIView):
@@ -33,3 +33,10 @@ class UsersAPIView(APIView):
     #     serializer.is_valid(raise_exception=True)
     #     serializer.save()
     #     return Response({'code_result':400})
+
+class SwipeAPIView(APIView):
+    def post(self,request):
+        serializer = SwipeUserSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({"code_result": 400})

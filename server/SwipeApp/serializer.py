@@ -1,7 +1,6 @@
 from rest_framework import serializers
 
-from SwipeApp.models import Hobby
-
+from SwipeApp.models import Hobby, Swipe, SwipeMatch, User
 
 class UserSerializer(serializers.Serializer):
     first_name = serializers.CharField(max_length=100)
@@ -18,4 +17,12 @@ class UserSerializer(serializers.Serializer):
     tg_contact = serializers.CharField(max_length=100)
     hobbies = serializers.PrimaryKeyRelatedField(many=True,queryset=Hobby.objects.all())
 
+class SwipeUserSerializer(serializers.Serializer):
+    identifier_swiped = serializers.IntegerField()
 
+
+    def create(self, validated_data):
+        # здесь захардкоржен айди свайпера
+        print(validated_data)
+        print(*validated_data)
+        return Swipe.objects.create(swiper = User.objects.get(id=2), swiped = User.objects.get(id=validated_data['identifier_swiped']))

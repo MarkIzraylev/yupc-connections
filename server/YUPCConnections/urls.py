@@ -16,9 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from SwipeApp.views import UsersAPIView
+from SwipeApp.views import UsersAPIView, SwipeAPIView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/userList/', UsersAPIView.as_view()),
+    path('api/swipeUser/',SwipeAPIView.as_view()),
 ]

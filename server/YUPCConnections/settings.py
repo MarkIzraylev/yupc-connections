@@ -40,9 +40,12 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'SwipeApp',
+    'corsheaders',
+
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -106,7 +109,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
-LANGUAGE_CODE = 'ru'
+LANGUAGE_CODE = 'en-en'
 
 TIME_ZONE = 'Europe/Moscow'
 
@@ -127,7 +130,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # User
 AUTH_USER_MODEL  = 'SwipeApp.User'
-
+CORS_ORIGIN_ALLOW_ALL=True
 
 
 # Media
