@@ -3,6 +3,7 @@ from rest_framework import serializers
 from SwipeApp.models import Hobby, Swipe, SwipeMatch, User
 
 class UserSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
     first_name = serializers.CharField(max_length=100)
     last_name = serializers.CharField(max_length=100)
     sur_name =serializers.CharField(max_length=100)
