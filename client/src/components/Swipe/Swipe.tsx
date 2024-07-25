@@ -102,7 +102,8 @@ export default function Swipe({currentPage, setCurrentPage}: {currentPage?: any,
         console.log(`send '${swipeType ? 'accept' : 'reject'}' swipe to a user whose id = ${swipedUserId}`)
         // post data to server
         axios.post('http://127.0.0.1:8000/api/swipeUser/', {
-            identifier_swiped: swipedUserId
+            identifier_swiped: swipedUserId,
+            is_swiped_like: swipeType
         })
         .then(function (response) {
             console.log(response);
