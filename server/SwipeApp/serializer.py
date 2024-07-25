@@ -32,7 +32,10 @@ class UserSerializer(serializers.Serializer):
         return list(obj.hobbies.all().values_list('name',flat=True))
 class SwipeUserSerializer(serializers.Serializer):
     identifier_swiped = serializers.IntegerField()
+    is_swiped_like = serializers.BooleanField()
 
     def create(self, validated_data):
         # здесь захардкоржен айди свайпера
-        return Swipe.objects.create(swiper = User.objects.get(id=2), swiped = User.objects.get(id=validated_data['identifier_swiped']))
+        return Swipe.objects.create(swiper = User.objects.get(id=2),
+                                    swiped = User.objects.get(id=validated_data['identifier_swiped']),
+                                    is_swiped_like=validated_data['is_swiped_like'])

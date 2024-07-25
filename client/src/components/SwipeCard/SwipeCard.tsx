@@ -18,12 +18,12 @@ interface SwipeCardProps {
     imageSrc: string;
     // тэги это овальные элементы с тексовой информацией
     mainTags: string[];
-    intentionTag: string;
+    intentionTags: string[];
     description: string;
     hobbiesTags: string[];
 }
 
-const SwipeCard: FC<SwipeCardProps> = ({name, imageSrc, mainTags, intentionTag, description, hobbiesTags}) => {
+const SwipeCard: FC<SwipeCardProps> = ({name, imageSrc, mainTags, intentionTags, description, hobbiesTags}) => {
   const [imageLoaded, setImageLoaded] = useState(false);
 
   return (
@@ -79,7 +79,13 @@ const SwipeCard: FC<SwipeCardProps> = ({name, imageSrc, mainTags, intentionTag, 
                     )
                 })
             }
-          <Chip label={intentionTag} variant="outlined" color="success" />
+            {
+                intentionTags.map(tag => {
+                    return (
+                        <Chip label={tag} variant="outlined" color="success" />
+                    )
+                })
+            }
         </Stack>
         <Typography variant="subtitle1" mb={1}>
           О себе
