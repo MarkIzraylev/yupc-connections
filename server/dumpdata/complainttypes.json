@@ -1,0 +1,23 @@
+[
+  { "model": "SwipeApp.complainttypes", "pk": 1, "fields": { "name": "Спам" } },
+  {
+    "model": "SwipeApp.complainttypes",
+    "pk": 2,
+    "fields": { "name": "Жесткое и отталкивающее содержание" }
+  },
+  {
+    "model": "SwipeApp.complainttypes",
+    "pk": 3,
+    "fields": { "name": "Содержания сексуального характера" }
+  },
+  {
+    "model": "SwipeApp.complainttypes",
+    "pk": 4,
+    "fields": { "name": "Дискриминационные высказывания и оскорбления" }
+  },
+  {
+    "model": "SwipeApp.complainttypes",
+    "pk": 5,
+    "fields": { "name": "Вредные и опасные действия" }
+  }
+]

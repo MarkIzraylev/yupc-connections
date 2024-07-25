@@ -1,0 +1,7 @@
+[
+  { "model": "SwipeApp.department", "pk": 1, "fields": { "name": "ОИТ" } },
+  { "model": "SwipeApp.department", "pk": 2, "fields": { "name": "СО" } },
+  { "model": "SwipeApp.department", "pk": 3, "fields": { "name": "ОЭП" } },
+  { "model": "SwipeApp.department", "pk": 4, "fields": { "name": "МО" } },
+  { "model": "SwipeApp.department", "pk": 5, "fields": { "name": "ОАР" } }
+]

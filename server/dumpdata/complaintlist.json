@@ -1,0 +1,29 @@
+[
+  {
+    "model": "SwipeApp.complaintlist",
+    "pk": 1,
+    "fields": {
+      "complaint_type": 1,
+      "author_complaint": 1,
+      "imposter_complaint": 2
+    }
+  },
+  {
+    "model": "SwipeApp.complaintlist",
+    "pk": 2,
+    "fields": {
+      "complaint_type": 2,
+      "author_complaint": 1,
+      "imposter_complaint": 4
+    }
+  },
+  {
+    "model": "SwipeApp.complaintlist",
+    "pk": 3,
+    "fields": {
+      "complaint_type": 5,
+      "author_complaint": 2,
+      "imposter_complaint": 1
+    }
+  }
+]

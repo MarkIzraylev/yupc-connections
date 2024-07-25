@@ -1,0 +1,6 @@
+[
+  { "model": "SwipeApp.course", "pk": 1, "fields": { "name": "1 КУРС" } },
+  { "model": "SwipeApp.course", "pk": 2, "fields": { "name": "2 КУРС" } },
+  { "model": "SwipeApp.course", "pk": 3, "fields": { "name": "3 КУРС" } },
+  { "model": "SwipeApp.course", "pk": 4, "fields": { "name": "4 КУРС" } }
+]

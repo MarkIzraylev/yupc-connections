@@ -42,7 +42,7 @@ class User(AbstractUser):
     description = models.TextField(default='Ищу друзей', null=True,blank=True)
     course = models.ForeignKey(Course, on_delete=models.CASCADE, default=None, null=True,blank=True)
     building = models.ForeignKey(Building, on_delete=models.CASCADE,default=None, null=True,blank=True)
-    departament = models.ForeignKey(Department, on_delete=models.CASCADE,default=None, null=True,blank=True)
+    department = models.ForeignKey(Department, on_delete=models.CASCADE,default=None, null=True,blank=True)
     is_search_friend = models.BooleanField(default=False)
     is_search_love = models.BooleanField(default=False)
     vk_contact = models.CharField(max_length=200, default=None, null=True, blank=True)
@@ -53,6 +53,8 @@ class User(AbstractUser):
     class Meta:
         verbose_name = 'User' # Название в единственном числе
         verbose_name_plural = 'Users' # название модели в общем списке
+
+# Модель списка жалоб
 class ComplaintList(models.Model):
     complaint_type = models.ForeignKey(ComplaintTypes, on_delete=models.CASCADE)
     author_complaint = models.ForeignKey(User, on_delete=models.CASCADE, related_name='author_complaint')
@@ -60,6 +62,7 @@ class ComplaintList(models.Model):
 
     def __str__(self):
         return f" Жалоба {self.author_complaint} на {self.imposter_complaint}  Причина - {self.complaint_type.name} "
+
 # Модель всех свайпов
 class Swipe(models.Model):
     swiper = models.ForeignKey(User, on_delete=models.CASCADE, related_name='swiper')

@@ -1,0 +1,23 @@
+[
+  { "model": "SwipeApp.hobby", "pk": 1, "fields": { "name": "РИСОВАНИЕ" } },
+  { "model": "SwipeApp.hobby", "pk": 2, "fields": { "name": "УЧЕБА В ЯГК" } },
+  {
+    "model": "SwipeApp.hobby",
+    "pk": 3,
+    "fields": { "name": "ПРОГРАММИРОВАНИЕ" }
+  },
+  { "model": "SwipeApp.hobby", "pk": 4, "fields": { "name": "ПРОГУЛКИ" } },
+  { "model": "SwipeApp.hobby", "pk": 5, "fields": { "name": "ПРОГУЛКИ" } },
+  { "model": "SwipeApp.hobby", "pk": 6, "fields": { "name": "ЧТЕНИЕ" } },
+  {
+    "model": "SwipeApp.hobby",
+    "pk": 7,
+    "fields": { "name": "ИНОСТРАННЫЕ ЯЗЫКИ" }
+  },
+  {
+    "model": "SwipeApp.hobby",
+    "pk": 8,
+    "fields": { "name": "WEB-РАЗРАБОТКА" }
+  },
+  { "model": "SwipeApp.hobby", "pk": 9, "fields": { "name": "Проверка" } }
+]

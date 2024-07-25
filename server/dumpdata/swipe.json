@@ -1,0 +1,8 @@
+[
+  {
+    "model": "SwipeApp.swipe",
+    "pk": 2,
+    "fields": { "swiper": 1, "swiped": 1 }
+  },
+  { "model": "SwipeApp.swipe", "pk": 3, "fields": { "swiper": 2, "swiped": 1 } }
+]

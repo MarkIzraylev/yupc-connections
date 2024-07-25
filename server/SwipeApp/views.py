@@ -9,30 +9,23 @@ from .serializer import UserSerializer, SwipeUserSerializer
 # Create your views here.
 
 class UsersAPIView(APIView):
-    def get(self,request):
+    def get(self,request, count_profile_need):
+        print("count = ", count_profile_need)
         # ниже версия, которая правильная
         # list_all_user_id_system = User.objects.filter(~Q(id=request.user.id))
 
         list_all_user_id_system = User.objects.filter(~Q(id=User.objects.first().id)) # получение всех пользователей
-        top_ten_user_for_load = [] # массив под 10 анкет
+        list_profile_user = [] # массив под  count_profile_need анкет
         for user in list_all_user_id_system: # бежим по всем пользователям
             # ниже версия, которая правильная
             # if not Swipe.objects.filter(swiper=request.user.ud, swiped=user.id).exists():
             if not Swipe.objects.filter(swiper=User.objects.first().id, swiped=user.id).exists(): # проверяем наличие
                                                                                 # свайпа этим пользователя этого
-                                                                                # пользователя
-                top_ten_user_for_load.append(user)
-
-            if len(top_ten_user_for_load)==10: # пока ограничились 10, дальше можем хоть параметром передавать
+                list_profile_user.append(user)
+            if len(list_profile_user)==count_profile_need:
                 break # выходим если набрали нужное количество анкет
-        return Response({'users': UserSerializer(top_ten_user_for_load, many=True).data})
-
-    # ниже код просто на память, потом конечно удалю!
-    # def post(self,request):
-    #     serializer = UserSerializer(data=request.data)
-    #     serializer.is_valid(raise_exception=True)
-    #     serializer.save()
-    #     return Response({'code_result':400})
+            print("вернуло -" , UserSerializer(list_profile_user, many=True), sep='\n')
+        return Response({'users': UserSerializer(list_profile_user, many=True).data})
 
 class SwipeAPIView(APIView):
     def post(self,request):

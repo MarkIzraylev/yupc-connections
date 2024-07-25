@@ -20,7 +20,7 @@ class UserAdmin(admin.ModelAdmin):
         ('sur_name', 'last_name', 'first_name'),
         'image',
         ('is_boy', 'is_search_friend', 'is_search_love'),
-        ('course', 'building', 'departament'),
+        ('course', 'building', 'department'),
         ('vk_contact', 'tg_contact'),
         'description',
         'hobbies',

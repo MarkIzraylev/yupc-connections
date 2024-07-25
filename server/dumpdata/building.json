@@ -1,0 +1,12 @@
+[
+  {
+    "model": "SwipeApp.building",
+    "pk": 1,
+    "fields": { "name": "ОСНОВНОЙ КУРС" }
+  },
+  {
+    "model": "SwipeApp.building",
+    "pk": 2,
+    "fields": { "name": "ВТОРОЙ КОРПУС" }
+  }
+]
