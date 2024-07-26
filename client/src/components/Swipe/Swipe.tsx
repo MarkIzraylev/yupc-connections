@@ -238,7 +238,8 @@ export default function Swipe({setCurrentPage, openModal, setOpenModal}: swipePr
         width: '90vw',
         maxWidth: 600,
         maxHeight: '60vh',
-        overflow: 'scroll',
+        overflowY: 'auto',
+
         bgcolor: 'background.paper',
         // border: '2px solid #000',
         // boxShadow: 24,
