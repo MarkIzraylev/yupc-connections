@@ -21,7 +21,7 @@ export default function Footer({currentPage, setCurrentPage}) {
   };
 
   return (
-    <BottomNavigation sx={{ width: 1 }} value={currentPage} onChange={handleChange}>
+    <BottomNavigation sx={{ width: 1, position: 'sticky', bottom: 0 }} value={currentPage} onChange={handleChange}>
       <BottomNavigationAction
         label="СВАЙПЫ"
         value="swipe"

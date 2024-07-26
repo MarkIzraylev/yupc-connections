@@ -1,9 +1,7 @@
 import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
-import Mikhail from "../../static/images/Mikhail.jpg";
 import Chip from "@mui/material/Chip";
 import IconButton from "@mui/material/IconButton";
 import Stack from "@mui/material/Stack";
@@ -12,6 +10,7 @@ import Skeleton from "@mui/material/Skeleton";
 import Box from "@mui/material/Box";
 import { useState } from 'react';
 import { FC } from "react";
+import { Dispatch } from "react";
 
 interface SwipeCardProps {
     name: string;
@@ -21,16 +20,17 @@ interface SwipeCardProps {
     intentionTags: string[];
     description: string;
     hobbiesTags: string[];
+    setOpenModal: Dispatch<string | null>;
 }
 
-const SwipeCard: FC<SwipeCardProps> = ({name, imageSrc, mainTags, intentionTags, description, hobbiesTags}) => {
+const SwipeCard: FC<SwipeCardProps> = ({name, imageSrc, mainTags, intentionTags, description, hobbiesTags, setOpenModal}) => {
   const [imageLoaded, setImageLoaded] = useState(false);
 
   return (
     <Card
       sx={{
         width: "90vw",
-        maxWidth: "570px",
+        maxWidth: "470px",
         height: "65vh",
         minHeight: "370px",
         overflowY: "scroll",
@@ -53,7 +53,7 @@ const SwipeCard: FC<SwipeCardProps> = ({name, imageSrc, mainTags, intentionTags,
         sx={{
           position: "relative",
           backdropFilter: "blur(30px)",
-          backgroundColor: "rgba(0,0,0,0.2)",
+          backgroundColor: "rgba(0,0,0,0.3)",
         }}
       >
         <Box
@@ -66,7 +66,7 @@ const SwipeCard: FC<SwipeCardProps> = ({name, imageSrc, mainTags, intentionTags,
           <Typography mb={2} variant="h5" noWrap component="div">
             {name}
           </Typography>
-          <IconButton size="small" sx={{ height: "fit-content" }}>
+          <IconButton size="small" sx={{ height: "fit-content" }} onClick={() => setOpenModal('complaint')}>
             <FlagOutlinedIcon />
           </IconButton>
         </Box>
@@ -75,14 +75,14 @@ const SwipeCard: FC<SwipeCardProps> = ({name, imageSrc, mainTags, intentionTags,
             {
                 mainTags.map(tag => {
                     return (
-                        <Chip label={tag} variant="outlined" />
+                        <Chip label={tag} variant="outlined" key={tag} />
                     )
                 })
             }
             {
                 intentionTags.map(tag => {
                     return (
-                        <Chip label={tag} variant="outlined" color="success" />
+                        <Chip label={tag} variant="outlined" color="success" key={tag} />
                     )
                 })
             }
@@ -113,7 +113,7 @@ const SwipeCard: FC<SwipeCardProps> = ({name, imageSrc, mainTags, intentionTags,
             {
                 hobbiesTags.map(hobby => {
                     return (
-                        <Chip label={hobby} variant="outlined" />
+                        <Chip label={hobby} key={hobby} variant="outlined" />
                     )
                 })
             }

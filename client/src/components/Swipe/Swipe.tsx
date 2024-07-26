@@ -1,21 +1,34 @@
-import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import IconButton from '@mui/material/IconButton';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import Grid from '@mui/material/Grid';
-import { grey } from '@mui/material/colors';
-import Divider from '@mui/material/Divider';
 import Tooltip from '@mui/material/Tooltip';
 import Box from "@mui/material/Box";
 import Alert from '@mui/material/Alert';
-import { useState, useRef, useEffect, useReducer } from 'react';
+import Modal from '@mui/material/Modal';
+import Typography from '@mui/material/Typography';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import Button from "@mui/material/Button";
+
+import { useState, useRef, useEffect, Dispatch } from 'react';
 
 import SwipeCard from '../SwipeCard/SwipeCard';
 
 import axios from 'axios';
 
-export default function Swipe({currentPage, setCurrentPage}: {currentPage?: any, setCurrentPage?: any}) {
+type modalType = string | null;
+
+interface swipeProps {
+    setCurrentPage: Dispatch<string>,
+    openModal: modalType,
+    setOpenModal: Dispatch<modalType>
+}
+
+export default function Swipe({setCurrentPage, openModal, setOpenModal}: swipeProps) {
     const [dragStart, setDragStart] = useState<number>(NaN);
     const [dragStartAfterThreshold, setDragStartAfterThreshold] = useState<number>(NaN);
     const [dragCurrent, setDragCurrent] = useState<number>(NaN);
@@ -40,9 +53,8 @@ export default function Swipe({currentPage, setCurrentPage}: {currentPage?: any,
         is_search_love: boolean;
         hobbies: string[];
     }
-    const [currentCardId, setCurrentCardId] = useState<number>(0);
 
-    
+    const [currentCardId, setCurrentCardId] = useState<number>(0);
 
     var blankImg = document.createElement('img');
     blankImg.src = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
@@ -118,6 +130,7 @@ export default function Swipe({currentPage, setCurrentPage}: {currentPage?: any,
     const [noCardsLeft, setNoCardsLeft] = useState(false);
 
     function fetchNewBunchOfCards(): void | boolean {
+        setCurrentBunchOfCards(null)
         let nextBunchOfCards: cardObj[];
         axios.get('http://127.0.0.1:8000/api/userList/10/')
         .then(response => {
@@ -133,21 +146,28 @@ export default function Swipe({currentPage, setCurrentPage}: {currentPage?: any,
         });
     }
 
-    function handleCardMoveEnd() {
+    function performSwipe(swipeType: boolean) {
         if (!currentBunchOfCards) {
             return false;
         }
-        sendSwipe(currentBunchOfCards[currentCardId].id, dragCurrent > dragStart)
+
+        sendSwipe(currentBunchOfCards[currentCardId].id, swipeType)
+
+        if (currentCardId === currentBunchOfCards.length - 1) {
+            // fetch new bunch of cards via API
+            fetchNewBunchOfCards()
+        }
+
+        setCurrentCardId(prev => (prev + 1) % currentBunchOfCards.length)
+    }
+
+    function handleCardMoveEnd() {
         setTimeout(() => {
             setDragStart(0)
             setDragCurrent(0)
             setDragStartAfterThreshold(NaN)
-            if (currentCardId === currentBunchOfCards.length - 1) {
-                // fetch new bunch of cards via API
-                
-                fetchNewBunchOfCards()
-            }
-            setCurrentCardId(prev => (prev + 1) % currentBunchOfCards.length)
+
+            performSwipe(dragCurrent > dragStart)
         }, 300)
     }
     function handleTouchEnd(ev: React.TouchEvent<HTMLDivElement>): void {
@@ -185,6 +205,7 @@ export default function Swipe({currentPage, setCurrentPage}: {currentPage?: any,
         }
     }, [dragCurrent])
     useEffect(() => {
+        setCurrentPage('swipe')
         // fetching new cards at the component's mount
         fetchNewBunchOfCards()
     }, []);
@@ -204,14 +225,109 @@ export default function Swipe({currentPage, setCurrentPage}: {currentPage?: any,
                 intentionTags={intentionTagsArr}
                 description={card.description}
                 imageSrc={card.image ? `http://127.0.0.1:8000/${card.image}` : 'https://i.pinimg.com/736x/c6/c3/0d/c6c30d611b4cdef5a4d73a54c3e0055b.jpg'}
+                setOpenModal={setOpenModal}
             />
         )
     }
+    const modalStyle = {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        minWidth: 350,
+        width: '90vw',
+        maxWidth: 600,
+        maxHeight: '60vh',
+        overflow: 'scroll',
+        bgcolor: 'background.paper',
+        // border: '2px solid #000',
+        // boxShadow: 24,
+        p: 4,
+      };
+    const [complaint, setComplaint] = useState<string>('')
     return (
         <>
             <Stack sx={{ flexGrow: 1, overflow:'hidden' }}>
+                <Modal
+                    open={openModal === "filter"}
+                    onClose={() => setOpenModal(null)}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description"
+                >
+                    <Box sx={modalStyle}>
+                    <Typography id="modal-modal-title" variant="h6" component="h2">
+                        Фильтры для поиска
+                    </Typography>
+                    <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                        Данное окно находится в процессе разработки.
+                    </Typography>
+                    </Box>
+                </Modal>
+
+                <Modal
+                    open={openModal === "guide"}
+                    onClose={() => setOpenModal(null)}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description"
+                >
+                    <Box sx={modalStyle}>
+                    <Typography id="modal-modal-title" variant="h6" component="h2">
+                        Инструкция
+                    </Typography>
+                    <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                        На данной странице (страница свайпов) можно просматривать анкеты других пользователей.
+                    </Typography>
+                    <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                        Чтобы посмотреть больше инфорации о пользователе, прокрутите анкету, наведя на неё курсор мыши и покрутив колёсико мыши или свайпом вверх (для устройств с сенсорным экраном).
+                    </Typography>
+                    <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                        Чтобы послать пользователю симпатию, нажмите на галочку внизу экрана или сделайте свайп вправо. Чтобы пропустить анкету - крестик внизу экрана или свайп влево.
+                    </Typography>
+                    <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                        Для выхода из модального окна, нажмите в любом месте веб-страницы за его пределами.
+                    </Typography>
+                    </Box>
+                </Modal>
+
+                <Modal
+                    open={openModal === "complaint"}
+                    onClose={() => setOpenModal(null)}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description"
+                >
+                    <Box sx={modalStyle}>
+                        <Typography id="modal-modal-title" variant="h6" component="h2">
+                            Жалоба на анкету
+                        </Typography>
+                        <Typography id="modal-modal-description" sx={{ mt: 2, mb: 2 }}>
+                            Пожалуйста, укажите причину жалобы.
+                        </Typography>
+                        <Box sx={{ minWidth: 120 }}>
+                            <FormControl fullWidth>
+                                <InputLabel id="demo-simple-select-label">Причина жалобы</InputLabel>
+                                <Select
+                                labelId="demo-simple-select-label"
+                                id="demo-simple-select"
+                                value={complaint}
+                                label="Причина жалобы"
+                                onChange={(event) => setComplaint(event.target.value)}
+                                color="primary"
+                                >
+                                <MenuItem value={'insult'}>Оскорбления</MenuItem>
+                                <MenuItem value={'nsfw'}>Контент +18</MenuItem>
+                                <MenuItem value={'other'}>Другая причина</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Box>
+                        <Box sx={{ minWidth: 120, mt: 2, display: 'flex', justifyContent: 'right' }}>
+                            <Button color="inherit">Отправить</Button>
+                        </Box>
+                    </Box>
+                </Modal>
+
+
                 <Box sx={{flexGrow: 1}}>
-                    <Grid container spacing={0} style={{alignItems: "center", height: '100%', width: '100%', transition: '0.2s'}} ref={backgroundRef}>
+                    <Grid container spacing={0} style={{alignContent: "space-evenly", height: '100%', width: '100%', transition: '0.2s'}} ref={backgroundRef}>
                         <Grid item sx={{width: '100%', backgroundColor: 'none', display:'flex', justifyContent:'center'}} p={2}>
                             <div className='swipe-card' draggable="true" onDrag={handleCardDrag} onTouchMove={handleCardDrag} onDragStart={handleDragStart} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} onDragEnd={handleDragEnd} onDragExit={handleDragEnd} onTouchCancel={handleTouchEnd} ref={cardRef}>
                                 {
@@ -228,24 +344,29 @@ export default function Swipe({currentPage, setCurrentPage}: {currentPage?: any,
                             }
 
                             {
+                                (!errorMessage && !currentBunchOfCards && !noCardsLeft) && (
+                                    <Alert severity="info">Загрузка...</Alert>
+                                )
+                            }
+
+                            {
                                 noCardsLeft && (
                                     <Alert severity="info">Вы свайпнули все карточки, что есть на данный момент по данному фильтру.</Alert>
-                                    
                                 )
                             }
                         </Grid>
                         <Grid item md={12} sx={{width: '100%'}} style={{display: (currentBunchOfCards && !noCardsLeft) ? 'block' : 'none'}}>
                             {
                                 (currentBunchOfCards && !noCardsLeft) && (
-                                    <Stack direction="row" justifyContent="center" spacing={10} sx={{width: '100%'}}>
+                                    <Stack direction="row" justifyContent="center" spacing={10} sx={{width: '100%', height: '65px'}}>
                                         <Tooltip title="Пропустить анкету">
-                                            <IconButton color="error" size="large" sx={{border: '1px solid'}}>
-                                                <CloseIcon />
+                                            <IconButton color="error"  sx={{border: '1px solid', aspectRatio: '1'}} onClick={() => performSwipe(false)}>
+                                                <CloseIcon sx={{width: '70%', height: '70%'}} />
                                             </IconButton>
                                         </Tooltip>
                                         <Tooltip title="Отправить симпатию">
-                                            <IconButton color="success" size="large" sx={{border: '1px solid'}}>
-                                                <CheckIcon />
+                                            <IconButton color="success" size="large" sx={{border: '1px solid', aspectRatio: '1'}} onClick={() => performSwipe(true)}>
+                                                <CheckIcon sx={{width: '70%', height: '70%'}} />
                                             </IconButton>
                                         </Tooltip>
                                     </Stack>

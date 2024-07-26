@@ -1,5 +1,5 @@
 import Timeline from '@mui/lab/Timeline';
-import TimelineItem from '@mui/lab/TimelineItem';
+import TimelineItem, { timelineItemClasses } from '@mui/lab/TimelineItem';
 import TimelineSeparator from '@mui/lab/TimelineSeparator';
 import TimelineConnector from '@mui/lab/TimelineConnector';
 import TimelineContent from '@mui/lab/TimelineContent';
@@ -9,12 +9,16 @@ import SwipeLeftIcon from '@mui/icons-material/SwipeLeft';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ForumIcon from '@mui/icons-material/Forum';
 import Groups3Icon from '@mui/icons-material/Groups3';
-
+import { Dispatch, useEffect } from 'react';
 import { Container, Paper, Typography } from "@mui/material";
 import Grid from '@mui/material/Grid';
 import { styled } from '@mui/material/styles';
 import { Link } from "react-router-dom";
-
+import TimelineOppositeContent, {
+    timelineOppositeContentClasses,
+  } from '@mui/lab/TimelineOppositeContent';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
     ...theme.typography.body2,
@@ -24,12 +28,24 @@ const Item = styled(Paper)(({ theme }) => ({
     flexGrow: 1,
   }));
 
-export default function AboutUs() {
+export default function AboutUs({setCurrentPage}) {
+    useEffect(() => {
+        setCurrentPage('about-us')
+    }, [])
+
     return (
         <Container style={{ flexGrow: 1}}>
-            <Typography variant="h2" textAlign="center" mt={8} mb={8}>Студенты града, знакомьтесь!</Typography>
+            <Typography variant={useMediaQuery(useTheme().breakpoints.up('sm')) ? "h2" : "h3"} textAlign="center" mt={{xs: 0, md: 8}} mb={{xs: 0, md: 8}}>Студенты града, знакомьтесь!</Typography>
             
-            <Timeline position="alternate">
+            <Timeline
+                sx={!useMediaQuery(useTheme().breakpoints.up('sm')) && {
+                    [`& .${timelineItemClasses.root}:before`]: {
+                      flex: 0,
+                      padding: 0,
+                    }
+                  }}
+                {...{position: useMediaQuery(useTheme().breakpoints.up('sm')) ? 'alternate' : 'right'}}
+            >
                 <TimelineItem>
                     <TimelineSeparator>
                     <TimelineDot variant="outlined">

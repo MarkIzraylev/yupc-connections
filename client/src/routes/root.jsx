@@ -1,13 +1,10 @@
 import * as React from "react";
 import { Outlet } from "react-router-dom";
-import { createStore } from "redux";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { red, blue, green } from "@mui/material/colors";
 import CssBaseline from '@mui/material/CssBaseline';
 import Header from "../components/Header/Header";
 import Footer from '../components/Footer/Footer';
-import Box from "@mui/material/Box";
-import Grid from '@mui/material/Grid';
 import Container from '@mui/material/Container';
 
 const theme = createTheme({
@@ -62,8 +59,7 @@ const theme = createTheme({
   },
 });
 
-export default function Root() {
-  const [currentPage, setCurrentPage] = React.useState("about-us");
+export default function Root({currentPage, setCurrentPage, openModal, setOpenModal}) {
   return (
     <ThemeProvider theme={theme}>
         <CssBaseline />
@@ -73,8 +69,8 @@ export default function Root() {
             flexDirection: 'column',
             height: '100vh',
         }}>
-            <Header currentPage={currentPage} setCurrentPage={setCurrentPage} />
-            <Outlet currentPage={currentPage} setCurrentPage={setCurrentPage} />
+            <Header currentPage={currentPage} setCurrentPage={setCurrentPage} openModal={openModal} setOpenModal={setOpenModal} />
+            <Outlet currentPage={currentPage} setCurrentPage={setCurrentPage} openModal={openModal} setOpenModal={setOpenModal} />
             <Footer currentPage={currentPage} setCurrentPage={setCurrentPage}/>
         </Container>
         
