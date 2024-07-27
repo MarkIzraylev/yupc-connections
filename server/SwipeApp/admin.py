@@ -50,9 +50,9 @@ class UserAdmin(admin.ModelAdmin):
 class SwipeAdmin(admin.ModelAdmin):
     list_display = ('swiper','swiped','is_swiped_like')
     fields = (('swiper','swiped', 'is_swiped_like'))
-    readonly_fields = ('swiper','swiped','is_swiped_like')
+    # readonly_fields = ('swiper','swiped','is_swiped_like')
 @admin.register(SwipeMatch)
-class SwipeAdmin(admin.ModelAdmin):
+class SwipeMatchAdmin(admin.ModelAdmin):
     list_display = ('first_swiper','second_swiper')
     fields = (('first_swiper','second_swiper'),)
     readonly_fields = ('first_swiper','second_swiper')
