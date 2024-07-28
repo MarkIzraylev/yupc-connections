@@ -1,6 +1,7 @@
 from django.db.models import QuerySet, Q
 from django.shortcuts import render
 from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -9,8 +10,11 @@ from .serializer import (UserSerializer, SwipeUserSerializer, ComplaintsListSeri
                          SwipesMatchListSerializer, SendComplaintSerializer)# Create your views here.
 
 class UsersAPIView(APIView):
+    """
+    Получение пользоваетелй для свайпов
+    """
+
     def get(self,request, count_profile_need):
-        print("count = ", count_profile_need)
         # ниже версия, которая правильная
         # list_all_user_id_system = User.objects.filter(~Q(id=request.user.id))
 
@@ -27,6 +31,9 @@ class UsersAPIView(APIView):
         return Response({'users': UserSerializer(list_profile_user, many=True).data})
 
 class InboxSwipeRequest(APIView):
+    """
+    Получение входящих свайпов
+    """
     def get(self, request):
         user = User.objects.first()
         # надо бы проверить, что у нас уже не метч)
@@ -55,6 +62,9 @@ class InboxSwipeRequest(APIView):
             id__in=matched_users_ids)
         return  Response({"usersInbox":UserSerializer(list_user_who_inbox_current_user_and_not_in_match, many=True).data})
 class SwipeAPIView(APIView):
+    """
+    Свайп пользователя
+    """
     def post(self,request):
         serializer = SwipeUserSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -64,10 +74,16 @@ class SwipeAPIView(APIView):
 
 
 class ComplaintsListAPIView(APIView):
+    """
+    Получение наименований вариантов жалоб
+    """
     def get(self, request):
         list_all_complaints =  ComplaintTypes.objects.all()
         return Response({"complaintsList":ComplaintsListSerializer(list_all_complaints, many=True).data})
 class SendComplaintAPIView(APIView):
+    """
+    Отправка жалобы
+    """
     def post(self, request):
         serializer = SendComplaintSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -75,6 +91,9 @@ class SendComplaintAPIView(APIView):
         return Response({"core_result": "400"})
 
 class SwipesMatchAPIView(APIView):
+    """
+    Получение метчей
+    """
     def get(self,request):
         user = User.objects.get(id=2)
         list_all_match_for_user = []

@@ -55,8 +55,6 @@ class ComplaintsListSerializer(serializers.Serializer):
     id_complaint = serializers.IntegerField(source='id')
     name = serializers.CharField(max_length=150)
 
-
-
 class SwipesMatchListSerializer(serializers.Serializer):
     user= serializers.SerializerMethodField()
     id = serializers.IntegerField(read_only=True )
