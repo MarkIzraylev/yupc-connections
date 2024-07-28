@@ -82,7 +82,14 @@ export default function Header({currentPage, setCurrentPage, openModal, setOpenM
             </Box>
           )}
           
-          {/*<Button color="inherit">Войти</Button>*/}
+          {currentPage === "about-us" && (
+            <Box sx={{ textAlign: "right" }}>
+              <Link to="/signin" onClick={() => setCurrentPage('sign-in')}>
+                <Button sx={{color: 'white'}}>Войти</Button>
+              </Link>
+            </Box>
+          )}
+          
         </Toolbar>
       </AppBar>
     </Box>

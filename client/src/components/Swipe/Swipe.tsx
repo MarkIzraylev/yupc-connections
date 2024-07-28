@@ -13,6 +13,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Button from "@mui/material/Button";
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
 import { useState, useRef, useEffect, Dispatch } from 'react';
 
@@ -256,7 +257,7 @@ export default function Swipe({setCurrentPage, openModal, setOpenModal}: swipePr
                     aria-describedby="modal-modal-description"
                 >
                     <Box sx={modalStyle}>
-                    <Typography id="modal-modal-title" variant="h6" component="h2">
+                    <Typography id="modal-modal-title" variant="h5" component="h3" gutterBottom>
                         Фильтры для поиска
                     </Typography>
                     <Typography id="modal-modal-description" sx={{ mt: 2 }}>
@@ -272,20 +273,47 @@ export default function Swipe({setCurrentPage, openModal, setOpenModal}: swipePr
                     aria-describedby="modal-modal-description"
                 >
                     <Box sx={modalStyle}>
-                    <Typography id="modal-modal-title" variant="h6" component="h2">
+                    <Typography id="modal-modal-title" variant="h5" component="h3" gutterBottom>
                         Инструкция
                     </Typography>
-                    <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                        На данной странице (страница свайпов) можно просматривать анкеты других пользователей.
+                    <Typography variant="h6" component="h4" gutterBottom>
+                        О странице свайпов
                     </Typography>
-                    <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                        Чтобы посмотреть больше инфорации о пользователе, прокрутите анкету, наведя на неё курсор мыши и покрутив колёсико мыши или свайпом вверх (для устройств с сенсорным экраном).
+                    <Typography id="modal-modal-description" gutterBottom>
+                        На данной странице можно просматривать анкеты других пользователей.
                     </Typography>
-                    <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                        Чтобы послать пользователю симпатию, нажмите на галочку внизу экрана или сделайте свайп вправо. Чтобы пропустить анкету - крестик внизу экрана или свайп влево.
+                    <Typography variant="h6" component="h4" gutterBottom>
+                        Подсказки
                     </Typography>
-                    <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                        Для выхода из модального окна, нажмите в любом месте веб-страницы за его пределами.
+                    <Typography id="modal-modal-description" gutterBottom>
+                        Иногда в тексте встречаются подсказки (<Tooltip title="Подсказка">
+                            <IconButton aria-label="info" size="small">
+                                <InfoOutlinedIcon fontSize="inherit" />
+                            </IconButton>
+                        </Tooltip>). Чтобы воспользоваться подсказкой, наведите на неё курсор или зажмите долгим нажатием.
+                    </Typography>
+                    <Typography variant="h6" component="h4" gutterBottom>
+                        Просмотр анкет
+                    </Typography>
+                    <Typography id="modal-modal-description" gutterBottom>
+                        Чтобы посмотреть больше инфорации о пользователе, прокрутите анкету, наведя на неё курсор мыши и покрутив колёсико мыши или свайпнув
+                        <Tooltip title="Свайп - это смахивание, т.е. движение (обычно по прямой) по экрану пальцем или зажатым курсором мыши.">
+                            <IconButton aria-label="info" size="small">
+                                <InfoOutlinedIcon fontSize="inherit" />
+                            </IconButton>
+                        </Tooltip> вверх (для устройств с сенсорным экраном).
+                    </Typography>
+                    <Typography variant="h6" component="h4" gutterBottom>
+                        Принятие и отклонение анкет
+                    </Typography>
+                    <Typography id="modal-modal-description" gutterBottom>
+                        Чтобы послать пользователю симпатию, нажмите на галочку внизу экрана или сделайте свайп вправо. Чтобы отклонить анкету - крестик внизу экрана или свайп влево.
+                    </Typography>
+                    <Typography variant="h6" component="h4" gutterBottom>
+                        Закрытие окон
+                    </Typography>
+                    <Typography id="modal-modal-description" gutterBottom>
+                        Для закрытия модального окна (например, текущего), нажмите в любом месте веб-страницы за его пределами.
                     </Typography>
                     </Box>
                 </Modal>

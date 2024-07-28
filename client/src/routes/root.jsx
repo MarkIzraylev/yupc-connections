@@ -71,7 +71,10 @@ export default function Root({currentPage, setCurrentPage, openModal, setOpenMod
         }}>
             <Header currentPage={currentPage} setCurrentPage={setCurrentPage} openModal={openModal} setOpenModal={setOpenModal} />
             <Outlet currentPage={currentPage} setCurrentPage={setCurrentPage} openModal={openModal} setOpenModal={setOpenModal} />
-            <Footer currentPage={currentPage} setCurrentPage={setCurrentPage}/>
+            {currentPage !== 'sign-in' && (
+              <Footer currentPage={currentPage} setCurrentPage={setCurrentPage}/>
+            )}
+            
         </Container>
         
         

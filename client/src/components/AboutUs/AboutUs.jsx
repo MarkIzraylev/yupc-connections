@@ -35,7 +35,7 @@ export default function AboutUs({setCurrentPage}) {
 
     return (
         <Container style={{ flexGrow: 1}}>
-            <Typography variant={useMediaQuery(useTheme().breakpoints.up('sm')) ? "h2" : "h3"} textAlign="center" mt={{xs: 0, md: 8}} mb={{xs: 0, md: 8}}>Студенты града, знакомьтесь!</Typography>
+            <Typography variant={useMediaQuery(useTheme().breakpoints.up('sm')) ? "h2" : "h3"} textAlign="center" mt={{xs: 2, md: 8}} mb={{xs: 2, md: 8}} p={2}>ЯГК Знакомства</Typography>
             
             <Timeline
                 sx={!useMediaQuery(useTheme().breakpoints.up('sm')) && {
