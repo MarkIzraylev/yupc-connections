@@ -16,7 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from SwipeApp.views import UsersAPIView, SwipeAPIView
+from SwipeApp.views import (UsersAPIView, SwipeAPIView, ComplaintsListAPIView, SwipesMatchAPIView,
+                            SendComplaintAPIView, InboxSwipeRequest)
 
 from django.conf.urls.static import static
 from django.conf import  settings
@@ -24,7 +25,11 @@ from django.conf import  settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/userList/<int:count_profile_need>/', UsersAPIView.as_view()),
+    path('api/inboxUserList/', InboxSwipeRequest.as_view()),
     path('api/swipeUser/',SwipeAPIView.as_view()),
+    path('api/complaintsList/',ComplaintsListAPIView.as_view()),
+    path('api/sendComplaint/',SendComplaintAPIView.as_view()),
+    path('api/swipesMatchList/',SwipesMatchAPIView.as_view()),
 ]
 
 if settings.DEBUG:
