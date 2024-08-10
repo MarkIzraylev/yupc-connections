@@ -1,6 +1,5 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.db.models import Model
 
 
 # Create your models here.
@@ -11,30 +10,35 @@ class ComplaintTypes(models.Model):
 
     def __str__(self):
         return self.name
+
 # Хобби
 class Hobby(models.Model):
     name = models.CharField(max_length=100, default="УЧЕБА В ЯГК")
 
     def __str__(self):
         return self.name
+
 # Модель курса
 class Course(models.Model):
     name = models.CharField(max_length=100, default="1 КУРС")
 
     def __str__(self):
         return self.name
+
 # Модель корпуса
 class Building(models.Model):
     name = models.CharField(max_length=100, default="ОСНОВНОЙ КУРС")
 
     def __str__(self):
         return self.name
+
 # Модель отделения
 class Department(models.Model):
     name = models.CharField(max_length=100, default="ОИТ")
 
     def __str__(self):
         return self.name
+
 # Переопределенная модель пользователя
 class User(AbstractUser):
     image = models.ImageField(upload_to='imagesUser/', null=True, blank=True)
@@ -67,13 +71,10 @@ class ComplaintList(models.Model):
 class Swipe(models.Model):
     swiper = models.ForeignKey(User, on_delete=models.CASCADE, related_name='swiper')
     swiped = models.ForeignKey(User, on_delete=models.CASCADE, related_name='swiped')
-    is_swiped_like = models.BooleanField(default=False)
+    swiper_is_like = models.BooleanField(default=False, null=True,blank=True) # первый лайкнул или нет
+    swiped_is_like = models.BooleanField(default=False, null=True, blank=True) # второй лайкнул или нет
+
     def __str__(self):
         return f"{self.swiper.last_name} свайпнул {self.swiped.last_name}"
-
-# Модель взаимных свайпов
-class SwipeMatch(models.Model):
-    first_swiper = models.ForeignKey(User, on_delete=models.CASCADE, related_name='first_swiper')
-    second_swiper = models.ForeignKey(User, on_delete=models.CASCADE, related_name='second_swiper')
 
 

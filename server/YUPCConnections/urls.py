@@ -15,21 +15,15 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
-from SwipeApp.views import (UsersAPIView, SwipeAPIView, ComplaintsListAPIView, SwipesMatchAPIView,
-                            SendComplaintAPIView, InboxSwipeRequest)
+from django.urls import path, include
+
 
 from django.conf.urls.static import static
 from django.conf import  settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/userList/<int:count_profile_need>/', UsersAPIView.as_view()),
-    path('api/inboxUserList/', InboxSwipeRequest.as_view()),
-    path('api/swipeUser/',SwipeAPIView.as_view()),
-    path('api/complaintsList/',ComplaintsListAPIView.as_view()),
-    path('api/sendComplaint/',SendComplaintAPIView.as_view()),
-    path('api/swipesMatchList/',SwipesMatchAPIView.as_view()),
+    path('api/', include('SwipeApp.urls'))
 ]
 
 if settings.DEBUG:
