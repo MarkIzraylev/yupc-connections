@@ -19,6 +19,8 @@ class UserSerializer(serializers.Serializer):
     hobbies = serializers.SerializerMethodField()
 
     def get_course_name(self,obj):
+        print("айди кура", obj)
+        print(obj.course_id)
         return str(Course.objects.get(id=obj.course_id))
 
     def get_building_name(self,obj):
@@ -29,6 +31,8 @@ class UserSerializer(serializers.Serializer):
 
     def get_hobbies(self,obj):
         return list(obj.hobbies.all().values_list('name',flat=True))
+
+
 
 class SwipeUserSerializer(serializers.Serializer):
     target_user_id = serializers.IntegerField()
@@ -105,3 +109,29 @@ class SendComplaintSerializer(serializers.Serializer):
             author_obj = User.objects.get(username="admin")
             imposter_obj = User.objects.get(id=validated_data['target_user_id'])
             return ComplaintList.objects.create(complaint_type= complaint_obj, author_complaint = author_obj, imposter_complaint=imposter_obj)
+
+
+
+
+class UserNewSerializer(serializers.Serializer):
+    first_name = serializers.CharField(max_length=100, required=False)
+    last_name = serializers.CharField(max_length=100, required=False)
+    sur_name = serializers.CharField(max_length=100, required=False)
+    description = serializers.CharField(max_length=200 , required=False)
+    course_name = serializers.SerializerMethodField(source='course_id', required=False)
+    building_name = serializers.SerializerMethodField(source='build_id', required=False)
+    department_name = serializers.SerializerMethodField(source='department_id', required=False)
+    is_search_friend = serializers.BooleanField(default=True, required=False)
+    is_search_love = serializers.BooleanField(default=False, required=False)
+    vk_contact = serializers.CharField(max_length=100, required=False)
+    tg_contact = serializers.CharField(max_length=100, required=False)
+    hobbies = serializers.SerializerMethodField(required=False)
+    username = serializers.CharField(max_length=150)
+    password = serializers.CharField(max_length=150)
+    def create(self, validated_data):
+        new_user = User(
+            username=validated_data['username'],
+        )
+        new_user.set_password(validated_data['password'])
+        new_user.save()
+        return new_user
