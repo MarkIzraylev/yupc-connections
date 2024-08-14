@@ -133,7 +133,11 @@ export default function Swipe({setCurrentPage, openModal, setOpenModal}: swipePr
     function fetchNewBunchOfCards(): void | boolean {
         setCurrentBunchOfCards(null)
         let nextBunchOfCards: cardObj[];
-        axios.get('http://127.0.0.1:8000/api/userList/')
+        axios.get('http://127.0.0.1:8000/api/userList/', {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+            },
+        })
         .then(response => {
             if (response.status === 200) {
                 nextBunchOfCards = response.data.users;

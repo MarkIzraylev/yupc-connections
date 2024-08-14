@@ -9,10 +9,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
-export default function SignUp({setCurrentPage}) {
+export default function SignUp({setCurrentPage, loggedIn, setLoggedIn}) {
     useEffect(() => {
         setCurrentPage('sign-in')
     }, [])
+    let navigate = useNavigate();
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
@@ -26,6 +28,8 @@ export default function SignUp({setCurrentPage}) {
             console.log('resp',response)
             localStorage.setItem('accessToken', response.data.access);
             localStorage.setItem('refreshToken', response.data.refresh);
+            setLoggedIn(true);
+            navigate('/swipe');
         })
         .catch(error => console.error(error))
     }

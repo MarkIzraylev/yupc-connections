@@ -59,7 +59,7 @@ const theme = createTheme({
   },
 });
 
-export default function Root({currentPage, setCurrentPage, openModal, setOpenModal}) {
+export default function Root({currentPage, setCurrentPage, openModal, setOpenModal, loggedIn, setLoggedIn}) {
   return (
     <ThemeProvider theme={theme}>
         <CssBaseline />
@@ -69,10 +69,10 @@ export default function Root({currentPage, setCurrentPage, openModal, setOpenMod
             flexDirection: 'column',
             height: '100vh',
         }}>
-            <Header currentPage={currentPage} setCurrentPage={setCurrentPage} openModal={openModal} setOpenModal={setOpenModal} />
+            <Header currentPage={currentPage} setCurrentPage={setCurrentPage} openModal={openModal} setOpenModal={setOpenModal} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />
             <Outlet currentPage={currentPage} setCurrentPage={setCurrentPage} openModal={openModal} setOpenModal={setOpenModal} />
-            {currentPage !== 'sign-in' && (
-              <Footer currentPage={currentPage} setCurrentPage={setCurrentPage}/>
+            {currentPage !== 'sign-in' && loggedIn && (
+              <Footer currentPage={currentPage} setCurrentPage={setCurrentPage} />
             )}
             
         </Container>

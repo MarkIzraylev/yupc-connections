@@ -9,12 +9,28 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { ReactComponent as Logo } from "../../img/icons/group.svg";
 import SvgIcon from "@mui/icons-material/Menu";
 import Groups3Icon from "@mui/icons-material/Groups3";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Tooltip from '@mui/material/Tooltip';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
+import axios from 'axios';
 
-export default function Header({currentPage, setCurrentPage, openModal, setOpenModal}) {
+export default function Header({currentPage, setCurrentPage, openModal, setOpenModal, loggedIn, setLoggedIn}) {
+  let navigate = useNavigate();
+  const handleLogOut = () => {
+    axios.post('http://127.0.0.1:8000/api/logout/', {
+        refresh_token: localStorage.getItem('refreshToken'),
+    })
+    .then(response => {
+        if (response.status != 200) return
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        setLoggedIn(false);
+        navigate('/');
+    })
+    .catch(error => console.error(error))
+  }
+  
   return (
     <Box>
       <AppBar position="static" sx={{backdropFilter: 'blur(30px)', boxShadow: 'none', backgroundImage: 'none'}}>
@@ -82,14 +98,18 @@ export default function Header({currentPage, setCurrentPage, openModal, setOpenM
             </Box>
           )}
           
-          {currentPage === "about-us" && (
+          {(currentPage === "about-us") && (!loggedIn) && (
             <Box sx={{ textAlign: "right" }}>
               <Link to="/signin" onClick={() => setCurrentPage('sign-in')}>
                 <Button sx={{color: 'white'}}>Войти</Button>
               </Link>
             </Box>
           )}
-          
+          {(currentPage === "about-us") && (loggedIn) && (
+            <Box sx={{ textAlign: "right" }}>
+              <Button onClick={handleLogOut} sx={{color: 'white'}}>Выйти</Button>
+            </Box>
+          )}
         </Toolbar>
       </AppBar>
     </Box>
