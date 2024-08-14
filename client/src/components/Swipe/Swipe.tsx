@@ -20,16 +20,19 @@ import { useState, useRef, useEffect, Dispatch } from 'react';
 import SwipeCard from '../SwipeCard/SwipeCard';
 
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 type modalType = string | null;
 
 interface swipeProps {
     setCurrentPage: Dispatch<string>,
     openModal: modalType,
-    setOpenModal: Dispatch<modalType>
+    setOpenModal: Dispatch<modalType>,
+    loggedIn: boolean
 }
 
-export default function Swipe({setCurrentPage, openModal, setOpenModal}: swipeProps) {
+export default function Swipe({setCurrentPage, openModal, setOpenModal, loggedIn}: swipeProps) {
+    let navigate = useNavigate();
     const [dragStart, setDragStart] = useState<number>(NaN);
     const [dragStartAfterThreshold, setDragStartAfterThreshold] = useState<number>(NaN);
     const [dragCurrent, setDragCurrent] = useState<number>(NaN);
@@ -115,8 +118,13 @@ export default function Swipe({setCurrentPage, openModal, setOpenModal}: swipePr
         console.log(`send '${swipeType ? 'accept' : 'reject'}' swipe to a user whose id = ${swipedUserId}`)
         // post data to server
         axios.post('http://127.0.0.1:8000/api/swipeUser/', {
-            identifier_swiped: swipedUserId,
-            is_swiped_like: swipeType
+            
+            target_user_id: swipedUserId,
+            is_like: swipeType
+        }, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+            },
         })
         .then(function (response) {
             console.log(response);
@@ -129,7 +137,7 @@ export default function Swipe({setCurrentPage, openModal, setOpenModal}: swipePr
     const [currentBunchOfCards, setCurrentBunchOfCards] = useState<cardObj[] | null>(null);
     const [errorMessage, setErrorMessage] = useState(null);
     const [noCardsLeft, setNoCardsLeft] = useState(false);
-
+    //git commit -m "feature: add auth credentials for matches page"
     function fetchNewBunchOfCards(): void | boolean {
         setCurrentBunchOfCards(null)
         let nextBunchOfCards: cardObj[];
@@ -139,17 +147,25 @@ export default function Swipe({setCurrentPage, openModal, setOpenModal}: swipePr
             },
         })
         .then(response => {
+            console.log('resp', response)
             if (response.status === 200) {
                 nextBunchOfCards = response.data.users;
                 console.log(response.data.users)
                 nextBunchOfCards.length !== 0 ? setCurrentBunchOfCards(nextBunchOfCards) : setNoCardsLeft(true);
             }
         }).catch(err => {
-            setErrorMessage(err.code);
+            setErrorMessage(err.response.status);
             console.error(err);
-            return false;
+            
+            //return false;
         });
     }
+
+    useEffect(() => {
+        if (!loggedIn) {
+            navigate('/signin');
+        }
+    }, [])
 
     function performSwipe(swipeType: boolean) {
         if (!currentBunchOfCards) {

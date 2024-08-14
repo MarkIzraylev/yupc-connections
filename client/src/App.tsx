@@ -33,7 +33,7 @@ function App() {
         },
         {
           path: "swipe",
-          element: <Swipe setCurrentPage={setCurrentPage} openModal={openModal} setOpenModal={setOpenModal} />,
+          element: <Swipe setCurrentPage={setCurrentPage} openModal={openModal} setOpenModal={setOpenModal} loggedIn={loggedIn} />,
         },
         {
           path: "match",

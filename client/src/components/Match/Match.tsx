@@ -17,7 +17,11 @@ export default function Match({setCurrentPage}: {setCurrentPage: Dispatch<string
     const theme = useTheme();
     const [matches, setMatches] = useState<any[] | null>(null);
     function getMatches() {
-        axios.get('http://127.0.0.1:8000/api/getMatch/')
+        axios.get('http://127.0.0.1:8000/api/getMatch/', {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+            },
+        })
         .then(function (response) {
             setMatches(response.data.users);
             console.log('matches are: ', response.data.users)

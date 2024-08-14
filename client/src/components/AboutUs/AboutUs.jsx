@@ -9,6 +9,7 @@ import SwipeLeftIcon from '@mui/icons-material/SwipeLeft';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ForumIcon from '@mui/icons-material/Forum';
 import Groups3Icon from '@mui/icons-material/Groups3';
+import SwipeIcon from '@mui/icons-material/Swipe';
 import { Dispatch, useEffect } from 'react';
 import { Container, Paper, Typography } from "@mui/material";
 import Grid from '@mui/material/Grid';
@@ -61,7 +62,7 @@ export default function AboutUs({setCurrentPage}) {
                 <TimelineItem>
                     <TimelineSeparator>
                     <TimelineDot variant="outlined" color="primary">
-                        <SwipeLeftIcon color="primary" />
+                        <SwipeIcon color="primary" />
                     </TimelineDot>
                     <TimelineConnector />
                     </TimelineSeparator>
