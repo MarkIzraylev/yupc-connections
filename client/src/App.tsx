@@ -13,6 +13,7 @@ import Profile from './components/Profile/Profile';
 import Swipe from './components/Swipe/Swipe';
 import AboutUs from './components/AboutUs/AboutUs';
 import SignIn from './components/SignIn/SignIn';
+import SignUp from './components/SignUp/SignUp';
 
 function App() {
   const [currentPage, setCurrentPage] = React.useState("about-us");
@@ -47,6 +48,10 @@ function App() {
         {
           path: "signin",
           element: <SignIn setCurrentPage={setCurrentPage} />,
+        },
+        {
+          path: "signup",
+          element: <SignUp setCurrentPage={setCurrentPage} />,
         },
       ]
     },
