@@ -57,9 +57,9 @@ class UsersAPIView(APIView):
                 status_message = "Анкеты кончились"
 
             if status_message:
-                return Response({"message":status_message}, status = status_for_client)
+                return Response({"message":status_message,"users":users_with_serializer}, status = status_for_client)
 
-            return Response(status=status_for_client)
+            return Response({"users":users_with_serializer},status=status_for_client)
 
         except Exception as error:
             print(error)
@@ -213,7 +213,6 @@ class SendComplaintAPIView(APIView):
 
 
 class RegistrationAPIView(APIView):
-
     def post(self, request):
 
         serializer = UserNewSerializer(data=request.data)
