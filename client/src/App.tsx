@@ -19,11 +19,13 @@ function App() {
   const [currentPage, setCurrentPage] = React.useState("about-us");
   type modalType = string | null;
   const [openModal, setOpenModal] = React.useState<modalType>(null);
+  const [loggedIn, setLoggedIn] = React.useState<boolean>(Object.keys(localStorage).includes('accessToken'));
+  console.log('logged in ', loggedIn)
 
   const router = createBrowserRouter([
     {
       path: "/",
-      element: <Root currentPage={currentPage} setCurrentPage={setCurrentPage} openModal={openModal} setOpenModal={setOpenModal} />,
+      element: <Root currentPage={currentPage} setCurrentPage={setCurrentPage} openModal={openModal} setOpenModal={setOpenModal} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />,
       children: [
         {
           path: "/",
@@ -47,11 +49,11 @@ function App() {
         },
         {
           path: "signin",
-          element: <SignIn setCurrentPage={setCurrentPage} />,
+          element: <SignIn setCurrentPage={setCurrentPage} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />,
         },
         {
           path: "signup",
-          element: <SignUp setCurrentPage={setCurrentPage} />,
+          element: <SignUp setCurrentPage={setCurrentPage} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />,
         },
       ]
     },

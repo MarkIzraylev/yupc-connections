@@ -9,12 +9,15 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
-export default function SignIn({setCurrentPage}) {
+export default function SignIn({setCurrentPage, loggedIn, setLoggedIn}) {
+    let navigate = useNavigate();
+
     useEffect(() => {
         setCurrentPage('sign-in')
     }, [])
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState(null);
 
     const handleSubmitForm = () => {    
         axios.post('http://127.0.0.1:8000/api/login/', {
@@ -22,12 +25,19 @@ export default function SignIn({setCurrentPage}) {
             password: password,
         })
         .then(response => {
-            if (response.status != 201) return
+            if (response.status != 200) return
             console.log('resp',response)
             localStorage.setItem('accessToken', response.data.access);
             localStorage.setItem('refreshToken', response.data.refresh);
+            setError(null);
+            console.log('success')
+            setLoggedIn(true);
+            navigate('/swipe')
         })
-        .catch(error => console.error(error))
+        .catch(error => {
+            console.error(error.response);
+            setError(`Ошибка входа. ${error.response.data.error}.`);
+        })
     }
     let bgImgsSrcs = [
         "https://i.pinimg.com/originals/79/96/65/799665b442c92830edc705db721f38c1.jpg",
@@ -44,6 +54,9 @@ export default function SignIn({setCurrentPage}) {
                 <CardContent>
                     <Typography gutterBottom variant="h5" mb={1}>
                         Авторизация
+                    </Typography>
+                    <Typography gutterBottom variant="subtitle1">
+                        {error}
                     </Typography>
                     <Box sx={{display: 'grid', flexDirection: 'column', gap: '1rem'}}>
                         <TextField label="Эл. почта" variant="standard" value={email} onChange={(ev) => setEmail(ev.target.value)} />
