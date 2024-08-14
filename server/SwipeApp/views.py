@@ -14,11 +14,11 @@ from .models import User, Swipe, ComplaintTypes
 from .serializer import UserSerializer, SwipeUserSerializer, IncomingProfilesSerializer, MatchListSerializer, \
     TargetUserIdSerializer, ComplaintsListSerializer, SendComplaintSerializer, UserNewSerializer
 
-
 class UsersAPIView(APIView):
     """
     Получение пользователей для свайпов <= 10
     """
+    permission_classes = [IsAuthenticated]
     def get(self,request):
 
         try:
@@ -63,7 +63,9 @@ class SwipeAPIView(APIView):
     """
     Свайп анкеты
     """
+    permission_classes = [IsAuthenticated]
     def post(self,request):
+        print("пользователь -", request.user)
         try:
             serializer = SwipeUserSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
@@ -79,6 +81,7 @@ class IncomingProfilesAPIView(APIView):
     """
     Получеге входящих анкет
     """
+    permission_classes = [IsAuthenticated]
     def get(self,request):
         target_user =  User.objects.get(username="admin")
         list_incoming_profiles = Swipe.objects.filter(swiped=target_user,swiped_is_like__isnull=True).values_list('swiper__id')
@@ -101,6 +104,7 @@ class GetMatchAPIView(APIView):
     """
     Получение метчей пользователя
     """
+    permission_classes = [IsAuthenticated]
     def get(self,request):
         try:
             target_user = User.objects.get(username="admin")
@@ -142,6 +146,7 @@ class GetProfileDetailsAPIView(APIView):
     """
     Получение детальной информации про пользователя
     """
+    permission_classes = [IsAuthenticated]
     def post(self,request):
        try:
            serializer = TargetUserIdSerializer(data=request.data)
@@ -165,6 +170,7 @@ class ComplaintsListAPIView(APIView):
     """
     Получение наименований вариантов жалоб
     """
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         try:
             list_all_complaints = ComplaintTypes.objects.all()
@@ -188,6 +194,7 @@ class SendComplaintAPIView(APIView):
     """
     Отправка жалобы
     """
+    permission_classes = [IsAuthenticated]
     def post(self, request):
        try:
            serializer = SendComplaintSerializer(data=request.data)
@@ -263,6 +270,7 @@ class LoginAPIView(APIView):
 
 
 class LogoutAPIView(APIView):
+    permission_classes = [IsAuthenticated]
     def post(self,request):
         refresh_token = request.data.get('refresh_token')  # С клиента нужно отправить refresh token
 

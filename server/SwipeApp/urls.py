@@ -8,7 +8,7 @@ from .views import UsersAPIView, SwipeAPIView, IncomingProfilesAPIView, GetMatch
 
 urlpatterns = [
     path('userList/', UsersAPIView.as_view()),
-    path('swipe/',SwipeAPIView.as_view()),
+    path('swipeUser/',SwipeAPIView.as_view()),
     path('incomingProfiles/', IncomingProfilesAPIView.as_view()),
     path('getMatch/', GetMatchAPIView.as_view()),
     path('getDetailsAboutProfile/', GetProfileDetailsAPIView.as_view()),

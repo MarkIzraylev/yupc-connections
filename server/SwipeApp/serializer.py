@@ -19,8 +19,6 @@ class UserSerializer(serializers.Serializer):
     hobbies = serializers.SerializerMethodField()
 
     def get_course_name(self,obj):
-        print("айди кура", obj)
-        print(obj.course_id)
         return str(Course.objects.get(id=obj.course_id))
 
     def get_building_name(self,obj):

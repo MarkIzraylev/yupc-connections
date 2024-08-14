@@ -152,10 +152,6 @@ REST_FRAMEWORK ={
         # строчку ниже надо будет убрать на релизе
         'rest_framework.renderers.BrowsableAPIRenderer',
     ],
-    # ниже ключ, который говорит всем вьюхам, что можно все давать только авторизованным пользователям)
-    'DEFAULT_PERMISSION_CLASSES':[
-        'rest_framework.permissions.IsAuthenticated'
-    ],
 }
 
 SIMPLE_JWT = {
