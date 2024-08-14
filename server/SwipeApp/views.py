@@ -21,6 +21,7 @@ class UsersAPIView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self,request):
         try:
+            print("пользователь - " ,request, request.user.password)
             # ниже версия, которая правильная
             # list_all_user_id_system = User.objects.filter(~Q(id=request.user.id))
             # if not Swipe.objects.filter(swiper=request.user.ud, swiped=user.id).exists():
