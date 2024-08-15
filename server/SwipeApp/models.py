@@ -41,7 +41,7 @@ class Department(models.Model):
 
 # Переопределенная модель пользователя
 class User(AbstractUser):
-    email = models.EmailField(max_length=50, unique=True)
+    email = models.EmailField(max_length=100 , unique=True)
     image = models.ImageField(upload_to='imagesUser/', null=True, blank=True)
     description = models.TextField(default='Ищу друзей', null=True,blank=True, max_length=170)
     course = models.ForeignKey(Course, on_delete=models.CASCADE, default=None, null=True,blank=True)

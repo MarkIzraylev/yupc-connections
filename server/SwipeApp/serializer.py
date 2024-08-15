@@ -84,23 +84,40 @@ class SendComplaintSerializer(serializers.Serializer):
 
 
 class UserNewSerializer(serializers.Serializer):
-    first_name = serializers.CharField(max_length=100, required=False)
-    last_name = serializers.CharField(max_length=100, required=False)
-    description = serializers.CharField(max_length=170 , required=False)
-    course_name = serializers.SerializerMethodField(source='course_id', required=False)
-    building_name = serializers.SerializerMethodField(source='build_id', required=False)
-    department_name = serializers.SerializerMethodField(source='department_id', required=False)
-    is_search_friend = serializers.BooleanField(default=True, required=False)
-    is_search_love = serializers.BooleanField(default=False, required=False)
-    vk_contact = serializers.CharField(max_length=100, required=False)
-    tg_contact = serializers.CharField(max_length=100, required=False)
-    hobbies = serializers.SerializerMethodField(required=False)
-    username = serializers.CharField(max_length=150)
+    username = serializers.CharField(max_length=100)
+    email = serializers.CharField(max_length=100)
+    first_name = serializers.CharField(max_length=100)
+    last_name = serializers.CharField(max_length=100)
+    description = serializers.CharField(max_length=170 )
+    course = serializers.CharField(max_length=50)
+    building = serializers.CharField(max_length=50)
+    department = serializers.CharField(max_length=50)
+    is_search_friend = serializers.BooleanField(default=True)
+    is_search_love = serializers.BooleanField(default=False)
+    vk_contact = serializers.CharField(max_length=100)
+    tg_contact = serializers.CharField(max_length=100)
+    hobbies = serializers.ListSerializer(child=serializers.IntegerField(), write_only=True)
     password = serializers.CharField(max_length=150)
     def create(self, validated_data):
+        print('валид дата', validated_data)
         new_user = User(
-            username=validated_data['username'],
+            username=validated_data['email'], # здесь потом убрать
+            email=validated_data['email'],
+            first_name=validated_data['first_name'],
+            last_name=validated_data['last_name'],
+            description=validated_data['description'],
+            course=Course.objects.get(id=validated_data["course"]),
+            building=Building.objects.get(id=validated_data['building']),
+            department=Department.objects.get(id=validated_data['department']),
+            is_search_friend=validated_data['is_search_friend'],
+            is_search_love=validated_data['is_search_love'],
+            vk_contact=validated_data['vk_contact'],
+            tg_contact=validated_data['tg_contact'],
         )
         new_user.set_password(validated_data['password'])
         new_user.save()
+
+        for hobby_id in validated_data['hobbies']:
+            hobby = Hobby.objects.get(id=hobby_id)
+            new_user.hobbies.add(hobby)
         return new_user

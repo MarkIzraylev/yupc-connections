@@ -192,7 +192,6 @@ class SendComplaintAPIView(APIView):
 
 class RegistrationAPIView(APIView):
     def post(self, request):
-
         serializer = UserNewSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
