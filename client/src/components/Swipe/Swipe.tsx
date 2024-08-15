@@ -30,13 +30,15 @@ import { useNavigate } from 'react-router-dom';
 type modalType = string | null;
 
 interface swipeProps {
+    currentPage: string,
     setCurrentPage: Dispatch<string>,
     openModal: modalType,
     setOpenModal: Dispatch<modalType>,
-    loggedIn: boolean
+    loggedIn: boolean,
+    isInbox?: boolean,
 }
 
-export default function Swipe({setCurrentPage, openModal, setOpenModal, loggedIn}: swipeProps) {
+export default function Swipe({currentPage, setCurrentPage, openModal, setOpenModal, loggedIn, isInbox}: swipeProps) {
     let navigate = useNavigate();
     const [dragStart, setDragStart] = useState<number>(NaN);
     const [dragStartAfterThreshold, setDragStartAfterThreshold] = useState<number>(NaN);
@@ -50,6 +52,17 @@ export default function Swipe({setCurrentPage, openModal, setOpenModal, loggedIn
     //         case 'SHOW_NEXT':
 
     // }
+
+    useEffect(() => {
+        setCurrentCardId(0)
+        setPrevSwipeIsSent(true)
+        setCurrentBunchOfCards(null)
+        setErrorMessage(null)
+        setInfoMessage(null)
+        setNoCardsLeft(false)
+        fetchNewBunchOfCards()
+        // !errorMessage && !currentBunchOfCards && !noCardsLeft && !infoMessage
+    }, [currentPage])
 
     const [currentCardId, setCurrentCardId] = useState<number>(0);
 
@@ -109,29 +122,34 @@ export default function Swipe({setCurrentPage, openModal, setOpenModal, loggedIn
         setDragStart(ev.changedTouches[0].clientX)
         setDragCurrent(ev.changedTouches[0].clientX)
     }
-    function sendSwipe(swipedUserId: number, swipeType: boolean) {
+    async function sendSwipe(swipedUserId: number, swipeType: boolean) {
         console.log(`send '${swipeType ? 'accept' : 'reject'}' swipe to a user whose id = ${swipedUserId}`)
         setPrevSwipeIsSent(false)
         // post data to server
-        axios.post('http://127.0.0.1:8000/api/swipeUser/', {
+        return new Promise<void>((resolve, reject) => {
+            axios.post('http://127.0.0.1:8000/api/swipeUser/', {
             
-            target_user_id: swipedUserId,
-            is_like: swipeType
-        }, {
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-            },
+                target_user_id: swipedUserId,
+                is_like: swipeType
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                },
+            })
+            .then(function (response) {
+                setPrevSwipeIsSent(true)
+                if (response.status === 401) {
+                    updateTokens()
+                    sendSwipe(swipedUserId, swipeType)
+                } else {
+                    resolve()
+                }
+            })
+            .catch(function (error) {
+                console.log(error);
+                reject()
+            });
         })
-        .then(function (response) {
-            setPrevSwipeIsSent(true)
-            if (response.status === 401) {
-                updateTokens()
-                sendSwipe(swipedUserId, swipeType)
-            }
-        })
-        .catch(function (error) {
-            console.log(error);
-        });
     }
 
     const [currentBunchOfCards, setCurrentBunchOfCards] = useState<cardObj[] | null>(null);
@@ -143,7 +161,7 @@ export default function Swipe({setCurrentPage, openModal, setOpenModal, loggedIn
         setCurrentBunchOfCards(null)
         let nextBunchOfCards: cardObj[];
         if (!prevSwipeIsSent) {return}
-        axios.get('http://127.0.0.1:8000/api/userList/', {
+        axios.get((isInbox ? 'http://127.0.0.1:8000/api/incomingProfiles/' : 'http://127.0.0.1:8000/api/userList/'), {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
             },
@@ -157,6 +175,8 @@ export default function Swipe({setCurrentPage, openModal, setOpenModal, loggedIn
             } else if (response.status === 401) {
                 updateTokens()
                 fetchNewBunchOfCards()
+            } else if (response.status === 204) {
+                setInfoMessage('Входящих на данный момент нет.')
             }
             
         }).catch(err => {
@@ -177,18 +197,27 @@ export default function Swipe({setCurrentPage, openModal, setOpenModal, loggedIn
     }, [])
 
     function performSwipe(swipeType: boolean) {
+        
         if (!currentBunchOfCards) {
             return false;
         }
 
         sendSwipe(currentBunchOfCards[currentCardId].id, swipeType)
+        .then(res => {
+            console.log('promise has worked! here is res:', res)
+            if (currentCardId === currentBunchOfCards.length - 1) {
+                // fetch new bunch of cards via API
+                fetchNewBunchOfCards()
+            }
+            setCurrentCardId(prev => (prev + 1) % currentBunchOfCards.length)
+        })
+        .catch(error => {
+            console.error('promise was catched! here is error:', error);
+        })
 
-        if (currentCardId === currentBunchOfCards.length - 1) {
-            // fetch new bunch of cards via API
-            fetchNewBunchOfCards()
-        }
+        
 
-        setCurrentCardId(prev => (prev + 1) % currentBunchOfCards.length)
+        
     }
 
     function handleCardMoveEnd() {
@@ -235,7 +264,7 @@ export default function Swipe({setCurrentPage, openModal, setOpenModal, loggedIn
         }
     }, [dragCurrent])
     useEffect(() => {
-        setCurrentPage('swipe')
+        setCurrentPage(isInbox ? 'inbox' : 'swipe')
         // fetching new cards at the component's mount
         fetchNewBunchOfCards()
     }, []);

@@ -33,7 +33,7 @@ function App() {
         },
         {
           path: "swipe",
-          element: <Swipe setCurrentPage={setCurrentPage} openModal={openModal} setOpenModal={setOpenModal} loggedIn={loggedIn} />,
+          element: <Swipe currentPage={currentPage} setCurrentPage={setCurrentPage} openModal={openModal} setOpenModal={setOpenModal} loggedIn={loggedIn} />,
         },
         {
           path: "match",
@@ -41,7 +41,7 @@ function App() {
         },
         {
           path: "inbox",
-          element: <Inbox setCurrentPage={setCurrentPage} />,
+          element: <Swipe currentPage={currentPage} setCurrentPage={setCurrentPage} openModal={openModal} setOpenModal={setOpenModal} loggedIn={loggedIn} isInbox={true} />,
         },
         {
           path: "profile",
