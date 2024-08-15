@@ -30,7 +30,7 @@ class UsersAPIView(APIView):
             for user in list_profiles_without_current_user:  # бежим по всем пользователям
 
                 if not Swipe.objects.filter(swiper=target_user.id,
-                                            swiped=user.id).exists():  # проверяем наличие свайпа этим пользователя этого
+                                            swiped=user.id, swiper_is_like__in=[False,True]).exists() and not Swipe.objects.filter(swiper=user.id,swiped=target_user.id, swiped_is_like__in=[False,True]).exists():  # проверяем наличие свайпа этим пользователя этого
                     final_list_profiles.append(user)
 
                 if len(final_list_profiles) == count_profiles_need:
