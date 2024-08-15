@@ -11,7 +11,7 @@ from rest_framework_simplejwt.tokens import  RefreshToken
 
 from .models import User, Swipe, ComplaintTypes
 
-from .serializer import UserSerializer, SwipeUserSerializer, IncomingProfilesSerializer, MatchListSerializer, \
+from .serializer import UserSerializer, SwipeUserSerializer, MatchListSerializer, \
     TargetUserIdSerializer, ComplaintsListSerializer, SendComplaintSerializer, UserNewSerializer
 
 class UsersAPIView(APIView):
@@ -58,7 +58,8 @@ class UsersAPIView(APIView):
                 status_message = "Анкеты кончились"
 
             if status_message:
-                return Response({"message":status_message,"users":users_with_serializer}, status = status_for_client)
+                print("нету контекста", status_message, status_for_client)
+                return Response({"message":status_message}, status = status_for_client)
 
             return Response({"users":users_with_serializer},status=status_for_client)
 
@@ -75,7 +76,7 @@ class SwipeAPIView(APIView):
     def post(self,request):
         print("пользователь -", request.user)
         try:
-            serializer = SwipeUserSerializer(data=request.data)
+            serializer = SwipeUserSerializer(data=request.data, context={"request":request})
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(status=status.HTTP_200_OK)
@@ -97,7 +98,7 @@ class IncomingProfilesAPIView(APIView):
             for user_swipe_id in list_incoming_profiles:
                 user_target = User.objects.get(id=user_swipe_id[0])
                 final_profiles.append(user_target)
-            list_incoming_profiles_with_serializer = IncomingProfilesSerializer(final_profiles, many=True).data
+            list_incoming_profiles_with_serializer = UserSerializer(final_profiles, many=True).data
             status_for_client = status.HTTP_200_OK
             if not len(list_incoming_profiles_with_serializer):
                 status_for_client = status.HTTP_204_NO_CONTENT

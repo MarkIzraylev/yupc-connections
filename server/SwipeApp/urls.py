@@ -6,6 +6,8 @@ from django.urls import path
 from .views import UsersAPIView, SwipeAPIView, IncomingProfilesAPIView, GetMatchAPIView, GetProfileDetailsAPIView, \
     ComplaintsListAPIView, SendComplaintAPIView, RegistrationAPIView, LoginAPIView, LogoutAPIView
 
+from rest_framework_simplejwt.views import TokenRefreshView
+
 urlpatterns = [
     path('userList/', UsersAPIView.as_view()),
     path('swipeUser/',SwipeAPIView.as_view()),
@@ -16,5 +18,6 @@ urlpatterns = [
     path('sendReport/', SendComplaintAPIView.as_view()),
     path('registration/',  RegistrationAPIView.as_view()),
     path('login/', LoginAPIView.as_view()),
-    path('logout/', LogoutAPIView.as_view())
+    path('logout/', LogoutAPIView.as_view()),
+    path('token/refresh/',   TokenRefreshView.as_view(), name="token_refresh")
 ]

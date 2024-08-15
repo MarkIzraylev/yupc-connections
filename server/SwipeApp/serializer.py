@@ -6,9 +6,8 @@ class UserSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     first_name = serializers.CharField(max_length=100)
     last_name = serializers.CharField(max_length=100)
-    sur_name = serializers.CharField(max_length=100)
     image = serializers.ImageField()
-    description = serializers.CharField(max_length=200)
+    description = serializers.CharField(max_length=170)
     course_name = serializers.SerializerMethodField(source='course_id')
     building_name = serializers.SerializerMethodField(source='build_id')
     department_name = serializers.SerializerMethodField(source='department_id')
@@ -37,7 +36,7 @@ class SwipeUserSerializer(serializers.Serializer):
     is_like = serializers.BooleanField()
     def create(self, validated_data):
         # получаем объект того, кто свайпает
-        swiper_user = User.objects.get(username="admin")
+        swiper_user = User.objects.get(id=self.context['request'].user.id)
 
         # получаем объект свайпнутого
         swiped_user = User.objects.get(id=validated_data.get('target_user_id'))
@@ -55,38 +54,11 @@ class SwipeUserSerializer(serializers.Serializer):
         object_swipe.save()
         return object_swipe
 
-class IncomingProfilesSerializer(serializers.Serializer):
-    id = serializers.IntegerField()
-    first_name = serializers.CharField(max_length=100)
-    last_name = serializers.CharField(max_length=100)
-    sur_name = serializers.CharField(max_length=100)
-    image = serializers.ImageField()
-    description = serializers.CharField(max_length=200)
-    course_name = serializers.SerializerMethodField(source='course_id')
-    building_name = serializers.SerializerMethodField(source='build_id')
-    department_name = serializers.SerializerMethodField(source='department_id')
-    is_search_friend = serializers.BooleanField(default=True)
-    is_search_love = serializers.BooleanField(default=False)
-    vk_contact = serializers.CharField(max_length=100)
-    tg_contact = serializers.CharField(max_length=100)
-    hobbies = serializers.SerializerMethodField()
-
-    def get_course_name(self, obj):
-        return str(Course.objects.get(id=obj.course_id))
-
-    def get_building_name(self, obj):
-        return str(Building.objects.get(id=obj.building_id))
-
-    def get_department_name(self, obj):
-        return str(Department.objects.get(id=obj.department_id))
-
-    def get_hobbies(self, obj):
-        return list(obj.hobbies.all().values_list('name', flat=True))
-
 class MatchListSerializer(serializers.Serializer):
     id = serializers.IntegerField()
-    sur_name = serializers.CharField(max_length=100)
+    last_name = serializers.CharField(max_length=100)
     first_name = serializers.CharField(max_length=100)
+    description = serializers.CharField(max_length=170)
     image = serializers.ImageField()
 
 
@@ -114,8 +86,7 @@ class SendComplaintSerializer(serializers.Serializer):
 class UserNewSerializer(serializers.Serializer):
     first_name = serializers.CharField(max_length=100, required=False)
     last_name = serializers.CharField(max_length=100, required=False)
-    sur_name = serializers.CharField(max_length=100, required=False)
-    description = serializers.CharField(max_length=200 , required=False)
+    description = serializers.CharField(max_length=170 , required=False)
     course_name = serializers.SerializerMethodField(source='course_id', required=False)
     building_name = serializers.SerializerMethodField(source='build_id', required=False)
     department_name = serializers.SerializerMethodField(source='department_id', required=False)
