@@ -71,8 +71,8 @@ class ComplaintList(models.Model):
 class Swipe(models.Model):
     swiper = models.ForeignKey(User, on_delete=models.CASCADE, related_name='swiper')
     swiped = models.ForeignKey(User, on_delete=models.CASCADE, related_name='swiped')
-    swiper_is_like = models.BooleanField(default=False, null=True,blank=True) # первый лайкнул или нет
-    swiped_is_like = models.BooleanField(default=False, null=True, blank=True) # второй лайкнул или нет
+    swiper_is_like = models.BooleanField(default=None, null=True,blank=True) # первый лайкнул или нет
+    swiped_is_like = models.BooleanField(default=None, null=True, blank=True) # второй лайкнул или нет
 
     def __str__(self):
         return f"{self.swiper.last_name} свайпнул {self.swiped.last_name}"
