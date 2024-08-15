@@ -21,25 +21,16 @@ class UsersAPIView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self,request):
         try:
-            print("пользователь - " ,request, request.user.password)
-            # ниже версия, которая правильная
-            # list_all_user_id_system = User.objects.filter(~Q(id=request.user.id))
-            # if not Swipe.objects.filter(swiper=request.user.ud, swiped=user.id).exists():
+            count_profiles_need = 10 # константа количества анкет для пользователя
+            target_user = request.user  # пользователей, для которого делаем запрос
 
-            # константа количества анкет для пользователя
-            count_profiles_need = 10
+            list_profiles_without_current_user = User.objects.filter(~Q(id=target_user.id)) # получение всех профилей, кроме нашего
 
-            # пользователей, для которого делаем запрос
-            target_user = User.objects.last()
-            # получение всех профилей, кроме нашего
-            list_profiles_without_current_user = User.objects.filter(~Q(id=target_user.id))
-            # список <= count_profiles_need анкет для пользователя
-            final_list_profiles = []
+            final_list_profiles = [] # список <= count_profiles_need анкет для пользователя
             for user in list_profiles_without_current_user:  # бежим по всем пользователям
 
                 if not Swipe.objects.filter(swiper=target_user.id,
-                                            swiped=user.id).exists():  # проверяем наличие
-                    # свайпа этим пользователя этого
+                                            swiped=user.id).exists():  # проверяем наличие свайпа этим пользователя этого
                     final_list_profiles.append(user)
 
                 if len(final_list_profiles) == count_profiles_need:
@@ -48,24 +39,20 @@ class UsersAPIView(APIView):
             users_with_serializer = UserSerializer(final_list_profiles, many=True).data
             status_for_client = status.HTTP_200_OK
             status_message = ""
+
             """
             При фильтрации если анкеты кончились, не забыть обработать эту ошибку
             """
-
-            # С ФИЛЬТРАМИ ДОБАВИТЬ информация о том, что из-за фильтров жестких нет больше людей(проверять по начальному массиву)
             if not len(users_with_serializer):
                 status_for_client = status.HTTP_204_NO_CONTENT
                 status_message = "Анкеты кончились"
 
             if status_message:
-                print("нету контекста", status_message, status_for_client)
                 return Response({"message":status_message}, status = status_for_client)
 
             return Response({"users":users_with_serializer},status=status_for_client)
 
-        except Exception as error:
-            print(error)
-            # return Response(status =  status.HTT)
+        except Exception:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 class SwipeAPIView(APIView):
@@ -74,14 +61,12 @@ class SwipeAPIView(APIView):
     """
     permission_classes = [IsAuthenticated]
     def post(self,request):
-        print("пользователь -", request.user)
         try:
             serializer = SwipeUserSerializer(data=request.data, context={"request":request})
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(status=status.HTTP_200_OK)
         except Exception as error:
-            print(error)
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 class IncomingProfilesAPIView(APIView):
@@ -91,7 +76,7 @@ class IncomingProfilesAPIView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self,request):
         try:
-            target_user = User.objects.get(username="admin")
+            target_user = request.user
             list_incoming_profiles = Swipe.objects.filter(swiped=target_user, swiped_is_like__isnull=True).values_list(
                 'swiper__id')
             final_profiles = []
@@ -108,8 +93,7 @@ class IncomingProfilesAPIView(APIView):
                 },
                 status=status_for_client
             )
-        except Exception as error:
-            print(error)
+        except Exception:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 class GetMatchAPIView(APIView):
@@ -119,10 +103,7 @@ class GetMatchAPIView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self,request):
         try:
-            target_user = User.objects.get(username="admin")
-            list_identifiers = []
-
-            # list_match_profiles_when_target_user_is_swiper = Swipe.objects.filter(Q((Q(swiper=target_user) | Q(swiped = target_user))) &  Q(swiper_is_like=True, swiped_is_like=True) ).values_list('swiper__id')
+            target_user = request.user
 
             list_match_profiles_when_target_user_is_swiper = list(
                 Swipe.objects.filter(swiper=target_user, swiper_is_like=True, swiped_is_like=True).values_list(
@@ -136,9 +117,10 @@ class GetMatchAPIView(APIView):
                 user_target = User.objects.get(id=user_swipe_id[0])
                 final_profiles.append({
                     "id": user_target.id,
-                    "sur_name": user_target.sur_name,
+                    "last_name": user_target.last_name,
                     "first_name": user_target.first_name,
-                    "image": user_target.image
+                    "image": user_target.image,
+                    "description": user_target.description,
                 })
             list_match_profiles_with_serializer = MatchListSerializer(final_profiles, many=True).data
             status_for_client = status.HTTP_200_OK
@@ -150,8 +132,7 @@ class GetMatchAPIView(APIView):
                 },
                 status =   status_for_client
             )
-        except Exception as error:
-            print(error)
+        except Exception:
             return Response(status.HTTP_400_BAD_REQUEST)
 
 class GetProfileDetailsAPIView(APIView):
@@ -173,8 +154,7 @@ class GetProfileDetailsAPIView(APIView):
            return Response({
                "user_details": serializer_data_user_profile
            },status= status_for_client)
-       except Exception as error:
-           print(error)
+       except Exception:
            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 class ComplaintsListAPIView(APIView):
@@ -192,10 +172,7 @@ class ComplaintsListAPIView(APIView):
             return Response({
                 "complaint_list":  serializer_list
             },status=status_for_client)
-        except Exception as error:
-            print(
-                error
-            )
+        except Exception:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 class SendComplaintAPIView(APIView):
@@ -205,12 +182,11 @@ class SendComplaintAPIView(APIView):
     permission_classes = [IsAuthenticated]
     def post(self, request):
        try:
-           serializer = SendComplaintSerializer(data=request.data)
+           serializer = SendComplaintSerializer(data=request.data, context={"request":request})
            serializer.is_valid(raise_exception=True)
            serializer.save()
            return Response( status = status.HTTP_200_OK)
-       except Exception as error:
-           print(error)
+       except Exception:
            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 

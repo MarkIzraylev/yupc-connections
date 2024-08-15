@@ -76,7 +76,7 @@ class SendComplaintSerializer(serializers.Serializer):
 
         def create(self, validated_data):
             complaint_obj = ComplaintTypes.objects.get(id=validated_data['complaint_id'])
-            author_obj = User.objects.get(username="admin")
+            author_obj = self.context['request'].user
             imposter_obj = User.objects.get(id=validated_data['target_user_id'])
             return ComplaintList.objects.create(complaint_type= complaint_obj, author_complaint = author_obj, imposter_complaint=imposter_obj)
 

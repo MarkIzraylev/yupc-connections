@@ -12,11 +12,11 @@ class ComplaintInlineAdmin(admin.TabularInline):
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
     # поля, которые будем видеть в общем списке
-    list_display = ('last_name','first_name')
+    list_display = ('username','last_name','first_name')
 
     # поля, которые будем видеть в каждом элементе списка + группировка
     fields = (
-        ('email','password'),
+        ('username','email','password'),
         ('last_name', 'first_name'),
         'image',
         ('is_boy', 'is_search_friend', 'is_search_love'),
@@ -39,7 +39,7 @@ class UserAdmin(admin.ModelAdmin):
     inlines = (ComplaintInlineAdmin,)
 
     # поля, по которым будет доступен поиск
-    search_fields = ('last_name', 'first_name')
+    search_fields = ('username', 'last_name', 'first_name')
 
     # поля, по котором сортировка(по умолчанию в алфавитном порядке/возрастанию
     # '-last_name' - сортировка в обратном порядке
