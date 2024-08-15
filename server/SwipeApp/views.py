@@ -44,7 +44,7 @@ class UsersAPIView(APIView):
             При фильтрации если анкеты кончились, не забыть обработать эту ошибку
             """
             if not len(users_with_serializer):
-                status_for_client = status.HTTP_204_NO_CONTENT
+                status_for_client = status.HTTP_404_NOT_FOUND
                 status_message = "Анкеты кончились"
 
             if status_message:
