@@ -6,11 +6,19 @@ import Chip from "@mui/material/Chip";
 import IconButton from "@mui/material/IconButton";
 import Stack from "@mui/material/Stack";
 import FlagOutlinedIcon from "@mui/icons-material/FlagOutlined";
+import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import Skeleton from "@mui/material/Skeleton";
 import Box from "@mui/material/Box";
-import { useState } from 'react';
+import TelegramIcon from '@mui/icons-material/Telegram';
+import ChatIcon from '@mui/icons-material/Chat';
+import FormatBoldIcon from '@mui/icons-material/FormatBold';
+import { ReactNode, useState } from 'react';
 import { FC } from "react";
 import { Dispatch } from "react";
+import { Link } from "react-router-dom";
+import Button from "@mui/material/Button";
+import CardActions from "@mui/material/CardActions";
+import Tooltip from '@mui/material/Tooltip';
 
 interface SwipeCardProps {
     name: string;
@@ -21,11 +29,24 @@ interface SwipeCardProps {
     description: string;
     hobbiesTags: string[];
     setOpenModal: Dispatch<string | null>;
+    socialMedia: Map<string, string>;
 }
 
-const SwipeCard: FC<SwipeCardProps> = ({name, imageSrc, mainTags, intentionTags, description, hobbiesTags, setOpenModal}) => {
+const SwipeCard: FC<SwipeCardProps> = ({name, imageSrc, mainTags, intentionTags, description, hobbiesTags, setOpenModal, socialMedia}) => {
   const [imageLoaded, setImageLoaded] = useState(false);
-
+  let socialMediaJSX: ReactNode[] = [];
+  if (socialMedia && socialMedia.size > 0) {
+    socialMediaJSX = [];
+    socialMedia.forEach((val, key, map) => {
+      socialMediaJSX.push(
+        <Link to={val}>
+          <Chip icon={key === 'tg' ? <TelegramIcon /> : (key === 'vk' ? <FormatBoldIcon /> : <ChatIcon />)} label={key === 'tg' ? 'ТЕЛЕГРАМ' : (key === 'vk' ? 'ВКОНТАКТЕ' : 'СОЦ. СЕТЬ') } variant="outlined" color="secondary" key={key} />
+        </Link>
+      )
+    })
+  }
+  //console.log('social media JSX:', socialMediaJSX, socialMedia)
+  const thereIsSocialMedia = socialMediaJSX != undefined && socialMediaJSX.length > 0
   return (
     <Card
       sx={{
@@ -53,22 +74,33 @@ const SwipeCard: FC<SwipeCardProps> = ({name, imageSrc, mainTags, intentionTags,
         sx={{
           position: "relative",
           backdropFilter: "blur(30px)",
-          backgroundColor: "rgba(0,0,0,0.3)",
+          backgroundColor: "rgba(0,0,0,0.6)",
         }}
       >
         <Box
           sx={{
             display: "grid",
             flexDirection: "row",
-            gridTemplateColumns: "1fr auto",
+            gridTemplateColumns: "1fr auto auto",
           }}
         >
           <Typography mb={2} variant="h5" noWrap component="div">
             {name}
           </Typography>
-          <IconButton size="small" sx={{ height: "fit-content" }} onClick={() => setOpenModal('complaint')}>
-            <FlagOutlinedIcon />
-          </IconButton>
+          <Tooltip title="Пожаловаться">
+            <IconButton size="small" sx={{ height: "fit-content" }} onClick={() => setOpenModal('complaint')}>
+              <FlagOutlinedIcon />
+            </IconButton>
+          </Tooltip>
+          {
+             thereIsSocialMedia && (
+              <Tooltip title="Отменить метч">
+                <IconButton size="small" sx={{ height: "fit-content" }} onClick={() => setOpenModal('remove-match')}>
+                  <DeleteOutlineOutlinedIcon />
+                </IconButton>
+              </Tooltip>
+            )
+          }
         </Box>
 
         <Stack mb={2} spacing={1} direction="row" useFlexGap flexWrap="wrap">
@@ -118,6 +150,18 @@ const SwipeCard: FC<SwipeCardProps> = ({name, imageSrc, mainTags, intentionTags,
                 })
             }
         </Stack>
+        {
+          thereIsSocialMedia && (
+            <>
+              <Typography variant="subtitle1" mt={1} mb={1}>
+                Соц. сети
+              </Typography>
+              <Stack spacing={1} direction="row" useFlexGap flexWrap="wrap">
+                {socialMediaJSX != undefined && socialMediaJSX}
+              </Stack>
+            </>
+          )
+        }
       </CardContent>
     </Card>
   );

@@ -37,7 +37,7 @@ function App() {
         },
         {
           path: "match",
-          element: <Match setCurrentPage={setCurrentPage} />,
+          element: <Match setCurrentPage={setCurrentPage} openModal={openModal} setOpenModal={setOpenModal} />,
         },
         {
           path: "inbox",

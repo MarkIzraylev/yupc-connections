@@ -15,6 +15,11 @@ import Select from '@mui/material/Select';
 import Button from "@mui/material/Button";
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
+import { cardObj, modalStyle } from '../cardObjInterface';
+
+import { cardObjToSwipeCard } from '../cardObjToSwipeCard';
+import { updateTokens } from '../updateTokens';
+
 import { useState, useRef, useEffect, Dispatch } from 'react';
 
 import SwipeCard from '../SwipeCard/SwipeCard';
@@ -46,19 +51,9 @@ export default function Swipe({setCurrentPage, openModal, setOpenModal, loggedIn
 
     // }
 
-    interface cardObj {
-        id: number;
-        first_name: string;
-        last_name: string;
-        sur_name: string;
-        image: string;
-        description: string;
-        is_search_friend: boolean;
-        is_search_love: boolean;
-        hobbies: string[];
-    }
-
     const [currentCardId, setCurrentCardId] = useState<number>(0);
+
+    const [prevSwipeIsSent, setPrevSwipeIsSent] = useState<boolean>(true)
 
     var blankImg = document.createElement('img');
     blankImg.src = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
@@ -116,6 +111,7 @@ export default function Swipe({setCurrentPage, openModal, setOpenModal, loggedIn
     }
     function sendSwipe(swipedUserId: number, swipeType: boolean) {
         console.log(`send '${swipeType ? 'accept' : 'reject'}' swipe to a user whose id = ${swipedUserId}`)
+        setPrevSwipeIsSent(false)
         // post data to server
         axios.post('http://127.0.0.1:8000/api/swipeUser/', {
             
@@ -127,7 +123,11 @@ export default function Swipe({setCurrentPage, openModal, setOpenModal, loggedIn
             },
         })
         .then(function (response) {
-            console.log(response);
+            setPrevSwipeIsSent(true)
+            if (response.status === 401) {
+                updateTokens()
+                sendSwipe(swipedUserId, swipeType)
+            }
         })
         .catch(function (error) {
             console.log(error);
@@ -135,28 +135,37 @@ export default function Swipe({setCurrentPage, openModal, setOpenModal, loggedIn
     }
 
     const [currentBunchOfCards, setCurrentBunchOfCards] = useState<cardObj[] | null>(null);
-    const [errorMessage, setErrorMessage] = useState(null);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [infoMessage, setInfoMessage] = useState<string | null>(null);
     const [noCardsLeft, setNoCardsLeft] = useState(false);
-    //git commit -m "feature: add auth credentials for matches page"
+    
     function fetchNewBunchOfCards(): void | boolean {
         setCurrentBunchOfCards(null)
         let nextBunchOfCards: cardObj[];
+        if (!prevSwipeIsSent) {return}
         axios.get('http://127.0.0.1:8000/api/userList/', {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
             },
         })
-        .then(response => {
+        .then(function (response) {
             console.log('resp', response)
             if (response.status === 200) {
                 nextBunchOfCards = response.data.users;
                 console.log(response.data.users)
                 nextBunchOfCards.length !== 0 ? setCurrentBunchOfCards(nextBunchOfCards) : setNoCardsLeft(true);
+            } else if (response.status === 401) {
+                updateTokens()
+                fetchNewBunchOfCards()
             }
-        }).catch(err => {
-            setErrorMessage(err.response.status);
-            console.error(err);
             
+        }).catch(err => {
+            console.error(err);
+            if (err.response.status === 404) {
+                setInfoMessage(err.response.data.message);
+            } else {
+                setErrorMessage(`Ошибка загрузки данных с сервера. Код ошибки: ${err.code}. Пожалуйста, попробуйте зайти на страницу позднее.`);
+            }
             //return false;
         });
     }
@@ -230,46 +239,12 @@ export default function Swipe({setCurrentPage, openModal, setOpenModal, loggedIn
         // fetching new cards at the component's mount
         fetchNewBunchOfCards()
     }, []);
-    function swipeCardJSX(card: cardObj) {
-        let intentionTagsArr = []
-        if (card.is_search_friend) {
-            intentionTagsArr.push('Ищу дружбу')
-        }
-        if (card.is_search_love) {
-            intentionTagsArr.push('Ищу любовь')
-        }
-        return (
-            <SwipeCard
-                name={`${card.last_name} ${card.first_name} ${card.sur_name ? card.sur_name : ''}`}
-                mainTags={['3 курс', 'Осн. корпус', 'ОИТ']}
-                hobbiesTags={card.hobbies}
-                intentionTags={intentionTagsArr}
-                description={card.description}
-                imageSrc={card.image ? `http://127.0.0.1:8000/${card.image}` : 'https://i.pinimg.com/736x/c6/c3/0d/c6c30d611b4cdef5a4d73a54c3e0055b.jpg'}
-                setOpenModal={setOpenModal}
-            />
-        )
-    }
-    const modalStyle = {
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        minWidth: 350,
-        width: '90vw',
-        maxWidth: 600,
-        maxHeight: '60vh',
-        overflowY: 'auto',
 
-        bgcolor: 'background.paper',
-        // border: '2px solid #000',
-        // boxShadow: 24,
-        p: 4,
-      };
+    
     const [complaint, setComplaint] = useState<string>('')
     return (
         <>
-            <Stack sx={{ flexGrow: 1, overflow:'hidden' }}>
+            <Stack className="wallpaperBackground" sx={{ flexGrow: 1, overflow:'hidden' }}>
                 <Modal
                     open={openModal === "filter"}
                     onClose={() => setOpenModal(null)}
@@ -381,19 +356,25 @@ export default function Swipe({setCurrentPage, openModal, setOpenModal, loggedIn
                             <div className='swipe-card' draggable="true" onDrag={handleCardDrag} onTouchMove={handleCardDrag} onDragStart={handleDragStart} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} onDragEnd={handleDragEnd} onDragExit={handleDragEnd} onTouchCancel={handleTouchEnd} ref={cardRef}>
                                 {
                                     (!errorMessage && currentBunchOfCards && !noCardsLeft) && (
-                                        swipeCardJSX(currentBunchOfCards[currentCardId])
+                                        cardObjToSwipeCard(currentBunchOfCards[currentCardId], setOpenModal)
                                     )
                                 }
                                 
                             </div>
                             {
                                 errorMessage && (
-                                    <Alert severity="error">Ошибка загрузки данных с сервера. Код ошибки: {errorMessage}. Пожалуйста, попробуйте зайти на страницу позднее.</Alert>
+                                    <Alert severity="error">{errorMessage}</Alert>
                                 )
                             }
 
                             {
-                                (!errorMessage && !currentBunchOfCards && !noCardsLeft) && (
+                                infoMessage && (
+                                    <Alert severity="info">{infoMessage}</Alert>
+                                )
+                            }
+
+                            {
+                                (!errorMessage && !currentBunchOfCards && !noCardsLeft && !infoMessage) && (
                                     <Alert severity="info">Загрузка...</Alert>
                                 )
                             }

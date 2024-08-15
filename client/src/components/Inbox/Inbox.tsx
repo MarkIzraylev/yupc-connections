@@ -6,6 +6,6 @@ export default function Inbox({setCurrentPage}: {setCurrentPage: Dispatch<string
     }, [])
 
     return (
-        <div style={{ flexGrow: 1}}>hello inbox</div>
+        <div style={{ flexGrow: 1}} className="wallpaperBackground">hello inbox</div>
     )
 }
