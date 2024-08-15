@@ -36,3 +36,10 @@
     transform: rotate(360deg);
   }
 }
+
+.wallpaperBackground {
+  background-size: cover;
+  background-position: center;
+  background-image: url(https://i.pinimg.com/originals/81/29/c4/8129c47eea4ca2923d834a0daf316d72.jpg);
+  backdrop-filter: blur(15px);
+}
