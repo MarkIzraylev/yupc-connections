@@ -3,8 +3,9 @@ from django.urls import path
 # from .views import (UsersAPIView, SwipeAPIView, ComplaintsListAPIView,
 #                             SendComplaintAPIView, )
 
-from .views import UsersAPIView, SwipeAPIView, IncomingProfilesAPIView, GetMatchAPIView, GetProfileDetailsAPIView, \
-    ComplaintsListAPIView, SendComplaintAPIView, RegistrationAPIView, LoginAPIView, LogoutAPIView
+from .views import ( UsersAPIView, SwipeAPIView, IncomingProfilesAPIView, GetMatchAPIView, GetProfileDetailsAPIView,
+    ComplaintsListAPIView, SendComplaintAPIView, RegistrationAPIView, LoginAPIView, LogoutAPIView, HobbiesListAPIView,
+                     DepartmentsListAPIView, CoursesListAPIView,  BuildingListAPIView)
 
 from rest_framework_simplejwt.views import TokenRefreshView
 
@@ -14,6 +15,10 @@ urlpatterns = [
     path('incomingProfiles/', IncomingProfilesAPIView.as_view()),
     path('getMatch/', GetMatchAPIView.as_view()),
     path('getDetailsAboutProfile/', GetProfileDetailsAPIView.as_view()),
+    path('getHobbies/', HobbiesListAPIView.as_view()),
+    path('getDepartments/', DepartmentsListAPIView.as_view()),
+    path('getBuildings/', BuildingListAPIView.as_view()),
+    path('getCourses/', CoursesListAPIView.as_view()),
     path('complaintsList/',ComplaintsListAPIView.as_view()),
     path('sendReport/', SendComplaintAPIView.as_view()),
     path('registration/',  RegistrationAPIView.as_view()),

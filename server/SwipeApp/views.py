@@ -9,10 +9,11 @@ from rest_framework.views import APIView
 # импортирование для JWT авторизации/регистрации
 from rest_framework_simplejwt.tokens import  RefreshToken
 
-from .models import User, Swipe, ComplaintTypes
+from .models import User, Swipe, ComplaintTypes, Hobby, Department, Building, Course
 
-from .serializer import UserSerializer, SwipeUserSerializer, MatchListSerializer, \
-    TargetUserIdSerializer, ComplaintsListSerializer, SendComplaintSerializer, UserNewSerializer
+from .serializer import (UserSerializer, SwipeUserSerializer, MatchListSerializer,
+    TargetUserIdSerializer, ComplaintsListSerializer, SendComplaintSerializer, UserNewSerializer, HobbiesListSerializer,
+                         DepartmentsListSerializer, CoursesListSerializer, BuildingsListSerializer)
 
 class UsersAPIView(APIView):
     """
@@ -188,6 +189,70 @@ class SendComplaintAPIView(APIView):
            return Response( status = status.HTTP_200_OK)
        except Exception:
            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class HobbiesListAPIView(APIView):
+    """
+    Получение списка хобби
+    """
+    def get(self,request):
+        try:
+            list_hobbies =   Hobby.objects.all()
+            serializer = HobbiesListSerializer(list_hobbies,many=True).data
+
+            if not len(serializer):
+                return Response(status=status.HTTP_204_NO_CONTENT)
+
+            return Response({"hobbies": serializer},status=status.HTTP_200_OK)
+        except Exception:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class BuildingListAPIView(APIView):
+    """
+    Получение списка корпусов
+    """
+    def get(self,request):
+        try:
+            list_buildings =   Building.objects.all()
+            serializer = BuildingsListSerializer(list_buildings,many=True).data
+
+            if not len(serializer):
+                return Response(status=status.HTTP_204_NO_CONTENT)
+
+            return Response({"buildings": serializer},status=status.HTTP_200_OK)
+        except Exception:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class DepartmentsListAPIView(APIView):
+    """
+    Получение списка отделения
+    """
+    def get(self,request):
+        try:
+            list_departments =   Department.objects.all()
+            serializer = DepartmentsListSerializer(list_departments,many=True).data
+
+            if not len(serializer):
+                return Response(status=status.HTTP_204_NO_CONTENT)
+
+            return Response({"departments": serializer},status=status.HTTP_200_OK)
+        except Exception:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class CoursesListAPIView(APIView):
+    """
+    Получение списка курсов
+    """
+    def get(self,request):
+        try:
+            list_courses =   Course.objects.all()
+            serializer = CoursesListSerializer(list_courses,many=True).data
+
+            if not len(serializer):
+                return Response(status=status.HTTP_204_NO_CONTENT)
+
+            return Response({"courses": serializer},status=status.HTTP_200_OK)
+        except Exception:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class RegistrationAPIView(APIView):

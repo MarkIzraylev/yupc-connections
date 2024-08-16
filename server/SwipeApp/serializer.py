@@ -80,7 +80,21 @@ class SendComplaintSerializer(serializers.Serializer):
             imposter_obj = User.objects.get(id=validated_data['target_user_id'])
             return ComplaintList.objects.create(complaint_type= complaint_obj, author_complaint = author_obj, imposter_complaint=imposter_obj)
 
+class HobbiesListSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    name = serializers.CharField(max_length=50)
 
+class DepartmentsListSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    name = serializers.CharField(max_length=50)
+
+class BuildingsListSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    name = serializers.CharField(max_length=50)
+
+class CoursesListSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    name = serializers.CharField(max_length=50)
 
 
 class UserNewSerializer(serializers.Serializer):
