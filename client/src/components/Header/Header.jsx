@@ -13,6 +13,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Tooltip from '@mui/material/Tooltip';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
+import PeopleIcon from '../PeopleIcon';
 import axios from 'axios';
 
 export default function Header({currentPage, setCurrentPage, openModal, setOpenModal, loggedIn, setLoggedIn}) {
@@ -74,7 +75,8 @@ export default function Header({currentPage, setCurrentPage, openModal, setOpenM
                         aria-label="menu"
                         sx={{ color: "white" }}
                     >
-                        <Groups3Icon />
+                        {/* <Groups3Icon /> */}
+                        <PeopleIcon />
                     </IconButton>
                 </Tooltip>
             </Link>

@@ -39,17 +39,9 @@ export default function SignIn({setCurrentPage, loggedIn, setLoggedIn}) {
             setError(`Ошибка входа. ${error.response.data.error}.`);
         })
     }
-    let bgImgsSrcs = [
-        "https://i.pinimg.com/originals/79/96/65/799665b442c92830edc705db721f38c1.jpg",
-        "https://i.pinimg.com/originals/bc/8c/e0/bc8ce0552875a4a04d7cd77ea3b7521b.jpg",
-        "https://i.pinimg.com/originals/08/33/ea/0833ea60a1563a4f8d44ae03a2e153cd.jpg",
-        "https://i.pinimg.com/originals/8c/6a/8d/8c6a8d65db4696c900befac028a73fba.jpg",
-        "https://i.pinimg.com/originals/f7/d4/ef/f7d4efc04d11c5ba336e2eba406a9c6a.jpg",
-    ]
 
-    let bgImgSrc = bgImgsSrcs[bgImgsSrcs.length-1];
     return (
-        <Box style={{height: '100%', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundImage: `url("${bgImgSrc}")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'center', backgroundSize: 'cover'}}>
+        <Box className="wallpaperBackground" style={{height: '100%', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
             <Card sx={{maxWidth: '500px', height: 'fit-content', minWidth: '350px', minHeight: '100px'}} variant="outlined">
                 <CardContent>
                     <Typography gutterBottom variant="h5" mb={1}>

@@ -1,14 +1,23 @@
 import axios from 'axios';
 
-export const updateTokens = () => {
-    axios.post('http://127.0.0.1:8000/api/token/refresh/', { refresh: localStorage.getitem('refreshToken')})
-    .then(response => {
-        const newAccessToken = response.data.access;
-        const newRefreshToken = response.data.refresh;
-        localStorage.setItem('accessToken', newAccessToken)
-        localStorage.setItem('refreshToken', newRefreshToken)
-    })
-    .catch(error => {
-        console.error('Ошибка при обновлении токена:', error);
-    })
-} 
+export function updateTokens() {
+    return new Promise((resolve, reject) => {
+        axios.post('http://127.0.0.1:8000/api/token/refresh/', { refresh: localStorage.getItem('refreshToken')})
+        .then(response => {
+            const newAccessToken = response.data.access;
+            const newRefreshToken = response.data.refresh;
+            localStorage.setItem('accessToken', newAccessToken)
+            localStorage.setItem('refreshToken', newRefreshToken)
+            console.log('new tokens:', newAccessToken, newRefreshToken)
+            console.log('response after generating tokens:', response)
+            resolve()
+        })
+        .catch(error => {
+            console.error('Ошибка при обновлении токена:', error);
+            console.log('current tokens:', localStorage.getItem('refreshToken'), localStorage.getItem('accessToken'))
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken'); 
+            reject()
+        })
+    });
+}

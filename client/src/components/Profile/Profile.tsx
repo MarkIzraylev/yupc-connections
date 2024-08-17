@@ -7,7 +7,7 @@ export default function Profile({setCurrentPage}: {setCurrentPage: Dispatch<stri
     }, [])
     
     return (
-        <div style={{ flexGrow: 1}}>
+        <div className="wallpaperBackground" style={{ flexGrow: 1}}>
             Profile
         </div>
     )

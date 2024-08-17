@@ -35,10 +35,11 @@ interface swipeProps {
     openModal: modalType,
     setOpenModal: Dispatch<modalType>,
     loggedIn: boolean,
+    setLoggedIn: Dispatch<boolean>,
     isInbox?: boolean,
 }
 
-export default function Swipe({currentPage, setCurrentPage, openModal, setOpenModal, loggedIn, isInbox}: swipeProps) {
+export default function Swipe({currentPage, setCurrentPage, openModal, setOpenModal, loggedIn, setLoggedIn, isInbox}: swipeProps) {
     let navigate = useNavigate();
     const [dragStart, setDragStart] = useState<number>(NaN);
     const [dragStartAfterThreshold, setDragStartAfterThreshold] = useState<number>(NaN);
@@ -138,16 +139,22 @@ export default function Swipe({currentPage, setCurrentPage, openModal, setOpenMo
             })
             .then(function (response) {
                 setPrevSwipeIsSent(true)
-                if (response.status === 401) {
-                    updateTokens()
-                    sendSwipe(swipedUserId, swipeType)
-                } else {
-                    resolve()
-                }
+                
+                resolve()
+                
             })
             .catch(function (error) {
                 console.log(error);
-                reject()
+                if (error.response.status === 401) {
+                    console.log('sendSwipe 401 error')
+
+                    updateTokens()
+                    .then(res => {sendSwipe(swipedUserId, swipeType); console.log('update tokens did not cause an error')})
+                    .catch(err => {setLoggedIn(false); window.location.assign('/'); console.log('update tokens -> error')})
+                } else {
+                    reject()
+                }
+                
             });
         })
     }
@@ -172,9 +179,6 @@ export default function Swipe({currentPage, setCurrentPage, openModal, setOpenMo
                 nextBunchOfCards = response.data.users;
                 console.log(response.data.users)
                 nextBunchOfCards.length !== 0 ? setCurrentBunchOfCards(nextBunchOfCards) : setNoCardsLeft(true);
-            } else if (response.status === 401) {
-                updateTokens()
-                fetchNewBunchOfCards()
             } else if (response.status === 204) {
                 setInfoMessage('Входящих на данный момент нет.')
             }
@@ -183,6 +187,15 @@ export default function Swipe({currentPage, setCurrentPage, openModal, setOpenMo
             console.error(err);
             if (err.response.status === 404) {
                 setInfoMessage(err.response.data.message);
+            } else if (err.response.status === 401) {
+                console.log('fetchNewBunchOfCards 401 error')
+                updateTokens()
+                .then(res => {fetchNewBunchOfCards(); console.log('continue to fetch data after token refresh')})
+                .catch(err => {
+                    setLoggedIn(false);
+                    navigate('/');
+                    console.log('navigated to home page')
+                })
             } else {
                 setErrorMessage(`Ошибка загрузки данных с сервера. Код ошибки: ${err.code}. Пожалуйста, попробуйте зайти на страницу позднее.`);
             }

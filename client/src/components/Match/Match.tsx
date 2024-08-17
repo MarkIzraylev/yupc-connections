@@ -16,11 +16,13 @@ import { cardObjToSwipeCard } from '../cardObjToSwipeCard';
 import { cardObj, modalStyle } from '../cardObjInterface';
 import { updateTokens } from '../updateTokens';
 
+import { useNavigate } from 'react-router-dom';
 import { Dispatch, useEffect, useState } from 'react';
 import axios from 'axios';
 
-export default function Match({setCurrentPage, openModal, setOpenModal}: {setCurrentPage: Dispatch<string>, openModal: string | null, setOpenModal: Dispatch<string | null>}) {
+export default function Match({setCurrentPage, openModal, setOpenModal, setLoggedIn}: {setCurrentPage: Dispatch<string>, openModal: string | null, setOpenModal: Dispatch<string | null>, setLoggedIn: Dispatch<boolean>}) {
     const theme = useTheme();
+    const navigate = useNavigate();
     const [matches, setMatches] = useState<any[] | null>(null);
     const [infoMessage, setInfoMessage] = useState<string | null>(null);
     const [openedCard, setOpenedCard] = useState<cardObj | null>(null);
@@ -35,9 +37,6 @@ export default function Match({setCurrentPage, openModal, setOpenModal}: {setCur
             if (response.status === 204) {
                 // no matches
                 setInfoMessage('Мэтчей пока что нет.')
-            } else if (response.status === 401) {
-                updateTokens()
-                getMatches()
             } else {
                 setMatches(response.data.users);
                 console.log('matches are: ', response)
@@ -46,7 +45,11 @@ export default function Match({setCurrentPage, openModal, setOpenModal}: {setCur
         })
         .catch(function (error) {
             console.log(error);
-
+            if (error.response.status === 401) {
+                updateTokens()
+                .then(res => getMatches())
+                .catch(err => {setLoggedIn(false); localStorage.removeItem('accessToken'); localStorage.removeItem('refreshToken'); navigate('/')})
+            }
         });
     }
 
@@ -66,14 +69,15 @@ export default function Match({setCurrentPage, openModal, setOpenModal}: {setCur
             } else if (response.status === 200) {
                 setOpenedCard(response.data.user_details);
 
-            } else if (response.status === 401) {
-                updateTokens()
-                getCard(target_user_id)
             }
         })
         .catch(function (error) {
             console.log(error);
-
+            if (error.response.status === 401) {
+                updateTokens()
+                .then(res => getCard(target_user_id))
+                .catch(err => {setLoggedIn(false); localStorage.removeItem('accessToken'); localStorage.removeItem('refreshToken'); navigate('/')})
+            }
         });
     }
 

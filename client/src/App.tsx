@@ -33,15 +33,15 @@ function App() {
         },
         {
           path: "swipe",
-          element: <Swipe currentPage={currentPage} setCurrentPage={setCurrentPage} openModal={openModal} setOpenModal={setOpenModal} loggedIn={loggedIn} />,
+          element: <Swipe currentPage={currentPage} setCurrentPage={setCurrentPage} openModal={openModal} setOpenModal={setOpenModal} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />,
         },
         {
           path: "match",
-          element: <Match setCurrentPage={setCurrentPage} openModal={openModal} setOpenModal={setOpenModal} />,
+          element: <Match setCurrentPage={setCurrentPage} openModal={openModal} setOpenModal={setOpenModal} setLoggedIn={setLoggedIn} />,
         },
         {
           path: "inbox",
-          element: <Swipe currentPage={currentPage} setCurrentPage={setCurrentPage} openModal={openModal} setOpenModal={setOpenModal} loggedIn={loggedIn} isInbox={true} />,
+          element: <Swipe currentPage={currentPage} setCurrentPage={setCurrentPage} openModal={openModal} setOpenModal={setOpenModal} loggedIn={loggedIn} setLoggedIn={setLoggedIn} isInbox={true} />,
         },
         {
           path: "profile",
