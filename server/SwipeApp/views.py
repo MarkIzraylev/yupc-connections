@@ -13,7 +13,7 @@ from .models import User, Swipe, ComplaintTypes, Hobby, Department, Building, Co
 
 from .serializer import (UserSerializer, SwipeUserSerializer, MatchListSerializer,
     TargetUserIdSerializer, ComplaintsListSerializer, SendComplaintSerializer, UserNewSerializer, HobbiesListSerializer,
-                         DepartmentsListSerializer, CoursesListSerializer, BuildingsListSerializer)
+                         DepartmentsListSerializer, CoursesListSerializer, BuildingsListSerializer, ResetSwipeSerializer)
 
 class UsersAPIView(APIView):
     """
@@ -70,6 +70,16 @@ class SwipeAPIView(APIView):
         except Exception as error:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+class ResetSwipeAPIView(APIView):
+    def post(self,request):
+        try:
+            serializer  = ResetSwipeSerializer(data=request.data, context={'request':request})
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(status=status.HTTP_200_OK)
+        except Exception as error:
+            print(error)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 class IncomingProfilesAPIView(APIView):
     """
     Получение входящих анкет
@@ -289,7 +299,10 @@ class LoginAPIView(APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
         user = authenticate(username=username, password=password)
-
+        object_user = User.objects.filter(username=username,password=password)
+        # print("вот он - ", object_user)
+        # print("я дошел до сюда", user)
+        # print(user.is_active)
         if user is None:
             return Response({'error': 'Неверные данные'},
 

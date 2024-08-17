@@ -2,6 +2,8 @@ from rest_framework import serializers
 
 from .models import Hobby, Swipe, User, Course, Building, Department, ComplaintList, ComplaintTypes
 
+from django.db.models import QuerySet, Q
+
 class UserSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     first_name = serializers.CharField(max_length=100)
@@ -53,6 +55,26 @@ class SwipeUserSerializer(serializers.Serializer):
         object_swipe.swiped_is_like =  swipe_is_like
         object_swipe.save()
         return object_swipe
+
+class ResetSwipeSerializer(serializers.Serializer):
+    target_user_id = serializers.IntegerField()
+    def create(self, validated_data):
+        current_user = self.context['request'].user
+        target_user = User.objects.get(id=validated_data['target_user_id'])
+        print("от кого запрос - ", current_user)
+        print("кого отменяем - " ,target_user)
+        current_user_is_swiper_record = Swipe.objects.filter(swiper=current_user,swiped=target_user)
+        if current_user_is_swiper_record.exists():
+            print("я был свайпером")
+            cur = current_user_is_swiper_record[0]
+            cur.swiper_is_like = False
+            cur.save()
+            return current_user_is_swiper_record
+        print("тут меня свайпали")
+        current_user_is_swiped_record = Swipe.objects.filter(swiper=target_user, swiped=current_user)[0]
+        current_user_is_swiped_record.swiped_is_like = False
+        current_user_is_swiped_record.save()
+        return current_user_is_swiped_record
 
 class MatchListSerializer(serializers.Serializer):
     id = serializers.IntegerField()
