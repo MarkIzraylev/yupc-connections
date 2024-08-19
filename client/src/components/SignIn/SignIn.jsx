@@ -30,13 +30,14 @@ export default function SignIn({setCurrentPage, loggedIn, setLoggedIn}) {
             localStorage.setItem('accessToken', response.data.access);
             localStorage.setItem('refreshToken', response.data.refresh);
             setError(null);
+            //setError(`Диагностическое сообщение: ${JSON.stringify(response)}`)
             console.log('success')
             setLoggedIn(true);
             navigate('/swipe')
         })
         .catch(error => {
-            console.error(error.response);
-            setError(`Ошибка входа. ${error.response.data.error}.`);
+            console.error(error);
+            setError(`Ошибка входа. ${error.message}.`);
         })
     }
 

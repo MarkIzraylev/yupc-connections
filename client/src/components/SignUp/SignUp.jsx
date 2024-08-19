@@ -114,7 +114,7 @@ export default function SignUp({setCurrentPage, loggedIn, setLoggedIn}) {
 
         function onChange(ev) {
             setValue(ev.target.value);
-            setError(!ev.target.validity.valid || ev.target.value === '');
+            setError(!ev.target.validity.valid || ev.target.value === '' && required);
         }
 
         return {
@@ -135,13 +135,16 @@ export default function SignUp({setCurrentPage, loggedIn, setLoggedIn}) {
     const [validate, setValidate] = useState(false);
     const [validationError, setValidationError] = useState(false);
 
-    const vkInputProps = useFormInput('ВКонтакте', 'Ссылка на профиль ВКонтакте должна начинаться с https://vk.com/', 'https://vk.com/.*', 1);
-    const tgInputProps = useFormInput('Telegram', 'Ссылка на профиль Телеграм должна начинаться с https://t.me/', 'https://t.me/.*', 1);
+    const vkInputProps = useFormInput('ВКонтакте', 'Ссылка на профиль ВКонтакте должна начинаться с https://vk.com/', 'https://vk.com/.*');
+    const tgInputProps = useFormInput('Telegram', 'Ссылка на профиль Телеграм должна начинаться с https://t.me/', 'https://t.me/.*');
     const emailInputProps = useFormInput('Эл. почта', 'Введите действительный адрес электронной почты по типу example@mail.com', "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$", 1);
     const passwordInputProps = useFormInput('Пароль', 'Пароль должен содержать от 8 до 50 символов, среди которых есть только латинские символы (минимум одна заглавная и строчная буквы), минимум одна цифра (0-9) и минимум один символ из набора: !@#$%^&*_=+-', "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\\$%\\^&\\*_=\\+\\-]).{8,50}$", 1);
     const firstNameInputProps = useFormInput('Имя', 'Имя должно содержать от 1 до 50 символов', ".{1,50}", 1);
     const lastNameInputProps = useFormInput('Фамилия', 'Фамилия должна содержать от 1 до 50 символов', ".{1,50}", 1);
     const descriptionInputProps = useFormInput('О себе', 'Поле "О себе" должно содержать от 1 до 170 символов', ".{1,170}", 1);
+    
+    const [policyAgreement, setPolicyAgreement] = useState(false);
+    const [ageConfirmation, setAgeConfirmation] = useState(false);
 
     const [showPassword, setShowPassword] = useState(false);
 
@@ -156,12 +159,15 @@ export default function SignUp({setCurrentPage, loggedIn, setLoggedIn}) {
             && !descriptionInputProps.error
             && !vkInputProps.error
             && !tgInputProps.error
+            && (vkInputProps.value !== '' || tgInputProps.value !== '')
             && courseParams.value != ''
             && buildingParams.value != ''
             && departmentParams.value != ''
             && (isSearchFriend || isSearchLove)
             && (selectedHobbiesIds != undefined)
-            && isBoy != null;
+            && isBoy != null
+            && policyAgreement
+            && ageConfirmation;
         const data = {
             username: emailInputProps.value,
             email: emailInputProps.value,
@@ -202,16 +208,14 @@ export default function SignUp({setCurrentPage, loggedIn, setLoggedIn}) {
             setValidationError(true);
             setTimeout(() => {
                 setValidationError(false);
-            }, 5000)
+            }, validationErrorMessage.length / (150*6/60/1000))
         }
     }
 
     /*
     TODO:
-        делать валидацию формы
-        отследить, что корректно сохраняется на сервере мультистроковое описание
+        валидация: обязательно заполнение хотя бы одной соц.сети
         реализовать загрузку фотографии
-        сделать регистрацию по ссылке? или как-то ограничить круг регистрируемых
     */
 
     const buildingParams = useSelectWithFetchedOptions('Корпус', 'buildings', 1)
@@ -226,10 +230,12 @@ export default function SignUp({setCurrentPage, loggedIn, setLoggedIn}) {
 
     const theme = useTheme();
 
+    const validationErrorMessage = 'Ого, что-то пошло не так! Похоже, форма запуталась. Проверьте, все ли поля заполнены правильно, и попробуйте снова.';
+
     return (
         <Box className="wallpaperBackground" style={{height: '100%', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
             <form style={{width: 'clamp(300px, 90vw, 500px)',}} onSubmit={handleSubmitForm} noValidate>
-            {validationError && <Alert severity="error" style={{width: 'inherit', position: 'absolute', zIndex: 300}}>Проверьте, что поля формы заполнены корректно.</Alert>}
+            {validationError && <Alert severity="error" style={{width: 'inherit', position: 'absolute', zIndex: 300}}>{validationErrorMessage}</Alert>}
                 <Card sx={{width: 'clamp(300px, 90vw, 500px)', height: 'fit-content', minHeight: '100px', maxHeight: 'calc(90vh - 56px)', overflow: 'auto', outline: 'none'}} variant="outlined">
                     <CardContent>
                         <Typography gutterBottom variant="h5">
@@ -290,12 +296,13 @@ export default function SignUp({setCurrentPage, loggedIn, setLoggedIn}) {
                             />
                             {[buildingParams, departmentParams, courseParams].map(params => ReactiveSelect(...Object.values(params)))}
                         </Box>
-                        <Typography gutterBottom variant="subtitle1" mt={2}>
+                        <Typography gutterBottom variant="subtitle1" mt={2} color={validate && tgInputProps.value === '' && vkInputProps.value === '' && "error" || tgInputProps.error || vkInputProps.error}>
                             Ссылки на соц. сети для связи
+                            <FormHelperText error={validate && tgInputProps.value === '' && vkInputProps.value === '' && true || tgInputProps.error || vkInputProps.error}>Необходимо указать ссылку на хотя бы одну соц. сеть</FormHelperText>
                         </Typography>
                         <Box sx={{display: 'grid', flexDirection: 'column', gap: 1}}>
-                            <TextField variant="standard" {...tgInputProps} required />
-                            <TextField variant="standard" {...vkInputProps} required />
+                            <TextField variant="standard" {...tgInputProps} error={validate && tgInputProps.value === '' && vkInputProps.value === '' && true || tgInputProps.error || vkInputProps.error} />
+                            <TextField variant="standard" {...vkInputProps} error={validate && tgInputProps.value === '' && vkInputProps.value === '' && true || tgInputProps.error || vkInputProps.error} />
                         </Box>
                         <Typography gutterBottom variant="subtitle1" mt={2}>
                             Данные для входа
@@ -317,6 +324,10 @@ export default function SignUp({setCurrentPage, loggedIn, setLoggedIn}) {
                                 )
                             }} />
                         </Box>
+                        <FormGroup style={{marginTop: theme.spacing(2)}}>
+                            <FormControlLabel required value={policyAgreement} onChange={() => setPolicyAgreement(prev => !prev)} style={!policyAgreement && validate ? {color: theme.palette.error.main} : {}} control={<Checkbox style={!policyAgreement && validate ? {color: theme.palette.error.main} : {}} />}  label={<span>Я даю свое согласие на обработку моих персональных данных в соответствии с «<Link to="" style={{color: theme.palette.secondary.main}}>Политикой обработки персональных данных</Link>»</span>} />
+                            <FormControlLabel required value={ageConfirmation} onChange={() => setAgeConfirmation(prev => !prev)} style={!ageConfirmation && validate ? {color: theme.palette.error.main} : {}} control={<Checkbox style={!ageConfirmation && validate ? {color: theme.palette.error.main} : {}} />} label="Подтверждаю, что мне есть 18 лет" />
+                        </FormGroup>
                     </CardContent>
                     
                     <CardActions>

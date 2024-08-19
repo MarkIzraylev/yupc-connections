@@ -19,6 +19,10 @@ import { updateTokens } from '../updateTokens';
 import { useNavigate } from 'react-router-dom';
 import { Dispatch, useEffect, useState } from 'react';
 import axios from 'axios';
+import ComplaintModal from '../ComplaintModal';
+
+import Button from '@mui/material/Button';
+import CardActions from '@mui/material/CardActions';
 
 export default function Match({setCurrentPage, openModal, setOpenModal, setLoggedIn}: {setCurrentPage: Dispatch<string>, openModal: string | null, setOpenModal: Dispatch<string | null>, setLoggedIn: Dispatch<boolean>}) {
     const theme = useTheme();
@@ -26,6 +30,7 @@ export default function Match({setCurrentPage, openModal, setOpenModal, setLogge
     const [matches, setMatches] = useState<any[] | null>(null);
     const [infoMessage, setInfoMessage] = useState<string | null>(null);
     const [openedCard, setOpenedCard] = useState<cardObj | null>(null);
+    const noMatchesMessage = 'Мэтчей пока что нет.';
     function getMatches() {
         axios.get('http://127.0.0.1:8000/api/getMatch/', {
             headers: {
@@ -36,7 +41,7 @@ export default function Match({setCurrentPage, openModal, setOpenModal, setLogge
             
             if (response.status === 204) {
                 // no matches
-                setInfoMessage('Мэтчей пока что нет.')
+                setInfoMessage(noMatchesMessage);
             } else {
                 setMatches(response.data.users);
                 console.log('matches are: ', response)
@@ -80,6 +85,42 @@ export default function Match({setCurrentPage, openModal, setOpenModal, setLogge
             }
         });
     }
+    function removeOpenedMatchFromState() {
+        if (!openedCard || !matches) {
+            return;
+        }
+        setMatches(matches.filter(m => m.id !== openedCard.id))
+    }
+    function removeMatch() {
+        if (!openedCard || !matches) {
+            return;
+        }
+        axios.post('http://127.0.0.1:8000/api/resetMatch/', {
+            target_user_id: openedCard.id
+        }, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+            },
+        })
+        .then(function (response) {
+            console.log('removeMatch() -> response: ', response)
+            // 200 or 400
+            if (response.status === 200) {
+                if (matches.length === 1) {
+                    setInfoMessage(noMatchesMessage);
+                }
+                removeOpenedMatchFromState()
+                setOpenModal(null);
+                setOpenedCard(null);
+            } else {
+                setInfoMessage('Ошибка сервера.');
+            }
+        })
+        .catch(function (error) {
+            console.log(error);
+            setInfoMessage('Ошибка сервера.');
+        })
+    }
 
     useEffect(() => {
         setCurrentPage('match')
@@ -104,7 +145,32 @@ export default function Match({setCurrentPage, openModal, setOpenModal, setLogge
             >
                 <Box style={{ outline: 'none' }}>
                     { openedCard && cardObjToSwipeCard(openedCard, setOpenModal, true) }
-                </Box>  
+                </Box>
+            </Modal>
+
+            {
+                openedCard && <ComplaintModal targetId={openedCard.id} openModal={openModal} setOpenModal={setOpenModal} performSwipe={removeOpenedMatchFromState} />
+            }
+
+            <Modal
+                open={openModal === "remove-match"}
+                onClose={() => setOpenModal(null)}
+                style={{alignSelf: 'center', justifySelf: 'center'}}
+            >
+                <Card style={{ outline: 'none' }} sx={modalStyle}>
+                    <CardContent>
+                        <Typography variant="h6" gutterBottom>
+                            Вы точно хотите разорвать метч с пользователем "{`${openedCard?.first_name} ${openedCard?.last_name}`}"?
+                        </Typography>
+                        <Typography variant="subtitle1" color="textSecondary">
+                            Если разорвать метч, то пользователь больше не сможет видеть ваш профиль на странице метчей.
+                        </Typography>
+                    </CardContent>
+                    <CardActions style={{display: 'flex', justifyContent: 'space-between'}}>
+                        <Button color="secondary" onClick={() => setOpenModal(null)}>Сохранить</Button>
+                        <Button color="error" onClick={removeMatch}>Разорвать</Button>
+                    </CardActions>
+                </Card>
             </Modal>
             
             {

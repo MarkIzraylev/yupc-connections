@@ -26,6 +26,7 @@ import SwipeCard from '../SwipeCard/SwipeCard';
 
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import ComplaintModal from '../ComplaintModal';
 
 type modalType = string | null;
 
@@ -210,11 +211,9 @@ export default function Swipe({currentPage, setCurrentPage, openModal, setOpenMo
     }, [])
 
     function performSwipe(swipeType: boolean) {
-        
         if (!currentBunchOfCards) {
             return false;
         }
-
         sendSwipe(currentBunchOfCards[currentCardId].id, swipeType)
         .then(res => {
             console.log('promise has worked! here is res:', res)
@@ -227,10 +226,6 @@ export default function Swipe({currentPage, setCurrentPage, openModal, setOpenMo
         .catch(error => {
             console.error('promise was catched! here is error:', error);
         })
-
-        
-
-        
     }
 
     function handleCardMoveEnd() {
@@ -355,7 +350,7 @@ export default function Swipe({currentPage, setCurrentPage, openModal, setOpenMo
                     </Box>
                 </Modal>
 
-                <Modal
+                {/* <Modal
                     open={openModal === "complaint"}
                     onClose={() => setOpenModal(null)}
                     aria-labelledby="modal-modal-title"
@@ -389,9 +384,12 @@ export default function Swipe({currentPage, setCurrentPage, openModal, setOpenMo
                             <Button color="inherit">Отправить</Button>
                         </Box>
                     </Box>
-                </Modal>
+                </Modal> */}
 
-
+                {
+                    currentBunchOfCards && <ComplaintModal targetId={currentBunchOfCards[currentCardId].id} openModal={openModal} setOpenModal={setOpenModal} performSwipe={performSwipe} />
+                }
+                
                 <Box sx={{flexGrow: 1}}>
                     <Grid container spacing={0} style={{alignContent: "space-evenly", height: '100%', width: '100%', transition: '0.2s'}} ref={backgroundRef}>
                         <Grid item sx={{width: '100%', backgroundColor: 'none', display:'flex', justifyContent:'center'}} p={2}>
