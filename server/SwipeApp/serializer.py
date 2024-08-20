@@ -89,8 +89,8 @@ class TargetUserIdSerializer(serializers.Serializer):
 
 
 class ComplaintsListSerializer(serializers.Serializer):
-    id_complaint = serializers.IntegerField(source='id')
-    name = serializers.CharField(max_length=150)
+    id = serializers.IntegerField()
+    name = serializers.CharField(max_length=50)
 
 class SendComplaintSerializer(serializers.Serializer):
         target_user_id = serializers.IntegerField()
@@ -135,7 +135,6 @@ class UserNewSerializer(serializers.Serializer):
     hobbies = serializers.ListSerializer(child=serializers.IntegerField(), write_only=True)
     password = serializers.CharField(max_length=150)
     def create(self, validated_data):
-        print('валид дата', validated_data)
         new_user = User(
             username=validated_data['email'], # здесь потом убрать
             email=validated_data['email'],
@@ -157,3 +156,5 @@ class UserNewSerializer(serializers.Serializer):
             hobby = Hobby.objects.get(id=hobby_id)
             new_user.hobbies.add(hobby)
         return new_user
+class InvitationUserSerializer(serializers.Serializer):
+    code = serializers.UUIDField()

@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import (User, Building,ComplaintTypes,ComplaintList,Course,Department,Hobby,Swipe)
+from .models import (User, Building,ComplaintTypes,ComplaintList,Course,Department,Hobby,Swipe, InvitationsUser)
 
 class ComplaintInlineAdmin(admin.TabularInline):
     model = ComplaintList
@@ -82,3 +82,9 @@ class CourseAdmin(admin.ModelAdmin):
     fields = ('complaint_type',
               ('author_complaint','imposter_complaint'))
     readonly_fields = ('imposter_complaint','complaint_type','author_complaint')
+
+
+@admin.register(InvitationsUser)
+class InvitationUserAdmin(admin.ModelAdmin):
+    fields = ('quantity_activation', 'code')
+    readonly_fields = ('code',)

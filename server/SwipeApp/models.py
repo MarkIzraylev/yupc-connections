@@ -1,3 +1,5 @@
+import uuid
+
 from django.contrib.auth.models import AbstractUser, AbstractBaseUser
 from django.db import models
 
@@ -78,3 +80,10 @@ class Swipe(models.Model):
         return f"{self.swiper.last_name} свайпнул {self.swiped.last_name}"
 
 
+
+class InvitationsUser(models.Model):
+    code = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
+    quantity_activation = models.IntegerField(default=1)
+
+    def __str__(self):
+        return f"Осталось {self.quantity_activation} активаций приглашения"

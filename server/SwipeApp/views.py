@@ -6,14 +6,17 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+# импортирование моей функции
+
 # импортирование для JWT авторизации/регистрации
 from rest_framework_simplejwt.tokens import  RefreshToken
 
-from .models import User, Swipe, ComplaintTypes, Hobby, Department, Building, Course
+from .models import User, Swipe, ComplaintTypes, Hobby, Department, Building, Course, InvitationsUser
 
 from .serializer import (UserSerializer, SwipeUserSerializer, MatchListSerializer,
     TargetUserIdSerializer, ComplaintsListSerializer, SendComplaintSerializer, UserNewSerializer, HobbiesListSerializer,
-                         DepartmentsListSerializer, CoursesListSerializer, BuildingsListSerializer, ResetSwipeSerializer)
+                         DepartmentsListSerializer, CoursesListSerializer, BuildingsListSerializer, ResetSwipeSerializer,
+                         InvitationUserSerializer)
 
 class UsersAPIView(APIView):
     """
@@ -32,26 +35,31 @@ class UsersAPIView(APIView):
 
                 if not Swipe.objects.filter(swiper=target_user.id,
                                             swiped=user.id, swiper_is_like__in=[False,True]).exists() and not Swipe.objects.filter(swiper=user.id,swiped=target_user.id, swiped_is_like__in=[False,True]).exists():  # проверяем наличие свайпа этим пользователя этого
+
                     final_list_profiles.append(user)
+
+                    # final_list_profiles.append({
+                    #     "image": user.image,
+                    #     "description": user.description,
+                    #     "course": user.course,
+                    #     "building": user.building,
+                    #     "department": user.department,
+                    #     "is_search_friend": user.is_search_friend,
+                    #     "is_serach_love": user.is_search_love
+                    #     "last_name": user.last_name,
+                    #     "first_name": user.first_name,
+                    #     ""
+                    # })
 
                 if len(final_list_profiles) == count_profiles_need:
                     break  # выходим если набрали нужное количество анкет
 
             users_with_serializer = UserSerializer(final_list_profiles, many=True).data
-            status_for_client = status.HTTP_200_OK
-            status_message = ""
 
-            """
-            При фильтрации если анкеты кончились, не забыть обработать эту ошибку
-            """
             if not len(users_with_serializer):
-                status_for_client = status.HTTP_404_NOT_FOUND
-                status_message = "Анкеты кончились"
+                return Response({"status_message":"Анкеты кончились"}, status=status.HTTP_404_NOT_FOUND)
 
-            if status_message:
-                return Response({"message":status_message}, status = status_for_client)
-
-            return Response({"users":users_with_serializer},status=status_for_client)
+            return Response({"users":users_with_serializer},status=status.HTTP_200_OK)
 
         except Exception:
             return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -80,6 +88,7 @@ class ResetSwipeAPIView(APIView):
         except Exception as error:
             print(error)
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
 class IncomingProfilesAPIView(APIView):
     """
     Получение входящих анкет
@@ -95,14 +104,13 @@ class IncomingProfilesAPIView(APIView):
                 user_target = User.objects.get(id=user_swipe_id[0])
                 final_profiles.append(user_target)
             list_incoming_profiles_with_serializer = UserSerializer(final_profiles, many=True).data
-            status_for_client = status.HTTP_200_OK
             if not len(list_incoming_profiles_with_serializer):
-                status_for_client = status.HTTP_204_NO_CONTENT
+                return Response(status=status.HTTP_204_NO_CONTENT)
             return Response(
                 {
                     "users": list_incoming_profiles_with_serializer
                 },
-                status=status_for_client
+                status=status.HTTP_200_OK
             )
         except Exception:
             return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -115,7 +123,6 @@ class GetMatchAPIView(APIView):
     def get(self,request):
         try:
             target_user = request.user
-
             list_match_profiles_when_target_user_is_swiper = list(
                 Swipe.objects.filter(swiper=target_user, swiper_is_like=True, swiped_is_like=True).values_list(
                     'swiped__id'))
@@ -134,21 +141,21 @@ class GetMatchAPIView(APIView):
                     "description": user_target.description,
                 })
             list_match_profiles_with_serializer = MatchListSerializer(final_profiles, many=True).data
-            status_for_client = status.HTTP_200_OK
             if not len(list_match_profiles_with_serializer):
-                status_for_client =   status.HTTP_204_NO_CONTENT
+                return Response(status=status.HTTP_204_NO_CONTENT)
             return Response(
                 {
                     "users": list_match_profiles_with_serializer
                 },
-                status =   status_for_client
+                status = status.HTTP_200_OK
             )
         except Exception:
             return Response(status.HTTP_400_BAD_REQUEST)
 
 class GetProfileDetailsAPIView(APIView):
     """
-    Получение детальной информации про пользователя
+    Получение детальной информации про пользователю
+    тут жесткий код
     """
     permission_classes = [IsAuthenticated]
     def post(self,request):
@@ -156,15 +163,35 @@ class GetProfileDetailsAPIView(APIView):
            serializer = TargetUserIdSerializer(data=request.data)
            serializer.is_valid(raise_exception=True)
            target_user_id = serializer.validated_data['target_user_id']
+
+           # Проверка, а если ли этот пользователь у меня в метчах
+           target_user = request.user
+           list_match_profiles_when_target_user_is_swiper = list(
+               Swipe.objects.filter(swiper=target_user, swiper_is_like=True, swiped_is_like=True).values_list(
+                   'swiped__id'))
+           list_match_profiles_when_target_user_is_swiped = list(
+               Swipe.objects.filter(swiped=target_user, swiper_is_like=True, swiped_is_like=True).values_list(
+                   'swiper__id'))
+
+           list_identifiers = list_match_profiles_when_target_user_is_swiper + list_match_profiles_when_target_user_is_swiped + [(request.user.id,)]
+           for user_swipe_id in list_identifiers:
+               user_target = User.objects.get(id=user_swipe_id[0]) # пользователь из метчей
+               if user_target.id == target_user_id:
+                   break
+           else:
+               return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+
            target_user = User.objects.get(id=target_user_id)
            serializer_data_user_profile = UserSerializer(target_user).data
-           status_for_client = status.HTTP_200_OK
+
            if not len(serializer_data_user_profile):
-               status_for_client = status.HTTP_204_NO_CONTENT
+               return  Response(status=status.HTTP_204_NO_CONTENT)
 
            return Response({
                "user_details": serializer_data_user_profile
-           },status= status_for_client)
+           },status=  status.HTTP_200_OK)
        except Exception:
            return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -177,12 +204,11 @@ class ComplaintsListAPIView(APIView):
         try:
             list_all_complaints = ComplaintTypes.objects.all()
             serializer_list = ComplaintsListSerializer(list_all_complaints, many=True).data
-            status_for_client = status.HTTP_200_OK
             if not len(serializer_list):
-                status_for_client = status.HTTP_204_NO_CONTENT
+                return Response(status=status.HTTP_204_NO_CONTENT)
             return Response({
-                "complaint_list":  serializer_list
-            },status=status_for_client)
+                "complaints":  serializer_list
+            },status=status.HTTP_200_OK)
         except Exception:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -264,11 +290,12 @@ class CoursesListAPIView(APIView):
         except Exception:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-
 class RegistrationAPIView(APIView):
     def post(self, request):
         serializer = UserNewSerializer(data=request.data)
         if serializer.is_valid():
+            if User.objects.filter(username=serializer.validated_data['username']).exists():
+                return Response({"error":"Пользователь с таким логином уже зарегистрирован"}, status=status.HTTP_409_CONFLICT)
             user = serializer.save()
 
             refresh = RefreshToken.for_user(user)
@@ -298,11 +325,13 @@ class LoginAPIView(APIView):
 
                             status=status.HTTP_400_BAD_REQUEST)
 
+        user_test = User.objects.filter(username=username)
+        if user_test.exists():
+            user_test = user_test[0]
+            if not user_test.is_active:
+                return Response(status=status.HTTP_403_FORBIDDEN)
+
         user = authenticate(username=username, password=password)
-        object_user = User.objects.filter(username=username,password=password)
-        # print("вот он - ", object_user)
-        # print("я дошел до сюда", user)
-        # print(user.is_active)
         if user is None:
             return Response({'error': 'Неверные данные'},
 
@@ -315,7 +344,6 @@ class LoginAPIView(APIView):
             "email": user.email
         })
 
-
         return Response({
 
             'refresh': str(refresh),
@@ -323,7 +351,6 @@ class LoginAPIView(APIView):
             'access': str(refresh.access_token),
 
         }, status=status.HTTP_200_OK)
-
 
 class LogoutAPIView(APIView):
     def post(self,request):
@@ -346,3 +373,19 @@ class LogoutAPIView(APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
         return Response({'success': 'Выход успешен'}, status=status.HTTP_200_OK)
+
+class InvitationAPIView(APIView):
+    def get(self,request, invited_code):
+        print(invited_code)
+        invitation_object = InvitationsUser.objects.filter(code=invited_code)
+        if not invitation_object.exists():
+            return Response({"message":"Данное приглашение отсутствует"},status=status.HTTP_404_NOT_FOUND)
+
+        invitation_object = invitation_object[0]
+        if invitation_object.quantity_activation<1:
+            return Response({"message" : "Превышено количество активаций"},status=status.HTTP_403_FORBIDDEN)
+
+        invitation_object.quantity_activation-=1
+        invitation_object.save()
+
+        return Response(status=status.HTTP_200_OK)
