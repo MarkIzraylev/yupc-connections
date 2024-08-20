@@ -32,10 +32,28 @@ import axios from 'axios';
 
 export default function SignUp({setCurrentPage, loggedIn, setLoggedIn}) {
     const { invitation_code } = useParams();
+    const [errorMessage, setErrorMessage] = useState(null);
+    const [isLoading, setIsLoading] = useState('Загрузка...');
+
+    function checkInvitationCode() {
+        axios.get('http://127.0.0.1:8000/api/checkInvitation/', {
+            invited_code: invitation_code
+        })
+        .then(response => {
+            console.log('response in checkInvitationCode()', response)
+        })
+        .catch(err => {
+            console.log('error in checkInvitationCode()', err)
+            setErrorMessage('Код приглашения неверный или активации по нему закончились (бета оповещение)')
+        })
+        .finally(() => {
+            setIsLoading(false);
+        })
+    }
     
     useEffect(() => {
         setCurrentPage('sign-up')
-        console.log(invitation_code)
+        checkInvitationCode()
     }, [])
     let navigate = useNavigate();
 
@@ -240,7 +258,7 @@ export default function SignUp({setCurrentPage, loggedIn, setLoggedIn}) {
 
     return (
         <Box className="wallpaperBackground" style={{height: '100%', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-            <form style={{width: 'clamp(300px, 90vw, 500px)',}} onSubmit={handleSubmitForm} noValidate>
+            {!errorMessage && !isLoading && <form style={{width: 'clamp(300px, 90vw, 500px)',}} onSubmit={handleSubmitForm} noValidate>
             {validationError && <Alert severity="error" style={{width: 'inherit', position: 'absolute', zIndex: 300}}>{validationErrorMessage}</Alert>}
                 <Card sx={{width: 'clamp(300px, 90vw, 500px)', height: 'fit-content', minHeight: '100px', maxHeight: 'calc(90vh - 56px)', overflow: 'auto', outline: 'none'}} variant="outlined">
                     <CardContent>
@@ -343,8 +361,9 @@ export default function SignUp({setCurrentPage, loggedIn, setLoggedIn}) {
                         
                     </CardActions>
                 </Card>
-            </form>
-
+            </form>}
+            {isLoading && !errorMessage && <Alert severity="info">{isLoading}</Alert>}
+            {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
         </Box>
     )
 }
