@@ -120,7 +120,7 @@ class CoursesListSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=50)
 
 
-class UserNewSerializer(serializers.Serializer):
+class UserNewSerializer(UserSerializerBase):
     username = serializers.CharField(max_length=100)
     email = serializers.CharField(max_length=100)
     first_name = serializers.CharField(max_length=100)
@@ -135,6 +135,8 @@ class UserNewSerializer(serializers.Serializer):
     tg_contact = serializers.CharField(max_length=100)
     hobbies = serializers.ListSerializer(child=serializers.IntegerField(), write_only=True)
     password = serializers.CharField(max_length=150)
+    invitation_code = serializers.UUIDField()
+
     def create(self, validated_data):
         new_user = User(
             username=validated_data['email'], # здесь потом убрать

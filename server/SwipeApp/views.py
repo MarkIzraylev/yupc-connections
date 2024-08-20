@@ -297,7 +297,18 @@ class RegistrationAPIView(APIView):
         if serializer.is_valid():
             if User.objects.filter(username=serializer.validated_data['username']).exists():
                 return Response({"error":"Пользователь с таким логином уже зарегистрирован"}, status=status.HTTP_409_CONFLICT)
+
+            invitation_object = InvitationsUser.objects.filter(code=serializer.validated_data['invited_code'])
+            if not invitation_object.exists():
+                return Response({"message": "Данное приглашение отсутствует"}, status=status.HTTP_404_NOT_FOUND)
+
+            invitation_object = invitation_object[0]
+            if invitation_object.quantity_activation < 1:
+                return Response({"message": "Превышено количество активаций"}, status=status.HTTP_403_FORBIDDEN)
+
+            invitation_object.quantity_activation-=1
             user = serializer.save()
+            invitation_object.save()
 
             refresh = RefreshToken.for_user(user)
             refresh.payload.update({
