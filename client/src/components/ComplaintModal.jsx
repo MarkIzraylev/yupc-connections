@@ -1,14 +1,40 @@
 import {Modal, Box, Typography, FormControl, InputLabel, Select, Button } from '@mui/material';
 import { modalStyle } from './cardObjInterface';
 import axios from 'axios';
+import {useState} from 'react';
+import { useSelectWithFetchedOptions, ReactiveSelect } from './useSelectWithFetchedOptions';
 
 export default function ComplaintModal({targetId, openModal, setOpenModal, performSwipe}) {
+    const complaintSelectProps = useSelectWithFetchedOptions('Причина жалобы', 'complaints', 1);
+    const [validate, setValidate] = useState(false);
+
     function complain() {
-        // send complaint
-        // ...
-        performSwipe(false);
-        setOpenModal(null);
+        setValidate(true);
+        let isValid = complaintSelectProps.value != '';
+        if (isValid) {
+            // send complaint
+            axios.post('http://127.0.0.1:8000/api/sendReport/', {
+                target_user_id: targetId,
+                complaint_id: complaintSelectProps.value
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                },
+            })
+            .then(response => {
+                performSwipe(false);
+                setOpenModal(null);
+            })
+            .catch(err => {
+                console.log(err);
+            })
+            
+        } else {
+            console.log('validation error');
+        }
     }
+
+    console.log(complaintSelectProps)
     
     return (
         <Modal
@@ -26,7 +52,7 @@ export default function ComplaintModal({targetId, openModal, setOpenModal, perfo
                 </Typography>
                 <Box sx={{ minWidth: 120 }}>
                     <FormControl fullWidth>
-                        Окно находится в процессе разработки. Скоро здесь будет выпадающий список, опции которого будут загружаться по API.
+                        <ReactiveSelect {...complaintSelectProps} validate={validate} />
                     </FormControl>
                 </Box>
                 <Box sx={{ minWidth: 120, mt: 2, display: 'flex', justifyContent: 'right' }}>

@@ -23,6 +23,8 @@ import FormHelperText  from '@mui/material/FormHelperText';
 import Alert from '@mui/material/Alert';
 import { useTheme } from '@mui/material/styles';
 
+import { useSelectWithFetchedOptions, ReactiveSelect } from '../useSelectWithFetchedOptions';
+
 import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
@@ -60,53 +62,53 @@ export default function SignUp({setCurrentPage, loggedIn, setLoggedIn}) {
 
     let selectedHobbiesIds = []; // айдишники выбранных хобби
     
-    const ReactiveSelect = (label, state, onChange, data, required) => {
-        return (
-            <FormControl fullWidth style={{marginBottom: 8}} required={required} error={validate && state === '' && required}>
-                <InputLabel>{label}</InputLabel>
-                <Select
-                    value={state}
-                    label={label}
-                    onChange={onChange}
-                    children={data.map(dataObj => {
-                        return <MenuItem value={dataObj.id}>{dataObj.name}</MenuItem>
-                    })}
-                />
-            </FormControl>
-        )
-    }
+    // const ReactiveSelect = (label, state, onChange, data, required) => {
+    //     return (
+    //         <FormControl fullWidth style={{marginBottom: 8}} required={required} error={validate && state === '' && required}>
+    //             <InputLabel>{label}</InputLabel>
+    //             <Select
+    //                 value={state}
+    //                 label={label}
+    //                 onChange={onChange}
+    //                 children={data.map(dataObj => {
+    //                     return <MenuItem value={dataObj.id}>{dataObj.name}</MenuItem>
+    //                 })}
+    //             />
+    //         </FormControl>
+    //     )
+    // }
 
-    function useSelectWithFetchedOptions(label, fetchingArrName, required) {
-        let [data, setData] = useState([]); // options which are objects with keys 'id' and 'name'
-        const [selectedOptionId, setSelectedOptionId] = useState('');
+    // function useSelectWithFetchedOptions(label, fetchingArrName, required) {
+    //     let [data, setData] = useState([]); // options which are objects with keys 'id' and 'name'
+    //     const [selectedOptionId, setSelectedOptionId] = useState('');
 
-        function capitalizeFirstLetter(string) {
-            return string.charAt(0).toUpperCase() + string.slice(1);
-        }
+    //     function capitalizeFirstLetter(string) {
+    //         return string.charAt(0).toUpperCase() + string.slice(1);
+    //     }
 
-        function onChange(ev) {
-            setSelectedOptionId(ev.target.value)
-        }
+    //     function onChange(ev) {
+    //         setSelectedOptionId(ev.target.value)
+    //     }
 
-        useEffect(() => {
-            axios.get(`http://127.0.0.1:8000/api/get${capitalizeFirstLetter(fetchingArrName)}/`)
-            .then(response => {
-                if (response.status != 200) return
-                setData(response.data[fetchingArrName])
-            })
-            .catch(error => {
-                console.error(error)
-            })
-        }, [])
+    //     useEffect(() => {
+    //         axios.get(`http://127.0.0.1:8000/api/get${capitalizeFirstLetter(fetchingArrName)}/`)
+    //         .then(response => {
+    //             if (response.status != 200) return
+    //             setData(response.data[fetchingArrName])
+    //         })
+    //         .catch(error => {
+    //             console.error(error)
+    //         })
+    //     }, [])
 
-        return {
-            label: label,
-            value: selectedOptionId,
-            onChange: onChange,
-            data: data,
-            required: required
-        }
-    }
+    //     return {
+    //         label: label,
+    //         value: selectedOptionId,
+    //         onChange: onChange,
+    //         data: data,
+    //         required: required
+    //     }
+    // }
 
     function useFormInput(label, helperText, pattern, required) {
         const [value, setValue] = useState('');
@@ -294,7 +296,9 @@ export default function SignUp({setCurrentPage, loggedIn, setLoggedIn}) {
                                     )
                                 }}
                             />
-                            {[buildingParams, departmentParams, courseParams].map(params => ReactiveSelect(...Object.values(params)))}
+                            {[buildingParams, departmentParams, courseParams].map(params => {
+                                return <ReactiveSelect {...params} validate={validate} />
+                            })}
                         </Box>
                         <Typography gutterBottom variant="subtitle1" mt={2} color={validate && tgInputProps.value === '' && vkInputProps.value === '' && "error" || tgInputProps.error || vkInputProps.error}>
                             Ссылки на соц. сети для связи

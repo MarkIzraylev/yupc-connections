@@ -59,7 +59,7 @@ export default function Match({setCurrentPage, openModal, setOpenModal, setLogge
     }
 
     function getCard(target_user_id: number) {
-        axios.post('http://127.0.0.1:8000/api/getDetailsAboutProfile/', {
+        axios.post('http://127.0.0.1:8000/api/getDetailsAboutProfileInMatch/', {
             target_user_id: target_user_id
         }, {
             headers: {
@@ -89,6 +89,9 @@ export default function Match({setCurrentPage, openModal, setOpenModal, setLogge
         if (!openedCard || !matches) {
             return;
         }
+        if (matches.length === 1) {
+            setInfoMessage(noMatchesMessage);
+        }
         setMatches(matches.filter(m => m.id !== openedCard.id))
     }
     function removeMatch() {
@@ -106,9 +109,6 @@ export default function Match({setCurrentPage, openModal, setOpenModal, setLogge
             console.log('removeMatch() -> response: ', response)
             // 200 or 400
             if (response.status === 200) {
-                if (matches.length === 1) {
-                    setInfoMessage(noMatchesMessage);
-                }
                 removeOpenedMatchFromState()
                 setOpenModal(null);
                 setOpenedCard(null);

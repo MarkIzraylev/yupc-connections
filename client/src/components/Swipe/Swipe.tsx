@@ -187,7 +187,7 @@ export default function Swipe({currentPage, setCurrentPage, openModal, setOpenMo
         }).catch(err => {
             console.error(err);
             if (err.response.status === 404) {
-                setInfoMessage(err.response.data.message);
+                setInfoMessage(err.response.data.status_message);
             } else if (err.response.status === 401) {
                 console.log('fetchNewBunchOfCards 401 error')
                 updateTokens()
