@@ -36,15 +36,20 @@ export default function SignUp({setCurrentPage, loggedIn, setLoggedIn}) {
     const [isLoading, setIsLoading] = useState('Загрузка...');
 
     function checkInvitationCode() {
-        axios.get('http://127.0.0.1:8000/api/checkInvitation/', {
+        axios.post('http://127.0.0.1:8000/api/checkInvitation/', {
             invited_code: invitation_code
         })
         .then(response => {
             console.log('response in checkInvitationCode()', response)
         })
         .catch(err => {
+            if (err.response.status === 404) {
+                setErrorMessage('Переданного кода приглашения не существует.')
+            } else if (err.response.status === 403) {
+                setErrorMessage('Превышено количество активаций кода приглашения.')
+            }
             console.log('error in checkInvitationCode()', err)
-            setErrorMessage('Код приглашения неверный или активации по нему закончились (бета оповещение)')
+            
         })
         .finally(() => {
             setIsLoading(false);
@@ -363,7 +368,7 @@ export default function SignUp({setCurrentPage, loggedIn, setLoggedIn}) {
                 </Card>
             </form>}
             {isLoading && !errorMessage && <Alert severity="info">{isLoading}</Alert>}
-            {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
+            {errorMessage && <Alert severity="error" style={{margin: theme.spacing(2)}}>{errorMessage}</Alert>}
         </Box>
     )
 }
