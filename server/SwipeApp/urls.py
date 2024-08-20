@@ -26,5 +26,5 @@ urlpatterns = [
     path('login/', LoginAPIView.as_view()),
     path('logout/', LogoutAPIView.as_view()),
     path('token/refresh/',   TokenRefreshView.as_view(), name="token_refresh"),
-    path('invitation/<uuid:invited_code>/', InvitationAPIView.as_view() )
+    path('checkInvitation/', InvitationAPIView.as_view() )
 ]
