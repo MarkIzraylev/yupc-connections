@@ -1,3 +1,5 @@
+import uuid
+
 from django.contrib.auth import authenticate
 from django.db.models import QuerySet, Q
 from django.shortcuts import render
@@ -374,8 +376,14 @@ class LogoutAPIView(APIView):
         return Response({'success': 'Выход успешен'}, status=status.HTTP_200_OK)
 
 class InvitationAPIView(APIView):
-    def get(self,request, invited_code):
-        print(invited_code)
+    def get(self,request):
+        invited_code = request.data.get('invited_code')
+        try:
+            uuid.UUID(invited_code)
+        except Exception:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+            pass
+
         invitation_object = InvitationsUser.objects.filter(code=invited_code)
         if not invitation_object.exists():
             return Response({"message":"Данное приглашение отсутствует"},status=status.HTTP_404_NOT_FOUND)
@@ -384,7 +392,7 @@ class InvitationAPIView(APIView):
         if invitation_object.quantity_activation<1:
             return Response({"message" : "Превышено количество активаций"},status=status.HTTP_403_FORBIDDEN)
 
-        invitation_object.quantity_activation-=1
-        invitation_object.save()
+        # invitation_object.quantity_activation-=1
+        # invitation_object.save()
 
         return Response(status=status.HTTP_200_OK)
