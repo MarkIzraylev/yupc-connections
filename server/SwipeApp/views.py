@@ -13,10 +13,10 @@ from rest_framework_simplejwt.tokens import  RefreshToken
 
 from .models import User, Swipe, ComplaintTypes, Hobby, Department, Building, Course, InvitationsUser
 
-from .serializer import (UserSerializer, SwipeUserSerializer, MatchListSerializer,
+from .serializer import (UserSerializerBase, SwipeUserSerializer, MatchListSerializer,
     TargetUserIdSerializer, ComplaintsListSerializer, SendComplaintSerializer, UserNewSerializer, HobbiesListSerializer,
                          DepartmentsListSerializer, CoursesListSerializer, BuildingsListSerializer, ResetSwipeSerializer,
-                         InvitationUserSerializer)
+                         InvitationUserSerializer, UserSerializerMatch)
 
 class UsersAPIView(APIView):
     """
@@ -54,7 +54,7 @@ class UsersAPIView(APIView):
                 if len(final_list_profiles) == count_profiles_need:
                     break  # выходим если набрали нужное количество анкет
 
-            users_with_serializer = UserSerializer(final_list_profiles, many=True).data
+            users_with_serializer = UserSerializerBase(final_list_profiles, many=True).data
 
             if not len(users_with_serializer):
                 return Response({"status_message":"Анкеты кончились"}, status=status.HTTP_404_NOT_FOUND)
@@ -103,7 +103,7 @@ class IncomingProfilesAPIView(APIView):
             for user_swipe_id in list_incoming_profiles:
                 user_target = User.objects.get(id=user_swipe_id[0])
                 final_profiles.append(user_target)
-            list_incoming_profiles_with_serializer = UserSerializer(final_profiles, many=True).data
+            list_incoming_profiles_with_serializer = UserSerializerBase(final_profiles, many=True).data
             if not len(list_incoming_profiles_with_serializer):
                 return Response(status=status.HTTP_204_NO_CONTENT)
             return Response(
@@ -184,7 +184,7 @@ class GetProfileDetailsAPIView(APIView):
 
 
            target_user = User.objects.get(id=target_user_id)
-           serializer_data_user_profile = UserSerializer(target_user).data
+           serializer_data_user_profile = UserSerializerMatch(target_user).data
 
            if not len(serializer_data_user_profile):
                return  Response(status=status.HTTP_204_NO_CONTENT)
@@ -199,7 +199,6 @@ class ComplaintsListAPIView(APIView):
     """
     Получение наименований вариантов жалоб
     """
-    permission_classes = [IsAuthenticated]
     def get(self, request):
         try:
             list_all_complaints = ComplaintTypes.objects.all()

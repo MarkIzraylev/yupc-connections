@@ -14,7 +14,7 @@ urlpatterns = [
     path('swipeUser/',SwipeAPIView.as_view()),
     path('incomingProfiles/', IncomingProfilesAPIView.as_view()),
     path('getMatch/', GetMatchAPIView.as_view()),
-    path('getDetailsAboutProfile/', GetProfileDetailsAPIView.as_view()),
+    path('getDetailsAboutProfileInMatch/', GetProfileDetailsAPIView.as_view()),
     path('getHobbies/', HobbiesListAPIView.as_view()),
     path('getDepartments/', DepartmentsListAPIView.as_view()),
     path('getBuildings/', BuildingListAPIView.as_view()),

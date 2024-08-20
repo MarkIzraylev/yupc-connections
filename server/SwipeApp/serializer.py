@@ -4,7 +4,7 @@ from .models import Hobby, Swipe, User, Course, Building, Department, ComplaintL
 
 from django.db.models import QuerySet, Q
 
-class UserSerializer(serializers.Serializer):
+class UserSerializerBase(serializers.Serializer):
     id = serializers.IntegerField()
     first_name = serializers.CharField(max_length=100)
     last_name = serializers.CharField(max_length=100)
@@ -15,8 +15,7 @@ class UserSerializer(serializers.Serializer):
     department_name = serializers.SerializerMethodField(source='department_id')
     is_search_friend = serializers.BooleanField(default=True)
     is_search_love = serializers.BooleanField(default=False)
-    vk_contact = serializers.CharField(max_length=100)
-    tg_contact = serializers.CharField(max_length=100)
+
     hobbies = serializers.SerializerMethodField()
 
     def get_course_name(self,obj):
@@ -31,7 +30,9 @@ class UserSerializer(serializers.Serializer):
     def get_hobbies(self,obj):
         return list(obj.hobbies.all().values_list('name',flat=True))
 
-
+class UserSerializerMatch(UserSerializerBase):
+    vk_contact = serializers.CharField(max_length=100)
+    tg_contact = serializers.CharField(max_length=100)
 
 class SwipeUserSerializer(serializers.Serializer):
     target_user_id = serializers.IntegerField()
