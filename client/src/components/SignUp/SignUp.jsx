@@ -25,13 +25,17 @@ import { useTheme } from '@mui/material/styles';
 
 import { useSelectWithFetchedOptions, ReactiveSelect } from '../useSelectWithFetchedOptions';
 
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+
 import { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 
 export default function SignUp({setCurrentPage, loggedIn, setLoggedIn}) {
+    const { invitation_code } = useParams();
+    
     useEffect(() => {
-        setCurrentPage('sign-in')
+        setCurrentPage('sign-up')
+        console.log(invitation_code)
     }, [])
     let navigate = useNavigate();
 

@@ -3,6 +3,7 @@ import logo from './logo.svg';
 import './App.css';
 import {
   createBrowserRouter,
+  Navigate,
   RouterProvider,
 } from "react-router-dom";
 import Root from "./routes/root";
@@ -14,6 +15,7 @@ import Swipe from './components/Swipe/Swipe';
 import AboutUs from './components/AboutUs/AboutUs';
 import SignIn from './components/SignIn/SignIn';
 import SignUp from './components/SignUp/SignUp';
+import { Route, redirect } from 'react-router'
 
 function App() {
   const [currentPage, setCurrentPage] = React.useState("about-us");
@@ -52,8 +54,12 @@ function App() {
           element: <SignIn setCurrentPage={setCurrentPage} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />,
         },
         {
-          path: "signup",
+          path: "signup/:invitation_code",
           element: <SignUp setCurrentPage={setCurrentPage} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />,
+        },
+        {
+          path: "signup/",
+          element: <Navigate to="/" replace />,
         },
       ]
     },
