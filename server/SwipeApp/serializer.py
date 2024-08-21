@@ -15,7 +15,6 @@ class UserSerializerBase(serializers.Serializer):
     department_name = serializers.SerializerMethodField(source='department_id')
     is_search_friend = serializers.BooleanField(default=True)
     is_search_love = serializers.BooleanField(default=False)
-
     hobbies = serializers.SerializerMethodField()
 
     def get_course_name(self,obj):
@@ -33,6 +32,12 @@ class UserSerializerBase(serializers.Serializer):
 class UserSerializerMatch(UserSerializerBase):
     vk_contact = serializers.CharField(max_length=100)
     tg_contact = serializers.CharField(max_length=100)
+
+
+class UserSerializerProfile(UserSerializerBase):
+    vk_contact = serializers.CharField(max_length=100)
+    tg_contact = serializers.CharField(max_length=100)
+
 
 class SwipeUserSerializer(serializers.Serializer):
     target_user_id = serializers.IntegerField()

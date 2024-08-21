@@ -387,13 +387,12 @@ class LogoutAPIView(APIView):
         return Response({'success': 'Выход успешен'}, status=status.HTTP_200_OK)
 
 class InvitationAPIView(APIView):
-    def get(self,request):
+    def post(self,request):
         invited_code = request.data.get('invited_code')
         try:
             uuid.UUID(invited_code)
         except Exception:
             return Response(status=status.HTTP_404_NOT_FOUND)
-            pass
 
         invitation_object = InvitationsUser.objects.filter(code=invited_code)
         if not invitation_object.exists():
