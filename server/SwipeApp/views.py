@@ -298,7 +298,7 @@ class RegistrationAPIView(APIView):
             if User.objects.filter(username=serializer.validated_data['username']).exists():
                 return Response({"error":"Пользователь с таким логином уже зарегистрирован"}, status=status.HTTP_409_CONFLICT)
 
-            invitation_object = InvitationsUser.objects.filter(code=serializer.validated_data['invited_code'])
+            invitation_object = InvitationsUser.objects.filter(code=serializer.validated_data['invitation_code'])
             if not invitation_object.exists():
                 return Response({"message": "Данное приглашение отсутствует"}, status=status.HTTP_404_NOT_FOUND)
 

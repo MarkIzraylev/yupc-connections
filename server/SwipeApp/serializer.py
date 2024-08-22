@@ -136,11 +136,13 @@ class UserNewSerializer(UserSerializerBase):
     department = serializers.CharField(max_length=50)
     is_search_friend = serializers.BooleanField(default=True)
     is_search_love = serializers.BooleanField(default=False)
-    vk_contact = serializers.CharField(max_length=100)
-    tg_contact = serializers.CharField(max_length=100)
+    vk_contact = serializers.CharField(max_length=100, required=False )
+    tg_contact = serializers.CharField(max_length=100, required=False)
     hobbies = serializers.ListSerializer(child=serializers.IntegerField(), write_only=True)
     password = serializers.CharField(max_length=150)
     invitation_code = serializers.UUIDField()
+    image = serializers.ImageField(required=True)
+
 
     def create(self, validated_data):
         new_user = User(
@@ -156,6 +158,7 @@ class UserNewSerializer(UserSerializerBase):
             is_search_love=validated_data['is_search_love'],
             vk_contact=validated_data['vk_contact'],
             tg_contact=validated_data['tg_contact'],
+            image=validated_data['image']
         )
         new_user.set_password(validated_data['password'])
         new_user.save()
