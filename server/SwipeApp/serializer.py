@@ -120,7 +120,7 @@ class CoursesListSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=50)
 
 
-class UserNewSerializer(UserSerializerBase):
+class UserNewSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=100)
     email = serializers.CharField(max_length=100)
     first_name = serializers.CharField(max_length=100)

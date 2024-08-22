@@ -294,11 +294,12 @@ class CoursesListAPIView(APIView):
 class RegistrationAPIView(APIView):
     def post(self, request):
         serializer = UserNewSerializer(data=request.data)
+        print(serializer)
         if serializer.is_valid():
             if User.objects.filter(username=serializer.validated_data['username']).exists():
                 return Response({"error":"Пользователь с таким логином уже зарегистрирован"}, status=status.HTTP_409_CONFLICT)
 
-            invitation_object = InvitationsUser.objects.filter(code=serializer.validated_data['invited_code'])
+            invitation_object = InvitationsUser.objects.filter(code=serializer.validated_data['invitation_code'])
             if not invitation_object.exists():
                 return Response({"message": "Данное приглашение отсутствует"}, status=status.HTTP_404_NOT_FOUND)
 
@@ -321,7 +322,7 @@ class RegistrationAPIView(APIView):
             }, status=status.HTTP_201_CREATED)
 
         else:
-            print("не прошли валидацию", serializer.errors)
+            print("8 не прошли валидацию", serializer.errors)
             return Response(status=status.HTTP_502_BAD_GATEWAY)
 
 class LoginAPIView(APIView):
@@ -387,7 +388,7 @@ class LogoutAPIView(APIView):
         return Response({'success': 'Выход успешен'}, status=status.HTTP_200_OK)
 
 class InvitationAPIView(APIView):
-    def get(self,request):
+    def post(self,request):
         invited_code = request.data.get('invited_code')
         try:
             uuid.UUID(invited_code)
