@@ -394,7 +394,6 @@ class InvitationAPIView(APIView):
             uuid.UUID(invited_code)
         except Exception:
             return Response(status=status.HTTP_404_NOT_FOUND)
-            pass
 
         invitation_object = InvitationsUser.objects.filter(code=invited_code)
         if not invitation_object.exists():
