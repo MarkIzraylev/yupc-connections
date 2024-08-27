@@ -291,9 +291,27 @@ class CoursesListAPIView(APIView):
         except Exception:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+class UpdateUserDataAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def put(self,request):
+        try:
+            instance = User.objects.get(id=request.user.id)
+
+            serializer = UserNewSerializer(instance,data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(status=status.HTTP_200_OK)
+            else:
+                print(serializer.errors)
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+        except Exception:
+            return Response(status=status.HTTP_502_BAD_GATEWAY)
+
 class RegistrationAPIView(APIView):
     def post(self, request):
         serializer = UserNewSerializer(data=request.data)
+        print("serializer", serializer)
         if serializer.is_valid():
             if User.objects.filter(username=serializer.validated_data['username']).exists():
                 return Response({"error":"Пользователь с таким логином уже зарегистрирован"}, status=status.HTTP_409_CONFLICT)

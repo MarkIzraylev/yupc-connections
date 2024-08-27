@@ -125,7 +125,7 @@ class CoursesListSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=50)
 
 
-class UserNewSerializer(UserSerializerBase):
+class UserNewSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=100)
     email = serializers.CharField(max_length=100)
     first_name = serializers.CharField(max_length=100)
@@ -138,7 +138,7 @@ class UserNewSerializer(UserSerializerBase):
     is_search_love = serializers.BooleanField(default=False)
     vk_contact = serializers.CharField(max_length=100, required=False )
     tg_contact = serializers.CharField(max_length=100, required=False)
-    hobbies = serializers.ListSerializer(child=serializers.IntegerField(), write_only=True)
+    hobbies = serializers.ListSerializer(child=serializers.IntegerField())
     password = serializers.CharField(max_length=150)
     invitation_code = serializers.UUIDField()
     image = serializers.ImageField(required=True)
