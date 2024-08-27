@@ -339,7 +339,7 @@ class RegistrationAPIView(APIView):
             }, status=status.HTTP_201_CREATED)
 
         else:
-            print("не прошли валидацию", serializer.errors)
+            print("8 не прошли валидацию", serializer.errors)
             return Response(status=status.HTTP_502_BAD_GATEWAY)
 
 class LoginAPIView(APIView):

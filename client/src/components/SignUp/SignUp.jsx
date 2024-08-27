@@ -21,6 +21,8 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import FormHelperText  from '@mui/material/FormHelperText';
 import Alert from '@mui/material/Alert';
+import Avatar from '@mui/material/Avatar';
+import Paper from '@mui/material/Paper';
 import { useTheme } from '@mui/material/styles';
 
 import { useSelectWithFetchedOptions, ReactiveSelect } from '../useSelectWithFetchedOptions';
@@ -29,11 +31,18 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
+import { convertCompilerOptionsFromJson } from 'typescript';
 
 export default function SignUp({setCurrentPage, loggedIn, setLoggedIn}) {
     const { invitation_code } = useParams();
     const [errorMessage, setErrorMessage] = useState(null);
     const [isLoading, setIsLoading] = useState('Загрузка...');
+
+    let navigate = useNavigate();
+
+    if (loggedIn) {
+        navigate('/')
+    }
 
     function checkInvitationCode() {
         axios.post('http://127.0.0.1:8000/api/checkInvitation/', {
@@ -60,7 +69,6 @@ export default function SignUp({setCurrentPage, loggedIn, setLoggedIn}) {
         setCurrentPage('sign-up')
         checkInvitationCode()
     }, [])
-    let navigate = useNavigate();
 
     const [isSearchFriend, setIsSearchFriend] = useState(false);
     const [isSearchLove, setIsSearchLove] = useState(false);
@@ -196,7 +204,8 @@ export default function SignUp({setCurrentPage, loggedIn, setLoggedIn}) {
             && (selectedHobbiesIds != undefined)
             && isBoy != null
             && policyAgreement
-            && ageConfirmation;
+            && ageConfirmation
+            && profileImage != '';
         const data = {
             username: emailInputProps.value,
             email: emailInputProps.value,
@@ -212,7 +221,9 @@ export default function SignUp({setCurrentPage, loggedIn, setLoggedIn}) {
             vk_contact: vkInputProps.value,
             tg_contact: tgInputProps.value,
             hobbies: selectedHobbiesIds,
-            is_boy: isBoy
+            is_boy: isBoy,
+            invitation_code: invitation_code,
+            image: URL.createObjectURL(profileImage)
         };
         if (formIsValid) {
             setValidationError(false);
@@ -251,6 +262,8 @@ export default function SignUp({setCurrentPage, loggedIn, setLoggedIn}) {
     const departmentParams = useSelectWithFetchedOptions('Отделение', 'departments', 1)
     const courseParams = useSelectWithFetchedOptions('Курс', 'courses', 1)
 
+    const [profileImage, setProfileImage] = useState('')
+
     const [searchIntentionError, setSearchIntentionError] = useState(false);
 
     useEffect(() => {
@@ -274,6 +287,28 @@ export default function SignUp({setCurrentPage, loggedIn, setLoggedIn}) {
                             Основная информация
                         </Typography>
                         <Box sx={{display: 'grid', flexDirection: 'column', gap: 1}}>
+                            <FormLabel component="legend">Фотография профиля</FormLabel>
+                            {
+                                profileImage && <Paper variant="outlined" sx={{aspectRatio: 1, backgroundImage: `url(${URL.createObjectURL(profileImage)})`, backgroundSize: 'cover', backgroundPosition: 'center', }}></Paper>
+                            }
+                            <Button
+                            variant="outlined"
+                            component="label"
+                            style={{
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                                display: "block",
+                                textOverflow: "ellipsis" }}
+                            >
+                                {profileImage.name ? profileImage.name : 'Загрузить файл'}
+                                <input
+                                    type="file"
+                                    accept="image/jpeg,image/jpg,image/png,image/gif"
+                                    onChange={(ev) => {console.log(ev.target.files[0]); setProfileImage(ev.target.files[0])}}
+                                    hidden
+                                />
+                            </Button>
+                            {profileImage ? console.log(URL.createObjectURL(profileImage)) : ''}
                             <TextField variant="standard" {...firstNameInputProps} required />
                             <TextField variant="standard" {...lastNameInputProps} />
                             <TextField
