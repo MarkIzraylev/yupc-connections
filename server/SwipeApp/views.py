@@ -123,7 +123,7 @@ class GetMatchAPIView(APIView):
     Получение метчей пользователя
     """
     permission_classes = [IsAuthenticated]
-    def get(self,request):
+    def post(self,request):
         try:
             target_user = request.user
             list_match_profiles_when_target_user_is_swiper = list(
