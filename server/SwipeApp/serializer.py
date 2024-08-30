@@ -16,6 +16,7 @@ class UserSerializerBase(serializers.Serializer):
     is_search_friend = serializers.BooleanField(default=True)
     is_search_love = serializers.BooleanField(default=False)
     hobbies = serializers.SerializerMethodField()
+    is_boy = serializers.BooleanField()
 
     def get_course_name(self,obj):
         return str(Course.objects.get(id=obj.course_id))
@@ -33,11 +34,9 @@ class UserSerializerMatch(UserSerializerBase):
     vk_contact = serializers.CharField(max_length=100)
     tg_contact = serializers.CharField(max_length=100)
 
-
 class UserSerializerProfile(UserSerializerBase):
     vk_contact = serializers.CharField(max_length=100)
     tg_contact = serializers.CharField(max_length=100)
-
 
 class SwipeUserSerializer(serializers.Serializer):
     target_user_id = serializers.IntegerField()
@@ -89,10 +88,8 @@ class MatchListSerializer(serializers.Serializer):
     description = serializers.CharField(max_length=170)
     image = serializers.ImageField()
 
-
 class TargetUserIdSerializer(serializers.Serializer):
     target_user_id = serializers.IntegerField()
-
 
 class ComplaintsListSerializer(serializers.Serializer):
     id = serializers.IntegerField()
@@ -125,7 +122,7 @@ class CoursesListSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=50)
 
 
-class UserNewSerializer(serializers.Serializer):
+class UserFullData(serializers.Serializer):
     username = serializers.CharField(max_length=100)
     email = serializers.CharField(max_length=100)
     first_name = serializers.CharField(max_length=100)
