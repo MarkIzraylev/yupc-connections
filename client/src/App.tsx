@@ -47,7 +47,7 @@ function App() {
         },
         {
           path: "profile",
-          element: <Profile setCurrentPage={setCurrentPage} />,
+          element: <Profile setCurrentPage={setCurrentPage} setOpenModal={setOpenModal} />,
         },
         {
           path: "signin",

@@ -211,7 +211,7 @@ export default function SignUp({setCurrentPage, loggedIn, setLoggedIn}) {
             email: emailInputProps.value,
             password: passwordInputProps.value,
             first_name: firstNameInputProps.value,
-            last_name: lastNameInputProps.value,
+            last_name: [lastNameInputProps.value],
             description: descriptionInputProps.value,
             course: courseParams.value,
             building: buildingParams.value,
@@ -223,12 +223,39 @@ export default function SignUp({setCurrentPage, loggedIn, setLoggedIn}) {
             hobbies: selectedHobbiesIds,
             is_boy: isBoy,
             invitation_code: invitation_code,
-            image: URL.createObjectURL(profileImage)
+            image: profileImage
         };
+        const formData = new FormData();
+        formData.append('username', emailInputProps.value);
+        formData.append('email', emailInputProps.value);
+        formData.append('password', passwordInputProps.value);
+        formData.append('first_name', firstNameInputProps.value);
+        formData.append('last_name', lastNameInputProps.value);
+        formData.append('description', descriptionInputProps.value);
+        formData.append('course', courseParams.value);
+        formData.append('building', buildingParams.value);
+        formData.append('department', departmentParams.value);
+        formData.append('is_search_friend', isSearchFriend);
+        formData.append('is_search_love', isSearchLove);
+        formData.append('vk_contact', vkInputProps.value);
+        formData.append('tg_contact', tgInputProps.value);
+        selectedHobbiesIds.map(hobbyId => {
+            formData.append('hobbies', Number(hobbyId))
+        });
+        // formData.append('hobbies', JSON.stringify(selectedHobbiesIds))
+        formData.append('is_boy', isBoy);
+        formData.append('invitation_code', invitation_code);
+        formData.append('image', profileImage);
+
         if (formIsValid) {
             setValidationError(false);
+            console.log('form is valid, here is data', data)
             //console.log(data)
-            axios.post('http://127.0.0.1:8000/api/registration/', data)
+            axios.post('http://127.0.0.1:8000/api/registration/', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            })
             .then(response => {
                 if (response.status != 201) return
                 console.log('resp',response)
@@ -241,9 +268,13 @@ export default function SignUp({setCurrentPage, loggedIn, setLoggedIn}) {
                 502 ошибка данных: не прошли валидацию
                 */
             })
-            .catch(error => console.error(error))
+            .catch(error => {
+                console.error(error);
+                console.log(profileImage)
+            })
         } else {
             console.error('Form is not valid')
+            console.log(data)
             //console.log(data)
             setValidationError(true);
             setTimeout(() => {
@@ -276,7 +307,7 @@ export default function SignUp({setCurrentPage, loggedIn, setLoggedIn}) {
 
     return (
         <Box className="wallpaperBackground" style={{height: '100%', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-            {!errorMessage && !isLoading && <form style={{width: 'clamp(300px, 90vw, 500px)',}} onSubmit={handleSubmitForm} noValidate>
+            {!errorMessage && !isLoading && <form style={{width: 'clamp(300px, 90vw, 500px)',}} onSubmit={handleSubmitForm} noValidate enctype="multipart/form-data">
             {validationError && <Alert severity="error" style={{width: 'inherit', position: 'absolute', zIndex: 300}}>{validationErrorMessage}</Alert>}
                 <Card sx={{width: 'clamp(300px, 90vw, 500px)', height: 'fit-content', minHeight: '100px', maxHeight: 'calc(90vh - 56px)', overflow: 'auto', outline: 'none'}} variant="outlined">
                     <CardContent>
@@ -300,15 +331,19 @@ export default function SignUp({setCurrentPage, loggedIn, setLoggedIn}) {
                                 display: "block",
                                 textOverflow: "ellipsis" }}
                             >
-                                {profileImage.name ? profileImage.name : 'Загрузить файл'}
+                                {'Загрузить файл'}
                                 <input
                                     type="file"
+                                    name="image_url"
                                     accept="image/jpeg,image/jpg,image/png,image/gif"
-                                    onChange={(ev) => {console.log(ev.target.files[0]); setProfileImage(ev.target.files[0])}}
+                                    onChange={(ev) => {
+                                        let data = ev.target.files[0];
+                                        setProfileImage(data);
+                                    }}
                                     hidden
                                 />
                             </Button>
-                            {profileImage ? console.log(URL.createObjectURL(profileImage)) : ''}
+                            {profileImage ? console.log('pi', profileImage) : ''}
                             <TextField variant="standard" {...firstNameInputProps} required />
                             <TextField variant="standard" {...lastNameInputProps} />
                             <TextField

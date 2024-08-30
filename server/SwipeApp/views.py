@@ -294,7 +294,6 @@ class CoursesListAPIView(APIView):
 class RegistrationAPIView(APIView):
     def post(self, request):
         serializer = UserNewSerializer(data=request.data)
-        print(serializer)
         if serializer.is_valid():
             if User.objects.filter(username=serializer.validated_data['username']).exists():
                 return Response({"error":"Пользователь с таким логином уже зарегистрирован"}, status=status.HTTP_409_CONFLICT)

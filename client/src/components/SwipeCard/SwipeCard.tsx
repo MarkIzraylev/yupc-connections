@@ -39,7 +39,7 @@ const SwipeCard: FC<SwipeCardProps> = ({name, imageSrc, mainTags, intentionTags,
     socialMediaJSX = [];
     socialMedia.forEach((val, key, map) => {
       socialMediaJSX.push(
-        <Link to={val}>
+        <Link to={val} target="_blank" rel="noopener noreferrer" >
           <Chip icon={key === 'tg' ? <TelegramIcon /> : (key === 'vk' ? <FormatBoldIcon /> : <ChatIcon />)} label={key === 'tg' ? 'ТЕЛЕГРАМ' : (key === 'vk' ? 'ВКОНТАКТЕ' : 'СОЦ. СЕТЬ') } variant="outlined" color="secondary" key={key} />
         </Link>
       )
@@ -114,7 +114,7 @@ const SwipeCard: FC<SwipeCardProps> = ({name, imageSrc, mainTags, intentionTags,
             {
                 intentionTags.map(tag => {
                     return (
-                        <Chip label={tag} variant="outlined" color="success" key={tag} />
+                        <Chip label={tag} variant="outlined" color={tag.toLowerCase().includes('дру') ? 'success' : 'error'} key={tag} />
                     )
                 })
             }
