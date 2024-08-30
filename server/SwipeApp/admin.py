@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.utils.safestring import mark_safe
 
 # Register your models here.
 from .models import (User, Building,ComplaintTypes,ComplaintList,Course,Department,Hobby,Swipe, InvitationsUser)
@@ -11,6 +12,12 @@ class ComplaintInlineAdmin(admin.TabularInline):
     extra = 0
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
+
+    def image_tag(self, obj):
+        if not obj.image:
+            return
+        return mark_safe(f"<img src='{obj.image.url}' width=200; height=200px>")
+
     # поля, которые будем видеть в общем списке
     list_display = ('username','last_name','first_name')
 
@@ -18,10 +25,11 @@ class UserAdmin(admin.ModelAdmin):
     fields = (
         ('username','email','password'),
         ('last_name', 'first_name'),
-        'image',
         ('is_boy', 'is_search_friend', 'is_search_love'),
         ('course', 'building', 'department'),
         ('vk_contact', 'tg_contact'),
+        'image',
+        'image_tag',
         'description',
         'hobbies',
         'groups',
@@ -37,7 +45,7 @@ class UserAdmin(admin.ModelAdmin):
     # readonly_fields = ('description','hobbies','last_login','date_joined','is_search_friend','image','is_search_love',
     #                    'is_boy','password','username','vk_contact','tg_contact')
     inlines = (ComplaintInlineAdmin,)
-
+    readonly_fields = ('image_tag',)
     # поля, по которым будет доступен поиск
     search_fields = ('username', 'last_name', 'first_name')
 

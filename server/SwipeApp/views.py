@@ -16,7 +16,7 @@ from rest_framework_simplejwt.tokens import  RefreshToken
 from .models import User, Swipe, ComplaintTypes, Hobby, Department, Building, Course, InvitationsUser
 
 from .serializer import (UserSerializerBase, SwipeUserSerializer, MatchListSerializer,
-    TargetUserIdSerializer, ComplaintsListSerializer, SendComplaintSerializer, UserNewSerializer, HobbiesListSerializer,
+    TargetUserIdSerializer, ComplaintsListSerializer, SendComplaintSerializer, UserFullData, HobbiesListSerializer,
                          DepartmentsListSerializer, CoursesListSerializer, BuildingsListSerializer, ResetSwipeSerializer,
                          InvitationUserSerializer, UserSerializerMatch)
 
@@ -24,13 +24,14 @@ class UsersAPIView(APIView):
     """
     Получение пользователей для свайпов <= 10
     """
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     def get(self,request):
         try:
+            is_search_friend = request.data['is_search_friend']
             count_profiles_need = 10 # константа количества анкет для пользователя
-            target_user = request.user  # пользователей, для которого делаем запрос
-
-            list_profiles_without_current_user = User.objects.filter(~Q(id=target_user.id)) # получение всех профилей, кроме нашего
+            # target_user = request.user  # пользователей, для которого делаем запрос
+            target_user = User.objects.first()
+            list_profiles_without_current_user = User.objects.filter(~Q(id=target_user.id), is_boy__in=([not target_user.is_boy] if not is_search_friend else [True,False]) ) # получение всех профилей, кроме нашего
 
             final_list_profiles = [] # список <= count_profiles_need анкет для пользователя
             for user in list_profiles_without_current_user:  # бежим по всем пользователям
@@ -291,9 +292,28 @@ class CoursesListAPIView(APIView):
         except Exception:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+class UpdateUserDataAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def put(self,request):
+        try:
+            instance = User.objects.get(id=request.user.id)
+
+            serializer = UserFullData(instance,data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(status=status.HTTP_200_OK)
+            else:
+                print(serializer.errors)
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+        except Exception:
+            return Response(status=status.HTTP_502_BAD_GATEWAY)
+
 class RegistrationAPIView(APIView):
     def post(self, request):
-        serializer = UserNewSerializer(data=request.data)
+        serializer = UserFullData(data=request.data)
+        print("serializer", serializer)
+
         if serializer.is_valid():
             if User.objects.filter(username=serializer.validated_data['username']).exists():
                 return Response({"error":"Пользователь с таким логином уже зарегистрирован"}, status=status.HTTP_409_CONFLICT)
