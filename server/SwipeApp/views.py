@@ -25,7 +25,7 @@ class UsersAPIView(APIView):
     Получение пользователей для свайпов <= 10
     """
     # permission_classes = [IsAuthenticated]
-    def get(self,request):
+    def post(self,request):
         try:
             is_search_friend = request.data['is_search_friend']
             count_profiles_need = 10 # константа количества анкет для пользователя
@@ -123,7 +123,7 @@ class GetMatchAPIView(APIView):
     Получение метчей пользователя
     """
     permission_classes = [IsAuthenticated]
-    def post(self,request):
+    def get(self,request):
         try:
             target_user = request.user
             list_match_profiles_when_target_user_is_swiper = list(
