@@ -264,8 +264,7 @@ class GetProfileDetailsAPIView(APIView):
                "user_details": serializer_data_user_profile
            },status=  status.HTTP_200_OK)
 
-       except Exception as e:
-           print(e)
+       except Exception:
            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class ComplaintsListAPIView(APIView):
