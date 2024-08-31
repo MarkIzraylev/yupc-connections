@@ -25,7 +25,43 @@ SECRET_KEY = 'django-insecure-k54=3&g@mfv73hgo!p+l9codd&gwh)smm5lfkg$%dok41eg(a^
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
+
+# вот тут НАСТРОИТЬ ПОТОМ БЕЗОПАСНОСТЬ
+CORS_ORIGIN_ALLOW_ALL=True # ОПАСНО
+CORS_ALLOW_ALL_ORIGINS = True
+CORD_ALLOWS_CREDENTIALS = True
+
+# DRF
+REST_FRAMEWORK ={
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+
+    ],
+    # строку ниже если что убрать можно
+    # 'DEFAULT_PERMISSION_CLASSES' : [
+    #     'rest_framework.permissions.IsAuthenticated',
+    # ],
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        # строчку ниже надо будет убрать на релизе
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ],
+
+}
+
+SIMPLE_JWT = {
+
+    'ROTATE_REFRESH_TOKENS': True,
+
+    'BLACKLIST_AFTER_ROTATION': True,
+
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=30),
+
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=60),
+
+}
 
 
 # Application definition
@@ -47,7 +83,6 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -55,6 +90,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'YUPCConnections.urls'
@@ -132,7 +168,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # User
 AUTH_USER_MODEL  = 'SwipeApp.User'
-CORS_ORIGIN_ALLOW_ALL=True
 
 
 # Media
@@ -140,28 +175,3 @@ MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 
-# DRF
-REST_FRAMEWORK ={
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-
-    ],
-    'DEFAULT_RENDERER_CLASSES': [
-        'rest_framework.renderers.JSONRenderer',
-        # строчку ниже надо будет убрать на релизе
-        'rest_framework.renderers.BrowsableAPIRenderer',
-    ],
-}
-
-SIMPLE_JWT = {
-
-    'ROTATE_REFRESH_TOKENS': True,
-
-    'BLACKLIST_AFTER_ROTATION': True,
-
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=30),
-
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=60),
-
-}

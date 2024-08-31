@@ -34,8 +34,7 @@ class UsersAPIView(APIView):
             count_required_profiles = 10
 
             # пользователь, для которого делаем запрос
-            # requesting_user = request.user
-            requesting_user = User.objects.first()
+            requesting_user = request.user
 
             # массив анкет
             list_users = []
@@ -221,7 +220,7 @@ class GetProfileDetailsAPIView(APIView):
            serializer.is_valid(raise_exception=True)
            target_user_id = serializer.validated_data['target_user_id']
 
-           user_requesting = User.objects.first()
+           user_requesting = request.user
 
            # Проверка,есть ли этот пользователь у тебя в метчах, иначе нельзя показывать
            list_match_profiles_when_target_user_is_swiper = list(
