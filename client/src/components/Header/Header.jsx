@@ -14,9 +14,11 @@ import Tooltip from '@mui/material/Tooltip';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
 import PeopleIcon from '../PeopleIcon';
+import Badge from '@mui/material/Badge';
 import axios from 'axios';
+import SearchIntentionSwitch from '../SearchIntentionSwitch';
 
-export default function Header({currentPage, setCurrentPage, openModal, setOpenModal, loggedIn, setLoggedIn}) {
+export default function Header({currentPage, setCurrentPage, openModal, setOpenModal, loggedIn, setLoggedIn, checked, setChecked}) {
   let navigate = useNavigate();
   const handleLogOut = () => {
     axios.post('http://127.0.0.1:8000/api/logout/', {
@@ -76,7 +78,16 @@ export default function Header({currentPage, setCurrentPage, openModal, setOpenM
                         sx={{ color: "white" }}
                     >
                         {/* <Groups3Icon /> */}
-                        <PeopleIcon />
+                        <Badge
+                        badgeContent={'β'}
+                        color="primary"
+                        anchorOrigin={{
+                          vertical: 'bottom',
+                          horizontal: 'right',
+                        }}>
+                          <PeopleIcon />
+                        </Badge>
+                        
                     </IconButton>
                 </Tooltip>
             </Link>
@@ -86,7 +97,7 @@ export default function Header({currentPage, setCurrentPage, openModal, setOpenM
             <Box sx={{ textAlign: "right" }}>
               
                 <Tooltip title="Фильтр поиска" onClick={() => setOpenModal("filter")}>
-                    <IconButton
+                    {/* <IconButton
                         size="large"
                         edge="start"
                         color="inherit"
@@ -94,7 +105,9 @@ export default function Header({currentPage, setCurrentPage, openModal, setOpenM
                         sx={{ color: "white" }}
                     >
                         <FilterAltIcon />
-                    </IconButton>
+                    </IconButton> */}
+
+                    <SearchIntentionSwitch checked={checked} setChecked={setChecked}/>
                 </Tooltip>
               
             </Box>

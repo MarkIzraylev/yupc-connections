@@ -33,10 +33,9 @@ export default function AboutUs({setCurrentPage}) {
     useEffect(() => {
         setCurrentPage('about-us')
     }, [])
-
     return (
         <Container style={{ flexGrow: 1}}>
-            <Typography variant={useMediaQuery(useTheme().breakpoints.up('sm')) ? "h2" : "h3"} textAlign="center" mt={{xs: 2, md: 8}} mb={{xs: 2, md: 8}} p={2}>ЯГК Знакомства</Typography>
+            <Typography variant={useMediaQuery(useTheme().breakpoints.up('sm')) ? "h2" : "h3"} textAlign="center" mt={{xs: 2, md: 8}} mb={{xs: 2, md: 8}} p={2}>ЯГК Знакомства<sup style={{fontSize: 20, color: useTheme().palette.error.main}}> Beta</sup></Typography>
             
             <Timeline
                 sx={!useMediaQuery(useTheme().breakpoints.up('sm')) && {

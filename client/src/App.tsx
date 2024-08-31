@@ -16,6 +16,9 @@ import AboutUs from './components/AboutUs/AboutUs';
 import SignIn from './components/SignIn/SignIn';
 import SignUp from './components/SignUp/SignUp';
 import { Route, redirect } from 'react-router'
+import { configureStore } from '@reduxjs/toolkit'
+import { store } from './store'
+import { Provider } from 'react-redux'
 
 function App() {
   const [currentPage, setCurrentPage] = React.useState("about-us");
@@ -67,7 +70,9 @@ function App() {
 
   return (
     <>
-      <RouterProvider router={router} />
+      <Provider store={store}>
+        <RouterProvider router={router} />
+      </Provider>
     </>
   );
 }

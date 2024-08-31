@@ -60,6 +60,8 @@ const theme = createTheme({
 });
 
 export default function Root({currentPage, setCurrentPage, openModal, setOpenModal, loggedIn, setLoggedIn}) {
+  const [searchIntentionSwitchChecked, setSearchIntentionSwitchChecked] = React.useState(false);
+  
   return (
     <ThemeProvider theme={theme}>
         <CssBaseline />
@@ -69,8 +71,8 @@ export default function Root({currentPage, setCurrentPage, openModal, setOpenMod
             flexDirection: 'column',
             height: '100vh',
         }}>
-            <Header currentPage={currentPage} setCurrentPage={setCurrentPage} openModal={openModal} setOpenModal={setOpenModal} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />
-            <Outlet currentPage={currentPage} setCurrentPage={setCurrentPage} openModal={openModal} setOpenModal={setOpenModal} />
+            <Header currentPage={currentPage} setCurrentPage={setCurrentPage} openModal={openModal} setOpenModal={setOpenModal} loggedIn={loggedIn} setLoggedIn={setLoggedIn} checked={searchIntentionSwitchChecked} setChecked={setSearchIntentionSwitchChecked} />
+            <Outlet currentPage={currentPage} setCurrentPage={setCurrentPage} openModal={openModal} setOpenModal={setOpenModal} checked={searchIntentionSwitchChecked} setChecked={setSearchIntentionSwitchChecked} />
             {currentPage !== 'sign-in' && loggedIn && (
               <Footer currentPage={currentPage} setCurrentPage={setCurrentPage} />
             )}

@@ -21,6 +21,8 @@ import { cardObjToSwipeCard } from '../cardObjToSwipeCard';
 import { updateTokens } from '../updateTokens';
 
 import { useState, useRef, useEffect, Dispatch } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from '../../store';
 
 import SwipeCard from '../SwipeCard/SwipeCard';
 
@@ -41,6 +43,10 @@ interface swipeProps {
 }
 
 export default function Swipe({currentPage, setCurrentPage, openModal, setOpenModal, loggedIn, setLoggedIn, isInbox}: swipeProps) {
+    const searchesLove = useSelector((state: RootState) => state.filters.searchesLove)
+    const dispatch = useDispatch()
+    const isMounted = useRef(false);
+
     let navigate = useNavigate();
     const [dragStart, setDragStart] = useState<number>(NaN);
     const [dragStartAfterThreshold, setDragStartAfterThreshold] = useState<number>(NaN);
@@ -56,15 +62,34 @@ export default function Swipe({currentPage, setCurrentPage, openModal, setOpenMo
     // }
 
     useEffect(() => {
+        clearCache();
+        fetchNewBunchOfCards();
+        // !errorMessage && !currentBunchOfCards && !noCardsLeft && !infoMessage
+    }, [currentPage])
+
+    const [hasMounted, setHasMounted] = useState(false);
+
+    useEffect(() => {
+        // This effect runs on mount and updates
+        setHasMounted(true);
+    }, []); // Empty dependency array ensures this runs only on mount
+
+    function clearCache() {
         setCurrentCardId(0)
         setPrevSwipeIsSent(true)
         setCurrentBunchOfCards(null)
         setErrorMessage(null)
         setInfoMessage(null)
         setNoCardsLeft(false)
-        fetchNewBunchOfCards()
-        // !errorMessage && !currentBunchOfCards && !noCardsLeft && !infoMessage
-    }, [currentPage])
+    }
+    
+    useEffect(() => {
+        if (hasMounted) {
+            clearCache();
+            fetchNewBunchOfCards();
+        }
+    }, [searchesLove])
+    
 
     const [currentCardId, setCurrentCardId] = useState<number>(0);
 
@@ -169,22 +194,30 @@ export default function Swipe({currentPage, setCurrentPage, openModal, setOpenMo
         setCurrentBunchOfCards(null)
         let nextBunchOfCards: cardObj[];
         if (!prevSwipeIsSent) {return}
-        axios.get((isInbox ? 'http://127.0.0.1:8000/api/incomingProfiles/' : 'http://127.0.0.1:8000/api/userList/'), {
+
+        let conditionalArgs: any[];
+        conditionalArgs = [];
+        if (!isInbox) {
+            conditionalArgs.push({is_search_friend: !searchesLove});
+        }
+        conditionalArgs.push({
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-            },
-        })
-        .then(function (response) {
+            }
+        });
+        
+        (isInbox ? axios.get : axios.post)((isInbox ? 'http://127.0.0.1:8000/api/incomingProfiles/' : 'http://127.0.0.1:8000/api/userList/'), ...conditionalArgs)
+        .then(function (response: any) {
             console.log('resp', response)
             if (response.status === 200) {
                 nextBunchOfCards = response.data.users;
                 console.log(response.data.users)
                 nextBunchOfCards.length !== 0 ? setCurrentBunchOfCards(nextBunchOfCards) : setNoCardsLeft(true);
             } else if (response.status === 204) {
-                setInfoMessage('Входящих на данный момент нет.')
+                setInfoMessage('Анкет на данный момент нет.')
             }
             
-        }).catch(err => {
+        }).catch(function (err: any) {
             console.error(err);
             if (err.response.status === 404) {
                 setInfoMessage(err.response.data.status_message);
