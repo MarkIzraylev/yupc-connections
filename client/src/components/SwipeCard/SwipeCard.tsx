@@ -19,6 +19,7 @@ import { Link } from "react-router-dom";
 import Button from "@mui/material/Button";
 import CardActions from "@mui/material/CardActions";
 import Tooltip from '@mui/material/Tooltip';
+import EditIcon from '@mui/icons-material/Edit';
 
 interface SwipeCardProps {
     name: string;
@@ -30,9 +31,10 @@ interface SwipeCardProps {
     hobbiesTags: string[];
     setOpenModal: Dispatch<string | null>;
     socialMedia: Map<string, string>;
+    isOwnProfile?: boolean | undefined;
 }
 
-const SwipeCard: FC<SwipeCardProps> = ({name, imageSrc, mainTags, intentionTags, description, hobbiesTags, setOpenModal, socialMedia}) => {
+const SwipeCard: FC<SwipeCardProps> = ({name, imageSrc, mainTags, intentionTags, description, hobbiesTags, setOpenModal, socialMedia, isOwnProfile}) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   let socialMediaJSX: ReactNode[] = [];
   if (socialMedia && socialMedia.size > 0) {
@@ -87,13 +89,22 @@ const SwipeCard: FC<SwipeCardProps> = ({name, imageSrc, mainTags, intentionTags,
           <Typography mb={2} variant="h5" noWrap component="div">
             {name}
           </Typography>
-          <Tooltip title="Пожаловаться">
-            <IconButton size="small" sx={{ height: "fit-content" }} onClick={() => setOpenModal('complaint')}>
-              <FlagOutlinedIcon />
-            </IconButton>
-          </Tooltip>
           {
-             thereIsSocialMedia && (
+            !isOwnProfile && <Tooltip title="Пожаловаться">
+              <IconButton size="small" sx={{ height: "fit-content" }} onClick={() => setOpenModal('complaint')}>
+                <FlagOutlinedIcon />
+              </IconButton>
+            </Tooltip>
+          }
+          {
+            isOwnProfile && <Tooltip title="Редактировать анкету">
+              <IconButton size="small" sx={{ height: "fit-content" }} onClick={() => setOpenModal('edit-profile')}>
+                <EditIcon />
+              </IconButton>
+            </Tooltip>
+          }
+          {
+             !isOwnProfile && thereIsSocialMedia && (
               <Tooltip title="Отменить метч">
                 <IconButton size="small" sx={{ height: "fit-content" }} onClick={() => setOpenModal('remove-match')}>
                   <DeleteOutlineOutlinedIcon />
