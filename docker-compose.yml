@@ -23,6 +23,7 @@ services:
   frontend:
     build:
       context: ./client
+      - no-cache: true  # удалить ниже строчку для более быстрой сборки
     networks:
       - dev
   

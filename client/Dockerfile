@@ -5,6 +5,10 @@ RUN npm install
 COPY . .
 RUN npm run build
 
+# вывод содержимого
+
+RUN ls -la /dist
+
 FROM nginx:stable-alpine
 
 COPY --from=build /dist /usr/share/nginx/html
