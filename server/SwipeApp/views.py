@@ -213,7 +213,7 @@ class GetProfileDetailsAPIView(APIView):
     """
     Получение детальной информации по пользователю, если он у нас есть в метчах +
     """
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     def post(self,request):
        try:
            serializer = TargetUserIdSerializer(data=request.data)
