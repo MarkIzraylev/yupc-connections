@@ -23,7 +23,7 @@ from django.conf import  settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('SwipeApp.urls'))
+    path('', include('SwipeApp.urls'))
 ]
 
 if settings.DEBUG:
