@@ -12,14 +12,13 @@ RUN pip install -r requirements.txt
 # Копируем весь код приложения
 COPY . .
 
+RUN python manage.py migrate
+
 ARG DJANGO_SUPERUSER_USERNAME=admin
 ARG DJANGO_SUPERUSER_EMAIL=admin@example.com
 ARG DJANGO_SUPERUSER_PASSWORD=admin
 
-RUN python manage.py createsuperuser --no-input || true
-
-
-RUN python manage.py collectstatic --noinput
+RUN python manage.py createsuperuser --no-input --username $DJANGO_SUPERUSER_USERNAME --email $DJANGO_SUPERUSER_EMAIL || true
 
 # Запускаем сервер Django
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
