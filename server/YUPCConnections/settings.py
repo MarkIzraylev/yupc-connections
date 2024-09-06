@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-k54=3&g@mfv73hgo!p+l9codd&gwh)smm5lfkg$%dok41eg(a^
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['gequuejouhe.beget.app', 'www.gequuejouhe.beget.app', 'localhost']
+ALLOWED_HOSTS = ['gequuejouhe.beget.app', 'www.gequuejouhe.beget.app', 'localhost', 'backend','*']
 
 
 # вот тут НАСТРОИТЬ ПОТОМ БЕЗОПАСНОСТЬ
