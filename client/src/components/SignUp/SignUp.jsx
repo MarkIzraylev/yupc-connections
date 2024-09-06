@@ -76,7 +76,7 @@ export default function SignUp({setCurrentPage, loggedIn, setLoggedIn}) {
     const [allHobbies, setAllHobbies] = useState([]);
 
     function fetchSaveData(fetchingArrName, endPointName, setState) {
-        axios.get(`http://127.0.0.1:8000/api/${endPointName}/`)
+        axios.get(`/api/${endPointName}/`)
         .then(response => {
             if (response.status != 200) return
             console.log('resp of fetch', response)
