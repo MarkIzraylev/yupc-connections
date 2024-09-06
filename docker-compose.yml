@@ -1,13 +1,15 @@
+version: '3.8'
+
 networks:
   dev:
 
-services: 
-  nginx :
+services:
+  nginx:
     image: nginx:stable-alpine
     ports:
       - "80:80"
     volumes:
-      - './nginx.conf:/etc/nginx/nginx.conf' 
+      - './nginx.conf:/etc/nginx/nginx.conf'
     depends_on:
       - backend
       - frontend
@@ -16,13 +18,14 @@ services:
 
   backend:
     build:
-      context: ./server
+      context: ./backend
     networks:
       - dev
-  
+    environment:
+      - "DJANGO_SETTINGS_MODULE=myproject.settings"
+
   frontend:
     build:
-      context: ./client
+      context: ./frontend
     networks:
       - dev
-  
