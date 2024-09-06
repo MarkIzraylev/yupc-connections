@@ -16,7 +16,7 @@ services:
 
   backend:
     build:
-      context: ./backend
+      context: ./server
     networks:
       - dev
     environment:
@@ -24,6 +24,6 @@ services:
 
   frontend:
     build:
-      context: ./frontend
+      context: ./client
     networks:
       - dev
