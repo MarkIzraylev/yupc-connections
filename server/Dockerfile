@@ -18,5 +18,6 @@ ARG DJANGO_SUPERUSER_PASSWORD=admin
 
 RUN python manage.py createsuperuser --no-input || true
 
+RUN python manage.py collectstatic
 # Запускаем сервер Django
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

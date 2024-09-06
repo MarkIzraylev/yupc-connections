@@ -32,7 +32,10 @@ ALLOWED_HOSTS = ['gequuejouhe.beget.app', 'www.gequuejouhe.beget.app', 'localhos
 CORS_ORIGIN_ALLOW_ALL=True # ОПАСНО
 CORS_ALLOW_ALL_ORIGINS = True
 CORD_ALLOWS_CREDENTIALS = True
-
+CSRF_TRUSTED_ORIGINS = [
+    'http://45.84.227.66',  # ваш IP-адрес
+    'https://45.84.227.66', 
+]
 # DRF
 REST_FRAMEWORK ={
     'DEFAULT_AUTHENTICATION_CLASSES': [
