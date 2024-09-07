@@ -45,7 +45,7 @@ export default function SignUp({setCurrentPage, loggedIn, setLoggedIn}) {
     }
 
     function checkInvitationCode() {
-        axios.post('http://127.0.0.1:8000/api/checkInvitation/', {
+        axios.post('/api/checkInvitation/', {
             invited_code: invitation_code
         })
         .then(response => {
@@ -251,7 +251,7 @@ export default function SignUp({setCurrentPage, loggedIn, setLoggedIn}) {
             setValidationError(false);
             console.log('form is valid, here is data', data)
             //console.log(data)
-            axios.post('http://127.0.0.1:8000/api/registration/', formData, {
+            axios.post('/api/registration/', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
