@@ -21,7 +21,7 @@ import SearchIntentionSwitch from '../SearchIntentionSwitch';
 export default function Header({currentPage, setCurrentPage, openModal, setOpenModal, loggedIn, setLoggedIn, checked, setChecked}) {
   let navigate = useNavigate();
   const handleLogOut = () => {
-    axios.post('http://127.0.0.1:8000/api/logout/', {
+    axios.post('/api/logout/', {
         refresh_token: localStorage.getItem('refreshToken'),
     })
     .then(response => {

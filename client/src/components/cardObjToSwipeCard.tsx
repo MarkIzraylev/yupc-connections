@@ -27,7 +27,7 @@ export function cardObjToSwipeCard(card: cardObj, setOpenModal: any, showSocialM
             hobbiesTags={card.hobbies}
             intentionTags={intentionTagsArr}
             description={card.description}
-            imageSrc={card.image ? `http://127.0.0.1:8000/${card.image}` : 'https://i.pinimg.com/736x/c6/c3/0d/c6c30d611b4cdef5a4d73a54c3e0055b.jpg'}
+            imageSrc={card.image ? `/${card.image}` : 'https://i.pinimg.com/736x/c6/c3/0d/c6c30d611b4cdef5a4d73a54c3e0055b.jpg'}
             setOpenModal={setOpenModal}
             socialMedia={socialMedia}
             isOwnProfile={isOwnProfile}

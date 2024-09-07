@@ -13,7 +13,7 @@ export default function ComplaintModal({targetId, openModal, setOpenModal, perfo
         let isValid = complaintSelectProps.value != '';
         if (isValid) {
             // send complaint
-            axios.post('http://127.0.0.1:8000/api/sendReport/', {
+            axios.post('/api/sendReport/', {
                 target_user_id: targetId,
                 complaint_id: complaintSelectProps.value
             }, {

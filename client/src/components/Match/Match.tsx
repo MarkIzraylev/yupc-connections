@@ -32,7 +32,7 @@ export default function Match({setCurrentPage, openModal, setOpenModal, setLogge
     const [openedCard, setOpenedCard] = useState<cardObj | null>(null);
     const noMatchesMessage = 'Мэтчей пока что нет.';
     function getMatches() {
-        axios.get('http://127.0.0.1:8000/api/getMatch/', {
+        axios.get('/api/getMatch/', {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
             },
@@ -59,7 +59,7 @@ export default function Match({setCurrentPage, openModal, setOpenModal, setLogge
     }
 
     function getCard(target_user_id: number) {
-        axios.post('http://127.0.0.1:8000/api/getDetailsAboutProfileInMatch/', {
+        axios.post('/api/getDetailsAboutProfileInMatch/', {
             target_user_id: target_user_id
         }, {
             headers: {
@@ -98,7 +98,7 @@ export default function Match({setCurrentPage, openModal, setOpenModal, setLogge
         if (!openedCard || !matches) {
             return;
         }
-        axios.post('http://127.0.0.1:8000/api/resetMatch/', {
+        axios.post('/api/resetMatch/', {
             target_user_id: openedCard.id
         }, {
             headers: {
