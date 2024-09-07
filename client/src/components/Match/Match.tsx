@@ -197,7 +197,7 @@ export default function Match({setCurrentPage, openModal, setOpenModal, setLogge
                                     <CardMedia
                                     component="img"
                                     sx={{ width: profileImageWidth, height: profileImageWidth, aspectRatio: '1', borderRadius: '50%', margin: profileImageMargins, marginRight: 0, display: imageLoaded ? 'block' : 'none' }}
-                                    image={`http://127.0.0.1:8000/${match.image}`}
+                                    image={`/${match.image}`}
                                     alt="Изображение пользователя"
                                     onLoad={() => {if (ind === matches.length - 1) {setImageLoaded(true)}}}
                                     />
