@@ -10,9 +10,11 @@ WORKDIR /app
 COPY package.json ./
 RUN npm install
 
+ENV REACT_APP_API_URL=http://45.84.227.66
+
 # Копируем весь код и запускаем сборку
 COPY . ./
-RUN REACT_APP_API_URL=http://45.84.227.66 npm run build
+RUN  npm run build
 
 # Stage 2: Serve the React app with Nginx
 FROM nginx:stable-alpine
