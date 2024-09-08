@@ -523,3 +523,4 @@ class InvitationAPIView(APIView):
             return Response({"message" : "Превышено количество активаций"},status=status.HTTP_403_FORBIDDEN)
 
         return Response(status=status.HTTP_200_OK)
+
