@@ -12,6 +12,7 @@ RUN npm install
 
 # Копируем весь код и запускаем сборку
 COPY . ./
+export REACT_APP_API_URL=http://45.84.227.66
 RUN npm run build
 
 # Stage 2: Serve the React app with Nginx

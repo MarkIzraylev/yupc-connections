@@ -41,7 +41,7 @@ interface swipeProps {
     setLoggedIn: Dispatch<boolean>,
     isInbox?: boolean,
 }
-
+const apiUrl = process.env.REACT_APP_API_URL;
 export default function Swipe({currentPage, setCurrentPage, openModal, setOpenModal, loggedIn, setLoggedIn, isInbox}: swipeProps) {
     const searchesLove = useSelector((state: RootState) => state.filters.searchesLove)
     const dispatch = useDispatch()
@@ -206,7 +206,7 @@ export default function Swipe({currentPage, setCurrentPage, openModal, setOpenMo
             }
         });
         
-        (isInbox ? axios.get : axios.post)((isInbox ? '/api/incomingProfiles/' : 'http://127.0.0.1:8000/api/userList/'), ...conditionalArgs)
+        (isInbox ? axios.get : axios.post)((isInbox ? '/api/incomingProfiles/' : `${apiUrl}/api/userList/`), ...conditionalArgs)
         .then(function (response: any) {
             console.log('resp', response)
             if (response.status === 200) {
