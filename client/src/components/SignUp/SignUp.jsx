@@ -45,7 +45,7 @@ export default function SignUp({setCurrentPage, loggedIn, setLoggedIn}) {
     }
 
     function checkInvitationCode() {
-        axios.post('http://127.0.0.1:8000/api/checkInvitation/', {
+        axios.post('/api/checkInvitation/', {
             invited_code: invitation_code
         })
         .then(response => {
@@ -76,7 +76,7 @@ export default function SignUp({setCurrentPage, loggedIn, setLoggedIn}) {
     const [allHobbies, setAllHobbies] = useState([]);
 
     function fetchSaveData(fetchingArrName, endPointName, setState) {
-        axios.get(`http://127.0.0.1:8000/api/${endPointName}/`)
+        axios.get(`/api/${endPointName}/`)
         .then(response => {
             if (response.status != 200) return
             console.log('resp of fetch', response)
@@ -247,7 +247,7 @@ export default function SignUp({setCurrentPage, loggedIn, setLoggedIn}) {
             setValidationError(false);
             console.log('form is valid, here is data', data)
             //console.log(data)
-            axios.post('http://127.0.0.1:8000/api/registration/', formData, {
+            axios.post('/api/registration/', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },

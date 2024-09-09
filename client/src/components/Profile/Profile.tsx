@@ -9,7 +9,7 @@ export default function Profile({setCurrentPage, setOpenModal}: {setCurrentPage:
 
     function fetchProfile() {
         // fetch profile data from API
-        axios.get('http://127.0.0.1:8000/api/getProfileData/', {
+        axios.get('/api/getProfileData/', {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
             },

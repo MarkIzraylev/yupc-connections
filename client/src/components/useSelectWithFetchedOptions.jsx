@@ -15,7 +15,7 @@ export function useSelectWithFetchedOptions(label, fetchingArrName, required) {
     }
 
     useEffect(() => {
-        axios.get(`http://127.0.0.1:8000/api/get${capitalizeFirstLetter(fetchingArrName)}/`)
+        axios.get(`/api/get${capitalizeFirstLetter(fetchingArrName)}/`)
         .then(response => {
             if (response.status != 200) return
             setData(response.data[fetchingArrName])

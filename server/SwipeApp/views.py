@@ -213,7 +213,7 @@ class GetProfileDetailsAPIView(APIView):
     """
     Получение детальной информации по пользователю, если он у нас есть в метчах +
     """
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     def post(self,request):
        try:
            serializer = TargetUserIdSerializer(data=request.data)
@@ -523,3 +523,4 @@ class InvitationAPIView(APIView):
             return Response({"message" : "Превышено количество активаций"},status=status.HTTP_403_FORBIDDEN)
 
         return Response(status=status.HTTP_200_OK)
+

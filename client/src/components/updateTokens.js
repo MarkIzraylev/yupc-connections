@@ -2,7 +2,7 @@ import axios from 'axios';
 
 export function updateTokens() {
     return new Promise((resolve, reject) => {
-        axios.post('http://127.0.0.1:8000/api/token/refresh/', { refresh: localStorage.getItem('refreshToken')})
+        axios.post('/api/token/refresh/', { refresh: localStorage.getItem('refreshToken')})
         .then(response => {
             const newAccessToken = response.data.access;
             const newRefreshToken = response.data.refresh;

@@ -227,3 +227,4 @@ class UserDataForPersonalAccount(UserSerializerBase):
 
 class InvitationUserSerializer(serializers.Serializer):
     code = serializers.UUIDField()
+

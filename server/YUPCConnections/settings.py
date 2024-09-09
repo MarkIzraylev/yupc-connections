@@ -25,13 +25,21 @@ SECRET_KEY = 'django-insecure-k54=3&g@mfv73hgo!p+l9codd&gwh)smm5lfkg$%dok41eg(a^
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['gequuejouhe.beget.app', 'www.gequuejouhe.beget.app', 'localhost', 'backend','*']
+
 
 # вот тут НАСТРОИТЬ ПОТОМ БЕЗОПАСНОСТЬ
-CORS_ORIGIN_ALLOW_ALL=True # ОПАСНО
-CORS_ALLOW_ALL_ORIGINS = True
-CORD_ALLOWS_CREDENTIALS = True
+# Разрешенные источники
+CORS_ALLOW_ALL_ORIGINS = False
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',  # Только ваш фронтенд
+    'https://yourproductionfrontend.com',
+]
 
+CSRF_TRUSTED_ORIGINS = [
+    'http://45.84.227.66',  # ваш IP-адрес
+    'https://45.84.227.66', 
+]
 # DRF
 REST_FRAMEWORK ={
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -160,7 +168,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
-
+STATIC_ROOT = BASE_DIR  / 'static'
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
@@ -171,7 +179,7 @@ AUTH_USER_MODEL  = 'SwipeApp.User'
 
 
 # Media
-MEDIA_URL = 'media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media/'
 
 

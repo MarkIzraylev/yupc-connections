@@ -20,7 +20,7 @@ export default function SignIn({setCurrentPage, loggedIn, setLoggedIn}) {
     const [error, setError] = useState(null);
 
     const handleSubmitForm = () => {    
-        axios.post('http://127.0.0.1:8000/api/login/', {
+        axios.post('/api/login/', {
             username: email,
             password: password,
         })
