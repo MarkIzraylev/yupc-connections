@@ -163,11 +163,7 @@ export default function SignUp({setCurrentPage, loggedIn, setLoggedIn}) {
             inputProps: {pattern: pattern},
             required: required
         }
-        // <TextField label="Telegram" variant="standard" value={tgContact} error={tgContactError} onChange={(ev) => {setTgContact(ev.target.value); setTgContactError(!ev.target.validity.valid)}} helperText={tgContactError && 'Ссылка на телеграм должна начинаться с https://t.me/'} inputProps={{pattern: "^https?://t.me/"}} />
     }
-
-    // const [vkContact, setVkContact] = useState('');
-    // const [tgContact, setTgContact] = useState('');
 
     const [validate, setValidate] = useState(false);
     const [validationError, setValidationError] = useState(false);
@@ -239,7 +235,7 @@ export default function SignUp({setCurrentPage, loggedIn, setLoggedIn}) {
         formData.append('is_search_love', isSearchLove);
         formData.append('vk_contact', vkInputProps.value);
         formData.append('tg_contact', tgInputProps.value);
-        selectedHobbiesIds.map(hobbyId => {
+        selectedHobbiesIds?.map(hobbyId => {
             formData.append('hobbies', Number(hobbyId))
         });
         // formData.append('hobbies', JSON.stringify(selectedHobbiesIds))
@@ -283,12 +279,6 @@ export default function SignUp({setCurrentPage, loggedIn, setLoggedIn}) {
         }
     }
 
-    /*
-    TODO:
-        валидация: обязательно заполнение хотя бы одной соц.сети
-        реализовать загрузку фотографии
-    */
-
     const buildingParams = useSelectWithFetchedOptions('Корпус', 'buildings', 1)
     const departmentParams = useSelectWithFetchedOptions('Отделение', 'departments', 1)
     const courseParams = useSelectWithFetchedOptions('Курс', 'courses', 1)
@@ -318,7 +308,7 @@ export default function SignUp({setCurrentPage, loggedIn, setLoggedIn}) {
                             Основная информация
                         </Typography>
                         <Box sx={{display: 'grid', flexDirection: 'column', gap: 1}}>
-                            <FormLabel component="legend">Фотография профиля</FormLabel>
+                            <FormLabel component="legend" error={!(profileImage != '') && validate}>Фотография профиля</FormLabel>
                             {
                                 profileImage && <Paper variant="outlined" sx={{aspectRatio: 1, backgroundImage: `url(${URL.createObjectURL(profileImage)})`, backgroundSize: 'cover', backgroundPosition: 'center', }}></Paper>
                             }
