@@ -41,7 +41,9 @@ interface swipeProps {
     setLoggedIn: Dispatch<boolean>,
     isInbox?: boolean,
 }
+
 const apiUrl = process.env.REACT_APP_API_URL;
+
 export default function Swipe({currentPage, setCurrentPage, openModal, setOpenModal, loggedIn, setLoggedIn, isInbox}: swipeProps) {
     const searchesLove = useSelector((state: RootState) => state.filters.searchesLove)
     const dispatch = useDispatch()
