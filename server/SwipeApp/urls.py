@@ -25,8 +25,10 @@ urlpatterns = [
     path('sendReport/', SendComplaintAPIView.as_view()), # +
     path('registration/',  RegistrationAPIView.as_view()), # +
     path('resetMatch/', ResetSwipeAPIView.as_view()), # +
+
     path('login/', LoginAPIView.as_view()), # +
     path('logout/', LogoutAPIView.as_view()), # +
     path('token/refresh/',   TokenRefreshView.as_view(), name="token_refresh"), # +
+
     path('checkInvitation/', InvitationAPIView.as_view() ) # +
 ]

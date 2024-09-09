@@ -42,6 +42,8 @@ interface swipeProps {
     isInbox?: boolean,
 }
 
+const apiUrl = process.env.REACT_APP_API_URL;
+
 export default function Swipe({currentPage, setCurrentPage, openModal, setOpenModal, loggedIn, setLoggedIn, isInbox}: swipeProps) {
     const searchesLove = useSelector((state: RootState) => state.filters.searchesLove)
     const dispatch = useDispatch()
@@ -154,7 +156,7 @@ export default function Swipe({currentPage, setCurrentPage, openModal, setOpenMo
         setPrevSwipeIsSent(false)
         // post data to server
         return new Promise<void>((resolve, reject) => {
-            axios.post('http://127.0.0.1:8000/api/swipeUser/', {
+            axios.post('/api/swipeUser/', {
             
                 target_user_id: swipedUserId,
                 is_like: swipeType
@@ -206,7 +208,7 @@ export default function Swipe({currentPage, setCurrentPage, openModal, setOpenMo
             }
         });
         
-        (isInbox ? axios.get : axios.post)((isInbox ? 'http://127.0.0.1:8000/api/incomingProfiles/' : 'http://127.0.0.1:8000/api/userList/'), ...conditionalArgs)
+        (isInbox ? axios.get : axios.post)((isInbox ? '/api/incomingProfiles/' : `${apiUrl}/api/userList/`), ...conditionalArgs)
         .then(function (response: any) {
             console.log('resp', response)
             if (response.status === 200) {

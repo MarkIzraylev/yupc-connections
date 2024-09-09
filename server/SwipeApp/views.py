@@ -34,8 +34,7 @@ class UsersAPIView(APIView):
             count_required_profiles = 10
 
             # пользователь, для которого делаем запрос
-            # requesting_user = request.user
-            requesting_user = User.objects.first()
+            requesting_user = request.user
 
             # массив анкет
             list_users = []
@@ -214,14 +213,14 @@ class GetProfileDetailsAPIView(APIView):
     """
     Получение детальной информации по пользователю, если он у нас есть в метчах +
     """
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     def post(self,request):
        try:
            serializer = TargetUserIdSerializer(data=request.data)
            serializer.is_valid(raise_exception=True)
            target_user_id = serializer.validated_data['target_user_id']
 
-           user_requesting = User.objects.first()
+           user_requesting = request.user
 
            # Проверка,есть ли этот пользователь у тебя в метчах, иначе нельзя показывать
            list_match_profiles_when_target_user_is_swiper = list(
@@ -264,8 +263,7 @@ class GetProfileDetailsAPIView(APIView):
                "user_details": serializer_data_user_profile
            },status=  status.HTTP_200_OK)
 
-       except Exception as e:
-           print(e)
+       except Exception:
            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class ComplaintsListAPIView(APIView):
@@ -525,3 +523,4 @@ class InvitationAPIView(APIView):
             return Response({"message" : "Превышено количество активаций"},status=status.HTTP_403_FORBIDDEN)
 
         return Response(status=status.HTTP_200_OK)
+
