@@ -25,6 +25,7 @@ import Button from '@mui/material/Button';
 import CardActions from '@mui/material/CardActions';
 
 export default function Match({setCurrentPage, openModal, setOpenModal, setLoggedIn}: {setCurrentPage: Dispatch<string>, openModal: string | null, setOpenModal: Dispatch<string | null>, setLoggedIn: Dispatch<boolean>}) {
+    const serverUrl = process.env.REACT_APP_API_URL;
     const theme = useTheme();
     const navigate = useNavigate();
     const [matches, setMatches] = useState<any[] | null>(null);
@@ -32,7 +33,7 @@ export default function Match({setCurrentPage, openModal, setOpenModal, setLogge
     const [openedCard, setOpenedCard] = useState<cardObj | null>(null);
     const noMatchesMessage = 'Мэтчей пока что нет.';
     function getMatches() {
-        axios.get('/api/getMatch/', {
+        axios.get(`${serverUrl}/api/getMatch/`, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
             },

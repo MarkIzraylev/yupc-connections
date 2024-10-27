@@ -9,6 +9,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
+const apiUrl = process.env.REACT_APP_API_URL;
+
 export default function SignIn({setCurrentPage, loggedIn, setLoggedIn}) {
     let navigate = useNavigate();
 
@@ -20,7 +22,7 @@ export default function SignIn({setCurrentPage, loggedIn, setLoggedIn}) {
     const [error, setError] = useState(null);
 
     const handleSubmitForm = () => {    
-        axios.post('/api/login/', {
+        axios.post(apiUrl + '/login/', {
             username: email,
             password: password,
         })

@@ -50,7 +50,7 @@ function App() {
         },
         {
           path: "profile",
-          element: <Profile setCurrentPage={setCurrentPage} setOpenModal={setOpenModal} />,
+          element: <Profile setCurrentPage={setCurrentPage} openModal={openModal} setOpenModal={setOpenModal} />,
         },
         {
           path: "signin",
