@@ -17,11 +17,12 @@ import PeopleIcon from '../PeopleIcon';
 import Badge from '@mui/material/Badge';
 import axios from 'axios';
 import SearchIntentionSwitch from '../SearchIntentionSwitch';
+import {API_URL} from '../../constants';
 
 export default function Header({currentPage, setCurrentPage, openModal, setOpenModal, loggedIn, setLoggedIn, checked, setChecked}) {
   let navigate = useNavigate();
   const handleLogOut = () => {
-    axios.post('/api/logout/', {
+    axios.post(`${API_URL}/logout/`, {
         refresh_token: localStorage.getItem('refreshToken'),
     })
     .then(response => {

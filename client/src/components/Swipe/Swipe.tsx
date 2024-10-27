@@ -16,7 +16,7 @@ import Button from "@mui/material/Button";
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
 import { cardObj, modalStyle } from '../cardObjInterface';
-
+import { API_URL } from '../../constants';
 import { cardObjToSwipeCard } from '../cardObjToSwipeCard';
 import { updateTokens } from '../updateTokens';
 
@@ -41,8 +41,6 @@ interface swipeProps {
     setLoggedIn: Dispatch<boolean>,
     isInbox?: boolean,
 }
-
-const apiUrl = process.env.REACT_APP_API_URL;
 
 export default function Swipe({currentPage, setCurrentPage, openModal, setOpenModal, loggedIn, setLoggedIn, isInbox}: swipeProps) {
     const searchesLove = useSelector((state: RootState) => state.filters.searchesLove)
@@ -156,7 +154,7 @@ export default function Swipe({currentPage, setCurrentPage, openModal, setOpenMo
         setPrevSwipeIsSent(false)
         // post data to server
         return new Promise<void>((resolve, reject) => {
-            axios.post('/api/swipeUser/', {
+            axios.post(API_URL + '/swipeUser/', {
             
                 target_user_id: swipedUserId,
                 is_like: swipeType
@@ -208,7 +206,7 @@ export default function Swipe({currentPage, setCurrentPage, openModal, setOpenMo
             }
         });
         
-        (isInbox ? axios.get : axios.post)((isInbox ? '/api/incomingProfiles/' : `${apiUrl}/api/userList/`), ...conditionalArgs)
+        (isInbox ? axios.get : axios.post)((isInbox ? `${API_URL}/incomingProfiles/` : `${API_URL}/userList/`), ...conditionalArgs)
         .then(function (response: any) {
             console.log('resp', response)
             if (response.status === 200) {

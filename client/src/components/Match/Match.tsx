@@ -12,6 +12,7 @@ import Skeleton from "@mui/material/Skeleton";
 import Alert from '@mui/material/Alert';
 import Modal from '@mui/material/Modal';
 
+import {API_URL} from '../../constants';
 import { cardObjToSwipeCard } from '../cardObjToSwipeCard';
 import { cardObj, modalStyle } from '../cardObjInterface';
 import { updateTokens } from '../updateTokens';
@@ -25,7 +26,6 @@ import Button from '@mui/material/Button';
 import CardActions from '@mui/material/CardActions';
 
 export default function Match({setCurrentPage, openModal, setOpenModal, setLoggedIn}: {setCurrentPage: Dispatch<string>, openModal: string | null, setOpenModal: Dispatch<string | null>, setLoggedIn: Dispatch<boolean>}) {
-    const serverUrl = process.env.REACT_APP_API_URL;
     const theme = useTheme();
     const navigate = useNavigate();
     const [matches, setMatches] = useState<any[] | null>(null);
@@ -33,7 +33,7 @@ export default function Match({setCurrentPage, openModal, setOpenModal, setLogge
     const [openedCard, setOpenedCard] = useState<cardObj | null>(null);
     const noMatchesMessage = 'Мэтчей пока что нет.';
     function getMatches() {
-        axios.get(`${serverUrl}/api/getMatch/`, {
+        axios.get(`${API_URL}/getMatch/`, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
             },
@@ -60,7 +60,7 @@ export default function Match({setCurrentPage, openModal, setOpenModal, setLogge
     }
 
     function getCard(target_user_id: number) {
-        axios.post('/api/getDetailsAboutProfileInMatch/', {
+        axios.post(`${API_URL}/getDetailsAboutProfileInMatch/`, {
             target_user_id: target_user_id
         }, {
             headers: {
@@ -99,7 +99,7 @@ export default function Match({setCurrentPage, openModal, setOpenModal, setLogge
         if (!openedCard || !matches) {
             return;
         }
-        axios.post('/api/resetMatch/', {
+        axios.post(`${API_URL}/resetMatch/`, {
             target_user_id: openedCard.id
         }, {
             headers: {
@@ -198,7 +198,7 @@ export default function Match({setCurrentPage, openModal, setOpenModal, setLogge
                                     <CardMedia
                                     component="img"
                                     sx={{ width: profileImageWidth, height: profileImageWidth, aspectRatio: '1', borderRadius: '50%', margin: profileImageMargins, marginRight: 0, display: imageLoaded ? 'block' : 'none' }}
-                                    image={`/${match.image}`}
+                                    image={`${API_URL}/${match.image}`}
                                     alt="Изображение пользователя"
                                     onLoad={() => {if (ind === matches.length - 1) {setImageLoaded(true)}}}
                                     />

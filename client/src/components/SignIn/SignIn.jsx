@@ -8,8 +8,7 @@ import TextField from '@mui/material/TextField';
 import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-
-const apiUrl = process.env.REACT_APP_API_URL;
+import { API_URL } from '../../constants';
 
 export default function SignIn({setCurrentPage, loggedIn, setLoggedIn}) {
     let navigate = useNavigate();
@@ -22,7 +21,7 @@ export default function SignIn({setCurrentPage, loggedIn, setLoggedIn}) {
     const [error, setError] = useState(null);
 
     const handleSubmitForm = () => {    
-        axios.post(apiUrl + '/login/', {
+        axios.post(API_URL + '/login/', {
             username: email,
             password: password,
         })

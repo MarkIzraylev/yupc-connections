@@ -4,13 +4,14 @@ import { Dispatch, useEffect, useState } from 'react';
 import { cardObjToSwipeCard } from '../cardObjToSwipeCard';
 import { cardObj, modalStyle } from '../cardObjInterface';
 import axios from 'axios';
+import {API_URL} from '../../constants';
 
 export default function Profile({setCurrentPage, openModal, setOpenModal}: {setCurrentPage: Dispatch<string>, openModal: string | null, setOpenModal: Dispatch<string | null>}) {
     const [profileCard, setProfileCard] = useState<cardObj | null>(null);
 
     function fetchProfile() {
         // fetch profile data from API
-        axios.get('/api/getProfileData/', {
+        axios.get(`${API_URL}/getProfileData/`, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
             },
@@ -62,7 +63,7 @@ export default function Profile({setCurrentPage, openModal, setOpenModal}: {setC
             is_search_friend: true,
             is_search_love: true,
             description: "Шла ночь... Смеркалось... Я искал тех, с кем можно разделить минуты горести и печали, скуку и занятость...",
-            image: "https://www.giallozafferano.com/images/255-25549/Guacamole_1200x800.jpg",
+            image: "",
             tg_contact: "https://t.me/northurljous",
             vk_contact: "https://vk.com/smth",
             is_boy: true

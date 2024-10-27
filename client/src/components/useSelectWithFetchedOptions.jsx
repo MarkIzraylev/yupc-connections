@@ -1,6 +1,7 @@
 import {useState, useEffect} from 'react';
 import axios from 'axios';
 import {FormControl, InputLabel, Select, MenuItem} from '@mui/material';
+import {API_URL} from '../constants';
 
 export function useSelectWithFetchedOptions(label, fetchingArrName, required) {
     let [data, setData] = useState([]); // options which are objects with keys 'id' and 'name'
@@ -15,7 +16,7 @@ export function useSelectWithFetchedOptions(label, fetchingArrName, required) {
     }
 
     useEffect(() => {
-        axios.get(`/api/get${capitalizeFirstLetter(fetchingArrName)}/`)
+        axios.get(`${API_URL}/get${capitalizeFirstLetter(fetchingArrName)}/`)
         .then(response => {
             if (response.status != 200) return
             setData(response.data[fetchingArrName])
