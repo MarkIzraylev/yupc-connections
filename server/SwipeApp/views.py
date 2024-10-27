@@ -383,11 +383,10 @@ class CoursesListAPIView(APIView):
 
 class PersonalAccount(APIView):
     """
-    Получение данных аккаунта +
     """
     def get(self,request):
         try:
-            user_requesting = User.objects.filter(username='mm').first()
+            user_requesting = User.objects.filter(user=request.user).first()
             serializer = UserDataForPersonalAccount({
                         'id':user_requesting.id,
                         'first_name': user_requesting.first_name,
@@ -409,7 +408,6 @@ class PersonalAccount(APIView):
             return Response({"user_data": serializer}, status.HTTP_200_OK)
         except Exception:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 
 
 class RegistrationAPIView(APIView):
@@ -446,6 +444,8 @@ class RegistrationAPIView(APIView):
 
 class LoginAPIView(APIView):
     def post(self,request):
+
+        print("зашли сюды")
         data = request.data
 
         username = data.get('username', None)

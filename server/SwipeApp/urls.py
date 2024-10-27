@@ -16,7 +16,7 @@ urlpatterns = [
     path('incomingProfiles/', IncomingProfilesAPIView.as_view()), # +
     path('getMatch/', GetMatchAPIView.as_view()), # +
     path('getDetailsAboutProfileInMatch/', GetProfileDetailsAPIView.as_view()), # +
-    path('getProfileData/',PersonalAccount.as_view()), # +
+    path('profileData/',PersonalAccount.as_view()), # +
     path('getHobbies/', HobbiesListAPIView.as_view()), # +
     path('getDepartments/', DepartmentsListAPIView.as_view()), # +
     path('getBuildings/', BuildingListAPIView.as_view()), # +
