@@ -11,14 +11,21 @@ export default function Profile({setCurrentPage, openModal, setOpenModal}: {setC
 
     function fetchProfile() {
         // fetch profile data from API
-        axios.get(`${API_URL}/getProfileData/`, {
+        axios.get(`${API_URL}/profileData/`, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
             },
         })
         .then(response => {
             console.log('resp in profile:', response)
-            setProfileCard(response.data.user_data)
+            const profileCard = response.data.user_data
+            setProfileCard(profileCard)
+            firstNameInputProps.setValue(profileCard.first_name)
+            lastNameInputProps.setValue(profileCard.last_name)
+            descriptionInputProps.setValue(profileCard.description)
+            setIsSearchFriend(profileCard.is_search_friend)
+            setIsSearchLove(profileCard.is_search_love)
+            setIsBoy(profileCard.is_boy)
         })
         .catch(err => console.log('err in profile:', err))
         // set profile data to state
@@ -50,31 +57,31 @@ export default function Profile({setCurrentPage, openModal, setOpenModal}: {setC
     
     useEffect(() => {
         setCurrentPage('profile')
-        //fetchProfile()
-        let sampleCard = {
-            id: 123,
-            first_name: "Рей",
-            last_name: "Оливер",
-            sur_name: "Загадка",
-            course_name: "4 курс",
-            building_name: "Осн. корпус",
-            department_name: "ОИТ",
-            hobbies: ["Лежать на диване", "Ничего не делать"],
-            is_search_friend: true,
-            is_search_love: true,
-            description: "Шла ночь... Смеркалось... Я искал тех, с кем можно разделить минуты горести и печали, скуку и занятость...",
-            image: "",
-            tg_contact: "https://t.me/northurljous",
-            vk_contact: "https://vk.com/smth",
-            is_boy: true
-        }
-        setProfileCard(sampleCard)
-        firstNameInputProps.setValue(sampleCard.first_name)
-        lastNameInputProps.setValue(sampleCard.last_name)
-        descriptionInputProps.setValue(sampleCard.description)
-        setIsSearchFriend(sampleCard.is_search_friend)
-        setIsSearchLove(sampleCard.is_search_love)
-        setIsBoy(sampleCard.is_boy)
+        fetchProfile()
+        // let sampleCard = {
+        //     id: 123,
+        //     first_name: "Рей",
+        //     last_name: "Оливер",
+        //     sur_name: "Загадка",
+        //     course_name: "4 курс",
+        //     building_name: "Осн. корпус",
+        //     department_name: "ОИТ",
+        //     hobbies: ["Лежать на диване", "Ничего не делать"],
+        //     is_search_friend: true,
+        //     is_search_love: true,
+        //     description: "Шла ночь... Смеркалось... Я искал тех, с кем можно разделить минуты горести и печали, скуку и занятость...",
+        //     image: "",
+        //     tg_contact: "https://t.me/northurljous",
+        //     vk_contact: "https://vk.com/smth",
+        //     is_boy: true
+        // }
+        // setProfileCard(sampleCard)
+        // firstNameInputProps.setValue(sampleCard.first_name)
+        // lastNameInputProps.setValue(sampleCard.last_name)
+        // descriptionInputProps.setValue(sampleCard.description)
+        // setIsSearchFriend(sampleCard.is_search_friend)
+        // setIsSearchLove(sampleCard.is_search_love)
+        // setIsBoy(sampleCard.is_boy)
         // setProfileImage(blob_image_of_profile_should_be_here)
     }, [])
 
