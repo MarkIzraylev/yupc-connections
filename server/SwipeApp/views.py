@@ -410,7 +410,31 @@ class PersonalAccount(APIView):
         except Exception:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     def post(self, request):
-        pass
+            try:
+                user_requesting = User.objects.get(id=request.user.id)
+
+                # Изменение данных профиля
+                user_requesting.first_name = request.data.get('first_name', user_requesting.first_name)
+                user_requesting.last_name = request.data.get('last_name', user_requesting.last_name)
+                user_requesting.image = request.data.get('image', user_requesting.image)
+                user_requesting.description = request.data.get('description', user_requesting.description)
+                user_requesting.course_id = request.data.get('course', user_requesting.course_id)
+                user_requesting.building_id = request.data.get('building', user_requesting.building_id)
+                user_requesting.department_id = request.data.get('department', user_requesting.department_id)
+                user_requesting.is_search_friend = request.data.get('is_search_friend', user_requesting.is_search_friend)
+                user_requesting.is_search_love = request.data.get('is_search_love', user_requesting.is_search_love)
+                user_requesting.vk_contact = request.data.get('vk_contact', user_requesting.vk_contact)
+                user_requesting.tg_contact = request.data.get('tg_contact', user_requesting.tg_contact)
+                user_requesting.hobbies = request.data.get('hobbies', user_requesting.hobbies)
+                user_requesting.email = request.data.get('email', user_requesting.email)
+
+                # Сохранение изменённых данных
+                user_requesting.save()
+
+                return Response({"message": "Profile updated successfully."}, status=status.HTTP_200_OK)
+
+            except Exception as e:
+                return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class RegistrationAPIView(APIView):
     def post(self, request):
