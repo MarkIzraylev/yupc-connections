@@ -25,6 +25,8 @@ import Avatar from '@mui/material/Avatar';
 import Paper from '@mui/material/Paper';
 import { useTheme } from '@mui/material/styles';
 
+import {API_URL} from '../../constants'
+
 import { useSelectWithFetchedOptions, ReactiveSelect } from '../useSelectWithFetchedOptions';
 
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -45,7 +47,7 @@ export default function SignUp({setCurrentPage, loggedIn, setLoggedIn}) {
     }
 
     function checkInvitationCode() {
-        axios.post('/api/checkInvitation/', {
+        axios.post(`${API_URL}/checkInvitation/`, {
             invited_code: invitation_code
         })
         .then(response => {
@@ -76,7 +78,7 @@ export default function SignUp({setCurrentPage, loggedIn, setLoggedIn}) {
     const [allHobbies, setAllHobbies] = useState([]);
 
     function fetchSaveData(fetchingArrName, endPointName, setState) {
-        axios.get(`/api/${endPointName}/`)
+        axios.get(`${API_URL}/${endPointName}/`)
         .then(response => {
             if (response.status != 200) return
             console.log('resp of fetch', response)
@@ -247,7 +249,7 @@ export default function SignUp({setCurrentPage, loggedIn, setLoggedIn}) {
             setValidationError(false);
             console.log('form is valid, here is data', data)
             //console.log(data)
-            axios.post('/api/registration/', formData, {
+            axios.post(`${API_URL}/registration/`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },

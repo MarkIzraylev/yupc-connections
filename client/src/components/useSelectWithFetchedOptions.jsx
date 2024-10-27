@@ -31,7 +31,8 @@ export function useSelectWithFetchedOptions(label, fetchingArrName, required) {
         value: selectedOptionId,
         onChange: onChange,
         data: data,
-        required: required
+        required: required,
+        setOptionId: setSelectedOptionId
     }
 }
 
