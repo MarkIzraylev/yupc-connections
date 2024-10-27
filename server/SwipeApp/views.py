@@ -386,7 +386,8 @@ class PersonalAccount(APIView):
     """
     def get(self,request):
         try:
-            user_requesting = User.objects.filter(username='mm').first()
+            user_requesting = User.objects.get(id=request.user.id)
+
             serializer = UserDataForPersonalAccount({
                         'id':user_requesting.id,
                         'first_name': user_requesting.first_name,
@@ -408,7 +409,8 @@ class PersonalAccount(APIView):
             return Response({"user_data": serializer}, status.HTTP_200_OK)
         except Exception:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
+    def post(self, request):
+        pass
 
 class RegistrationAPIView(APIView):
     def post(self, request):
