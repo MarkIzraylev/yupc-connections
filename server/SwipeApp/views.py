@@ -399,6 +399,7 @@ class PersonalAccount(APIView):
                         'department':user_requesting.department_id,
                         'is_search_friend':user_requesting.is_search_friend,
                         'is_search_love':user_requesting.is_search_love,
+                        'is_boy': user_requesting.is_boy,
                         'vk_contact':user_requesting.vk_contact,
                         'tg_contact':user_requesting.tg_contact,
                         'hobbies': user_requesting.hobbies,
