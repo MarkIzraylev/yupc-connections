@@ -386,7 +386,7 @@ class PersonalAccount(APIView):
     """
     def get(self,request):
         try:
-            user_requesting = User.objects.filter(user=request.user).first()
+            user_requesting = User.objects.filter(username='mm').first()
             serializer = UserDataForPersonalAccount({
                         'id':user_requesting.id,
                         'first_name': user_requesting.first_name,
