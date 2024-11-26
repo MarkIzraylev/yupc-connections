@@ -27,6 +27,7 @@ class UsersAPIView(APIView):
     permission_classes = [IsAuthenticated]
     def post(self,request):
         try:
+            print("пришло - ", request )
             # параметр поиска
             is_looking_friend = request.data['is_search_friend']
 
@@ -35,9 +36,6 @@ class UsersAPIView(APIView):
 
             # пользователь, для которого делаем запрос
             requesting_user = request.user
-
-            # массив анкет
-            list_users = []
 
             # получение профилей, всех пользователей, кроме нашего и по параметру поиска
             if is_looking_friend:
@@ -79,7 +77,8 @@ class UsersAPIView(APIView):
             # возвращаю анкеты
             return Response({"users":list_profiles_ready_to_be_sent},status=status.HTTP_200_OK)
 
-        except Exception:
+        except Exception as error:
+            print("ВОТ ОШИБКА _ ", error)
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class SwipeAPIView(APIView):

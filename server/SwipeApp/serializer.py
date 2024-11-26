@@ -204,8 +204,8 @@ class UserFullData(serializers.Serializer):
             department=Department.objects.get(id=validated_data['department']),
             is_search_friend=validated_data['is_search_friend'],
             is_search_love=validated_data['is_search_love'],
-            vk_contact=validated_data['vk_contact'],
-            tg_contact=validated_data['tg_contact'],
+            vk_contact=validated_data.get('vk_contact',None),
+            tg_contact=validated_data.get('tg_contact', None),
             image=validated_data['image']
         )
         
