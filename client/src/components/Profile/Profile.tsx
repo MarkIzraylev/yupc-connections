@@ -1,4 +1,5 @@
-import { Autocomplete, FormHelperText, InputAdornment, IconButton, Stack, Alert, Box, Modal, Card, CardContent, CardActions, Typography, Button, TextField, FormLabel, Paper, FormControl, FormGroup, FormControlLabel, Checkbox, MenuItem, Select, InputLabel } from '@mui/material';
+import { Autocomplete, FormHelperText, InputAdornment, IconButton, Stack, Alert, Box, Modal, Card, CardContent, CardActions, Typography, Button, TextField, FormLabel, Paper, FormControl, FormGroup, FormControlLabel, Checkbox, MenuItem, Select, InputLabel, Portal } from '@mui/material';
+import Snackbar, { SnackbarCloseReason } from '@mui/material/Snackbar';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { useSelectWithFetchedOptions, ReactiveSelect } from '../useSelectWithFetchedOptions';
@@ -153,6 +154,29 @@ export default function Profile({setCurrentPage, openModal, setOpenModal}: {setC
     const [isSearchFriend, setIsSearchFriend] = useState(false);
     const [isSearchLove, setIsSearchLove] = useState(false);
     const [isBoy, setIsBoy] = useState<boolean | null>(false);
+
+
+    interface Snackbar {
+        message: string;
+        severity: 'error' | 'success';
+        open: boolean;
+    }
+    const [snackbar, setSnackbar] = useState<Snackbar | null>(null);
+
+    const snackbarHandleClose = (
+        event?: React.SyntheticEvent | Event,
+        reason?: SnackbarCloseReason,
+    ) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        snackbar && setSnackbar({
+            open: false,
+            message: snackbar.message,
+            severity: snackbar.severity
+        });
+    };
     
     useEffect(() => {
         setSearchIntentionError(!isSearchFriend && !isSearchLove)
@@ -200,7 +224,9 @@ export default function Profile({setCurrentPage, openModal, setOpenModal}: {setC
             && !lastNameInputProps.error
             && !descriptionInputProps.error
             && !vkInputProps.error
+            && !(vkInputProps.value && !vkInputProps.value.startsWith('https://vk.com/'))
             && !tgInputProps.error
+            && !(tgInputProps.value && !tgInputProps.value.startsWith('https://t.me/'))
             && (vkInputProps.value !== '' || tgInputProps.value !== '')
             && courseParams.value != ''
             && buildingParams.value != ''
@@ -247,25 +273,36 @@ export default function Profile({setCurrentPage, openModal, setOpenModal}: {setC
         // formData.append('hobbies', JSON.stringify(selectedHobbiesIds))
         formData.append('is_boy', isBoy!.toString());
         if (profileImage) {
-            formData.append('image', profileImage!.toString());
+            formData.append('image', profileImage.toString());
         }
 
         if (formIsValid) {
             setValidationError(false);
             console.log('form is valid, here is data', data)
             //console.log(data)
-            axios.post(`${API_URL}/profileData/`, formData, {
+            axios.put(`${API_URL}/profileData/`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
             })
             .then(response => {
-                if (response.status != 201) return
                 setOpenModal(null)
+
+                snackbar && setSnackbar({
+                    open: true,
+                    message: "Данные профиля обновлены!",
+                    severity: 'success',
+                });
             })
             .catch(error => {
                 console.error(error);
                 console.log(profileImage)
+
+                setSnackbar({
+                    open: true,
+                    message: error.response.data.error || error.response.data.detail,
+                    severity: 'error',
+                });
             })
         } else {
             console.error('Form is not valid')
@@ -280,6 +317,18 @@ export default function Profile({setCurrentPage, openModal, setOpenModal}: {setC
 
     return (
         <div className="wallpaperBackground" style={{ flexGrow: 1, display: 'grid'}}>
+            <Portal>
+                <Snackbar open={snackbar?.open} autoHideDuration={6000} onClose={snackbarHandleClose}>
+                    <Alert
+                    onClose={snackbarHandleClose}
+                    severity={snackbar?.severity}
+                    variant="filled"
+                    sx={{ width: '100%' }}
+                    >
+                    {snackbar?.message}
+                    </Alert>
+                </Snackbar>
+            </Portal>
             <Modal
                 open={openModal === "edit-profile"}
                 onClose={() => setOpenModal(null)}
@@ -427,6 +476,7 @@ export default function Profile({setCurrentPage, openModal, setOpenModal}: {setC
                 :
                     <Alert severity="info" style={{alignSelf: 'center', justifySelf: 'center'}}>Загрузка...</Alert>
             }
+            
         </div>
     )
 }
