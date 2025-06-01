@@ -40,6 +40,11 @@
 .wallpaperBackground {
   background-size: cover;
   background-position: center;
-  background-image: url(https://i.pinimg.com/originals/81/29/c4/8129c47eea4ca2923d834a0daf316d72.jpg);
+  background-image: var(--mainBgImageUrl);
+  filter: var(--mainBgFilter);
   backdrop-filter: blur(15px);
+}
+
+.wallpaperBackground > * {
+  filter: var(--mainBgFilter);
 }
