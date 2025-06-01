@@ -19,7 +19,7 @@ class UserSerializerBase(serializers.Serializer):
     is_search_friend = serializers.BooleanField(default=True)
     is_search_love = serializers.BooleanField(default=False)
     hobbies = serializers.SerializerMethodField()
-    is_boy = serializers.BooleanField()
+    is_boy = serializers.BooleanField( default=True)
 
     def get_course_name(self,obj):
         return str(Course.objects.get(id=obj.get('course')))
