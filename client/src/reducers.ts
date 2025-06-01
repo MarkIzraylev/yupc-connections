@@ -8,7 +8,8 @@ const filters: filtersState = {
 }
 
 const initialState = {
-    filters: filters
+    filters,
+    theme: localStorage.getItem('theme') || "light"
 }
 
 interface standardAction {
@@ -25,6 +26,14 @@ export default function rootReducer(state = initialState, action: ActionType) {
                 filters: {
                     searchesLove: !state.filters.searchesLove,
                 },
+            }
+        }
+        case 'theme/invert': {
+            const newTheme = state.theme === "light" ? "dark" : "light";
+            localStorage.setItem('theme', newTheme)
+            return {
+                ...state,
+                theme: newTheme,
             }
         }
         default:
