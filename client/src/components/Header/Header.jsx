@@ -133,7 +133,14 @@ export default function Header({
             </Link>
           </Box>
 
-          <div style={{ display: "flex", justifyContent: "end", gap: "8px" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "end",
+              gap: "8px",
+              height: "34px",
+            }}
+          >
             {currentPage === "about-us" && !loggedIn && (
               <Box sx={{ textAlign: "right" }}>
                 <Link to="/signin" onClick={() => setCurrentPage("sign-in")}>
