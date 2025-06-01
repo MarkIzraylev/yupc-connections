@@ -64,7 +64,13 @@ export default function Header({
         }}
       >
         {console.log(theme)}
-        <Toolbar sx={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr" }}>
+        <Toolbar
+          sx={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr 1fr",
+            gridTemplateRows: "1fr",
+          }}
+        >
           {/*  credit:
                         <a target="_blank" href="https://icons8.com/icon/k3UpsZXWEcc2/people">People</a> иконка от <a target="_blank" href="https://icons8.com">Icons8</a>
                     */}
@@ -127,13 +133,36 @@ export default function Header({
             </Link>
           </Box>
 
-          {currentPage === "swipe" && (
-            <Box sx={{ textAlign: "right" }}>
-              <Tooltip
-                title="Фильтр поиска"
-                onClick={() => setOpenModal("filter")}
-              >
-                {/* <IconButton
+          <div style={{ display: "flex", justifyContent: "end", gap: "8px" }}>
+            {currentPage === "about-us" && !loggedIn && (
+              <Box sx={{ textAlign: "right" }}>
+                <Link to="/signin" onClick={() => setCurrentPage("sign-in")}>
+                  <Button
+                    sx={theme.palette.mode === "dark" ? { color: "white" } : {}}
+                  >
+                    Войти
+                  </Button>
+                </Link>
+              </Box>
+            )}
+            {currentPage === "about-us" && loggedIn && (
+              <Box sx={{ textAlign: "right" }}>
+                <Button
+                  onClick={handleLogOut}
+                  sx={theme.palette.mode === "dark" ? { color: "white" } : {}}
+                >
+                  Выйти
+                </Button>
+              </Box>
+            )}
+
+            {currentPage === "swipe" && (
+              <Box sx={{ textAlign: "right" }}>
+                <Tooltip
+                  title="Фильтр поиска"
+                  onClick={() => setOpenModal("filter")}
+                >
+                  {/* <IconButton
                         size="large"
                         edge="start"
                         color="inherit"
@@ -143,43 +172,20 @@ export default function Header({
                         <FilterAltIcon />
                     </IconButton> */}
 
-                <SearchIntentionSwitch
-                  checked={checked}
-                  setChecked={setChecked}
-                />
-              </Tooltip>
-            </Box>
-          )}
+                  <SearchIntentionSwitch
+                    checked={checked}
+                    setChecked={setChecked}
+                  />
+                </Tooltip>
+              </Box>
+            )}
 
-          {currentPage === "profile" && (
             <Box sx={{ textAlign: "right" }}>
               <Tooltip title="Цветовая тема">
                 <ThemeSwitch checked={isDarkMode} setChecked={setDarkMode} />
               </Tooltip>
             </Box>
-          )}
-
-          {currentPage === "about-us" && !loggedIn && (
-            <Box sx={{ textAlign: "right" }}>
-              <Link to="/signin" onClick={() => setCurrentPage("sign-in")}>
-                <Button
-                  sx={theme.palette.mode === "dark" ? { color: "white" } : {}}
-                >
-                  Войти
-                </Button>
-              </Link>
-            </Box>
-          )}
-          {currentPage === "about-us" && loggedIn && (
-            <Box sx={{ textAlign: "right" }}>
-              <Button
-                onClick={handleLogOut}
-                sx={theme.palette.mode === "dark" ? { color: "white" } : {}}
-              >
-                Выйти
-              </Button>
-            </Box>
-          )}
+          </div>
         </Toolbar>
       </AppBar>
     </Box>

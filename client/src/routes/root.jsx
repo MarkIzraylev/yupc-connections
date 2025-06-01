@@ -122,7 +122,7 @@ const lightTheme = createTheme({
     },
   },
   cardBgColor: "rgba(255,255,255,0.8)",
-  mainBgImageUrl: "url(images/paper.jpg)",
+  mainBgImageUrl: "url(/images/paper.jpg)",
 });
 
 export default function Root({
