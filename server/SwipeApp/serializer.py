@@ -4,6 +4,7 @@ from .models import Hobby, Swipe, User, Course, Building, Department, ComplaintL
 
 from django.db.models import QuerySet, Q
 
+
 class UserSerializerBase(serializers.Serializer):
     """
         Для обработки анкет
@@ -19,20 +20,35 @@ class UserSerializerBase(serializers.Serializer):
     is_search_friend = serializers.BooleanField(default=True)
     is_search_love = serializers.BooleanField(default=False)
     hobbies = serializers.SerializerMethodField()
-    is_boy = serializers.BooleanField( default=True)
+    is_boy = serializers.BooleanField(default=True)
 
-    def get_course_name(self,obj):
-        return str(Course.objects.get(id=obj.get('course')))
+    def get_course_name(self, obj):
+        course_id = obj.get('course')
+        if not course_id:
+            return None
+        course = Course.objects.filter(id=course_id).first()
+        return str(course) if course else None
 
-    def get_building_name(self,obj):
-        return str(Building.objects.get(id=obj.get('building')))
+    def get_building_name(self, obj):
+        building_id = obj.get('building')
+        if not building_id:
+            return None
+        building = Building.objects.filter(id=building_id).first()
+        return str(building) if building else None
 
-    def get_department_name(self,obj):
-        return str(Department.objects.get(id=obj.get('department')))
+    def get_department_name(self, obj):
+        department_id = obj.get('department')
+        if not department_id:
+            return None
+        department = Department.objects.filter(id=department_id).first()
+        return str(department) if department else None
 
-    def get_hobbies(self,obj):
-        print("здесь, да?", obj)
-        return list(obj.get('hobbies').values_list('name',flat=True))
+    def get_hobbies(self, obj):
+        hobbies = obj.get('hobbies', [])
+        if hasattr(hobbies, 'values_list'):
+            return list(hobbies.values_list('name', flat=True))
+        return []
+
 
 class UserSerializerMatch(UserSerializerBase):
     """
@@ -83,8 +99,7 @@ class ResetSwipeSerializer(serializers.Serializer):
 
     target_user_id = serializers.IntegerField()
     def create(self, validated_data):
-        # current_user = self.context['request'].user
-        current_user = User.objects.first()
+        current_user = self.context['request'].user
         target_user = User.objects.get(id=validated_data['target_user_id'])
 
         # ищем запись о том, не были ли мы случайно инициатором свайпа(метча)
@@ -179,7 +194,7 @@ class UserFullData(serializers.Serializer):
     email = serializers.CharField(max_length=100)
     first_name = serializers.CharField(max_length=100)
     last_name = serializers.CharField(max_length=100)
-    description = serializers.CharField(max_length=170 )
+    description = serializers.CharField(max_length=170)
     course = serializers.CharField(max_length=50)
     building = serializers.CharField(max_length=50)
     department = serializers.CharField(max_length=50)
@@ -215,6 +230,16 @@ class UserFullData(serializers.Serializer):
             hobby = Hobby.objects.get(id=hobby_id)
             new_user.hobbies.add(hobby)
         return new_user
+
+    def validate(self, data):
+        required_fields = ['username', 'email', 'first_name', 'last_name', 
+                        'description', 'course', 'building', 'department',
+                        'password', 'image', 'invitation_code']
+        for field in required_fields:
+            if not data.get(field):
+                raise serializers.ValidationError(f"{field} is required")
+        return data
+
 
 class UserDataForPersonalAccount(UserSerializerBase):
     """

@@ -27,16 +27,18 @@ class UsersAPIView(APIView):
     permission_classes = [IsAuthenticated]
     def post(self,request):
         try:
-            print("пришло - ", request )
+            # пользователь, для которого делаем запрос
+            requesting_user = request.user
+
+            if not requesting_user:
+                return Response(status=status.HTTP_401_UNAUTHORIZED)
+            
             # параметр поиска
             is_looking_friend = request.data['is_search_friend']
 
             # количество анкет для пользователя
             count_required_profiles = 10
-
-            # пользователь, для которого делаем запрос
-            requesting_user = request.user
-
+          
             # получение профилей, всех пользователей, кроме нашего и по параметру поиска
             if is_looking_friend:
                 list_users = User.objects.filter(~Q(id=requesting_user.id), is_search_friend=True)
@@ -78,7 +80,6 @@ class UsersAPIView(APIView):
             return Response({"users":list_profiles_ready_to_be_sent},status=status.HTTP_200_OK)
 
         except Exception as error:
-            print("ВОТ ОШИБКА _ ", error)
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class SwipeAPIView(APIView):
@@ -103,11 +104,11 @@ class ResetSwipeAPIView(APIView):
     def post(self,request):
         try:
             # преобразуем данные из запроса и разрываем swipe
-            serializer  = ResetSwipeSerializer(data=request.data, context={'request':request})
+            serializer = ResetSwipeSerializer(data=request.data, context={'request':request})
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(status=status.HTTP_200_OK)
-        except Exception :
+        except Exception:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class IncomingProfilesAPIView(APIView):
@@ -362,28 +363,11 @@ class CoursesListAPIView(APIView):
         except Exception:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-# class UpdateUserDataAPIView(APIView):
-#     permission_classes = [IsAuthenticated]
-#
-#     def put(self,request):
-#         try:
-#             instance = User.objects.get(id=request.user.id)
-#
-#             serializer = UserFullData(instance,data=request.data)
-#             if serializer.is_valid():
-#                 serializer.save()
-#                 return Response(status=status.HTTP_200_OK)
-#             else:
-#                 print(serializer.errors)
-#                 return Response(status=status.HTTP_400_BAD_REQUEST)
-#         except Exception:
-#             return Response(status=status.HTTP_502_BAD_GATEWAY)
-
 
 class PersonalAccount(APIView):
     """
     """
-    def get(self,request):
+    def get(self, request):
         try:
             user_requesting = User.objects.get(id=request.user.id)
             serializer = UserDataForPersonalAccount({
@@ -408,39 +392,116 @@ class PersonalAccount(APIView):
             return Response({"user_data": serializer}, status.HTTP_200_OK)
         except Exception:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    def post(self, request):
-            try:
-                user_requesting = User.objects.get(id=request.user.id)
+    
+    def put(self, request):
+        try:
+            user = User.objects.get(id=request.user.id)
+            # Обновляем основные текстовые поля
+            user_fields = [
+                'username', 'email', 'first_name', 'last_name',
+                'description', 'vk_contact', 'tg_contact'
+            ]
+            
+            for field in user_fields:
+                if field in request.data:
+                    # Для nullable полей
+                    if request.data[field] == 'null':
+                        setattr(user, field, None)
+                    else:
+                        setattr(user, field, request.data[field])
 
-                # Изменение данных профиля
-                user_requesting.first_name = request.data.get('first_name', user_requesting.first_name)
-                user_requesting.last_name = request.data.get('last_name', user_requesting.last_name)
-                user_requesting.image = request.data.get('image', user_requesting.image)
-                user_requesting.description = request.data.get('description', user_requesting.description)
-                user_requesting.course_id = request.data.get('course', user_requesting.course_id)
-                user_requesting.building_id = request.data.get('building', user_requesting.building_id)
-                user_requesting.department_id = request.data.get('department', user_requesting.department_id)
-                user_requesting.is_search_friend = request.data.get('is_search_friend', user_requesting.is_search_friend)
-                user_requesting.is_search_love = request.data.get('is_search_love', user_requesting.is_search_love)
-                user_requesting.vk_contact = request.data.get('vk_contact', user_requesting.vk_contact)
-                user_requesting.tg_contact = request.data.get('tg_contact', user_requesting.tg_contact)
-                user_requesting.hobbies = request.data.get('hobbies', user_requesting.hobbies)
-                user_requesting.email = request.data.get('email', user_requesting.email)
+            # Обновляем булевы поля
+            bool_fields = ['is_search_friend', 'is_search_love', 'is_boy']
+            for field in bool_fields:
+                if field in request.data:
+                    setattr(user, field, request.data[field] == 'true')
 
-                # Сохранение изменённых данных
-                user_requesting.save()
+            # Обновляем связанные объекты (course, building, department)
+            related_fields = {
+                'course': Course,
+                'building': Building,
+                'department': Department
+            }
+            
+            for field, model in related_fields.items():
+                if field in request.data:
+                    try:
+                        related_obj = model.objects.get(id=int(request.data[field]))
+                        setattr(user, field, related_obj)
+                    except (model.DoesNotExist, ValueError):
+                        return Response(
+                            {"error": f"Invalid {field} ID"},
+                            status=status.HTTP_400_BAD_REQUEST
+                        )
 
-                return Response({"message": "Profile updated successfully."}, status=status.HTTP_200_OK)
+            # Обновляем хобби (обрабатываем несколько значений)
+            if 'hobbies' in request.data:
+                try:
+                    # Получаем список ID хобби (может приходить несколько значений)
+                    hobbies_ids = []
+                    if isinstance(request.data['hobbies'], list):
+                        hobbies_ids = [int(h) for h in request.data['hobbies']]
+                    else:
+                        hobbies_ids = [int(request.data['hobbies'])]
+                    
+                    hobbies = Hobby.objects.filter(id__in=hobbies_ids)
+                    if hobbies.count() != len(hobbies_ids):
+                        return Response(
+                            {"error": "Some hobbies not found"},
+                            status=status.HTTP_400_BAD_REQUEST
+                        )
+                    user.hobbies.set(hobbies)
+                except (ValueError, TypeError):
+                    return Response(
+                        {"error": "Invalid hobbies format"},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
 
-            except Exception as e:
-                return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            # Обновляем пароль (если предоставлен)
+            if 'password' in request.data and request.data['password']:
+                user.set_password(request.data['password'])
+
+            # Обновляем изображение (если предоставлено)
+            if 'image' in request.data and request.data['image'] != 'null':
+                user.image = request.data['image']
+
+            user.save()
+
+            # Возвращаем обновленные данные
+            serializer = UserDataForPersonalAccount({
+                'id': user.id,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'image': user.image,
+                'description': user.description,
+                'course': user.course_id,
+                'building': user.building_id,
+                'department': user.department_id,
+                'is_search_friend': user.is_search_friend,
+                'is_search_love': user.is_search_love,
+                'is_boy': user.is_boy,
+                'vk_contact': user.vk_contact,
+                'tg_contact': user.tg_contact,
+                'hobbies': user.hobbies,
+                "username": user.username,
+                "email": user.email
+            }).data
+            
+            return Response({"user_data": serializer}, status=status.HTTP_200_OK)
+            
+        except Exception as e:
+            return Response(
+                {"error": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+        
 
 class RegistrationAPIView(APIView):
     def post(self, request):
         serializer = UserFullData(data=request.data)
         if serializer.is_valid():
-            if User.objects.filter(username=serializer.validated_data['username']).exists():
-                return Response({"error":"Пользователь с таким логином уже зарегистрирован"}, status=status.HTTP_409_CONFLICT)
+            if User.objects.filter(email=serializer.validated_data['email']).exists():
+                return Response({"error":"Пользователь с таким email уже зарегистрирован"}, status=status.HTTP_409_CONFLICT)
 
             invitation_object = InvitationsUser.objects.filter(code=serializer.validated_data['invitation_code'])
             if not invitation_object.exists():
@@ -470,7 +531,6 @@ class RegistrationAPIView(APIView):
 class LoginAPIView(APIView):
     def post(self,request):
 
-        print("зашли сюды")
         data = request.data
 
         username = data.get('username', None)
@@ -482,13 +542,13 @@ class LoginAPIView(APIView):
 
                             status=status.HTTP_400_BAD_REQUEST)
 
-        # user_test = User.objects.filter(username=username)
-        # if user_test.exists():
-        #     user_test = user_test[0]
-        #     if not user_test.is_active:
-        #         return Response(status=status.HTTP_403_FORBIDDEN)
 
         user = authenticate(username=username, password=password)
+
+        if user is None or not user.is_active:
+            return Response({'error': 'Неверные данные или аккаунт неактивен'},
+                        status=status.HTTP_401_UNAUTHORIZED)
+
         if user is None:
             return Response({'error': 'Неверные данные'},
 
