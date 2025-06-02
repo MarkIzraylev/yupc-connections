@@ -2,7 +2,7 @@ import uuid
 
 from django.contrib.auth.models import AbstractUser, AbstractBaseUser
 from django.db import models
-
+import datetime
 
 # Create your models here.
 
@@ -67,7 +67,7 @@ class ComplaintList(models.Model):
     complaint_type = models.ForeignKey(ComplaintTypes, on_delete=models.CASCADE)
     author_complaint = models.ForeignKey(User, on_delete=models.CASCADE, related_name='author_complaint')
     imposter_complaint = models.ForeignKey(User, on_delete=models.CASCADE, related_name='imposter_complaint')
-    created_at = models.DateTimeField(default=None)
+    created_at = models.DateTimeField(default=datetime.datetime.now)
 
     def __str__(self):
         return f" Жалоба {self.author_complaint} на {self.imposter_complaint}  Причина - {self.complaint_type.name} "

@@ -306,7 +306,6 @@ class SendComplaintAPIView(APIView):
             # Проверяем количество жалоб на пользователя
             imposter = complaint.imposter_complaint
             complaint_count = ComplaintList.objects.filter(imposter_complaint=imposter).count()
-            print("количество = ", complaint_count)
             if complaint_count >= 3:
                 imposter.is_blocked = True
                 imposter.block_reason = f"Автоматическая блокировка за {complaint_count} жалоб"
@@ -316,7 +315,7 @@ class SendComplaintAPIView(APIView):
                 # send_block_notification(imposter, complaint_count)
             
             return Response(status=status.HTTP_200_OK)
-        except Exception:
+        except Exception as error:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class HobbiesListAPIView(APIView):
