@@ -1,98 +1,163 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
-
-# Register your models here.
-from .models import (User, Building,ComplaintTypes,ComplaintList,Course,Department,Hobby,Swipe, InvitationsUser)
+from django.contrib import messages
+from django.urls import reverse
+from django.utils.html import format_html
+from .models import (User, Building, ComplaintTypes, ComplaintList, Course, 
+                    Department, Hobby, Swipe, InvitationsUser)
 
 class ComplaintInlineAdmin(admin.TabularInline):
     model = ComplaintList
-    fields = ('imposter_complaint','complaint_type')
+    fields = ('imposter_complaint', 'complaint_type')
     fk_name = 'author_complaint'
-    readonly_fields = ('imposter_complaint','complaint_type')
+    readonly_fields = ('imposter_complaint', 'complaint_type')
     extra = 0
+
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-
     def image_tag(self, obj):
         if not obj.image:
-            return
-        return mark_safe(f"<img src='{obj.image.url}' width=200; height=200px>")
+            return "Нет фото"
+        return mark_safe(f"<img src='{obj.image.url}' width=200 height=200>")
 
-    # поля, которые будем видеть в общем списке
-    list_display = ('username','last_name','first_name')
+    def complaints_count(self, obj):
+        count = ComplaintList.objects.filter(imposter_complaint=obj).count()
+        url = reverse('admin:SwipeApp_complaintlist_changelist') + f'?imposter_complaint__id__exact={obj.id}'
+        return format_html('<a href="{}">{} жалоб</a>', url, count)
+    
+    complaints_count.short_description = 'Жалобы'
 
-    # поля, которые будем видеть в каждом элементе списка + группировка
-    fields = (
-        ('username','email','password'),
-        ('last_name', 'first_name'),
-        ('is_boy', 'is_search_friend', 'is_search_love'),
-        ('course', 'building', 'department'),
-        ('vk_contact', 'tg_contact'),
-        'image',
-        'image_tag',
-        'description',
-        'hobbies',
-        'groups',
-        'last_login',
-        'date_joined',
-        'is_active',
-        'is_staff',
-        'is_superuser',
-        'user_permissions',
+    def block_user(self, request, queryset):
+        updated = queryset.update(is_blocked=True)
+        self.message_user(request, f"Заблокировано {updated} пользователей")
+    block_user.short_description = "Заблокировать выбранных пользователей"
+
+    def unblock_user(self, request, queryset):
+        updated = queryset.update(is_blocked=False, block_reason='')
+        self.message_user(request, f"Разблокировано {updated} пользователей")
+    unblock_user.short_description = "Разблокировать выбранных пользователей"
+
+    def check_complaints(self, request, queryset):
+        for user in queryset:
+            complaints = ComplaintList.objects.filter(imposter_complaint=user)
+            if complaints.count() >= 3 and not user.is_blocked:
+                user.is_blocked = True
+                user.block_reason = f"Автоматическая блокировка за {complaints.count()} жалоб"
+                user.save()
+                self.message_user(
+                    request, 
+                    f"Пользователь {user.username} заблокирован за {complaints.count()} жалоб", 
+                    messages.WARNING
+                )
+    check_complaints.short_description = "Проверить жалобы и заблокировать"
+
+    list_display = (
+        'username', 'last_name', 'first_name', 
+        'is_blocked', 'complaints_count', 'block_reason'
     )
-
-    # # поля, которые мы сможем только читать
-    # readonly_fields = ('description','hobbies','last_login','date_joined','is_search_friend','image','is_search_love',
-    #                    'is_boy','password','username','vk_contact','tg_contact')
-    inlines = (ComplaintInlineAdmin,)
-    readonly_fields = ('image_tag',)
-    # поля, по которым будет доступен поиск
-    search_fields = ('username', 'last_name', 'first_name')
-
-    # поля, по котором сортировка(по умолчанию в алфавитном порядке/возрастанию
-    # '-last_name' - сортировка в обратном порядке
+    list_filter = ('is_blocked', 'is_boy', 'is_search_friend', 'is_search_love')
+    actions = [block_user, unblock_user, check_complaints]
+    fieldsets = (
+        ('Основная информация', {
+            'fields': (
+                ('username', 'email', 'password'),
+                ('last_name', 'first_name'),
+                'image',
+                'image_tag',
+                'description'
+            )
+        }),
+        ('Настройки поиска', {
+            'fields': (
+                ('is_boy', 'is_search_friend', 'is_search_love'),
+            )
+        }),
+        ('Учебная информация', {
+            'fields': (
+                ('course', 'building', 'department'),
+            )
+        }),
+        ('Контакты', {
+            'fields': (
+                ('vk_contact', 'tg_contact'),
+            )
+        }),
+        ('Блокировка', {
+            'fields': (
+                'is_blocked',
+                'block_reason'
+            )
+        }),
+        ('Системная информация', {
+            'fields': (
+                'hobbies',
+                'groups',
+                'last_login',
+                'date_joined',
+                'is_active',
+                'is_staff',
+                'is_superuser',
+                'user_permissions',
+            ),
+            'classes': ('collapse',)
+        })
+    )
+    readonly_fields = ('image_tag', 'password')
+    search_fields = ('username', 'last_name', 'first_name', 'email')
     ordering = ('last_name', 'first_name')
-
+    filter_horizontal = ('hobbies', 'groups', 'user_permissions')
+    inlines = (ComplaintInlineAdmin,)
 
 @admin.register(Swipe)
 class SwipeAdmin(admin.ModelAdmin):
-    list_display = ('swiper','swiped')
-    fields = (('swiper','swiped'),( "swiper_is_like","swiped_is_like"))
-    # readonly_fields = ('swiper','swiped','is_swiped_like')
-# @admin.register(SwipeMatch)
-# class SwipeMatchAdmin(admin.ModelAdmin):
-#     list_display = ('first_swiper','second_swiper')
-#     fields = (('first_swiper','second_swiper'),)
-#     readonly_fields = ('first_swiper','second_swiper')
+    list_display = ('swiper', 'swiped', 'swiper_is_like', 'swiped_is_like')
+    list_filter = ('swiper_is_like', 'swiped_is_like')
+    search_fields = ('swiper__username', 'swiped__username')
+    raw_id_fields = ('swiper', 'swiped')
+
+@admin.register(ComplaintList)
+class ComplaintListAdmin(admin.ModelAdmin):
+    list_display = ('author_complaint', 'imposter_complaint', 'complaint_type',
+                    'created_at_display')
+    list_filter = ('complaint_type',)
+    search_fields = (
+        'author_complaint__username', 
+        'imposter_complaint__username',
+        'complaint_type__name'
+    )
+    date_hierarchy = 'created_at'
+    readonly_fields = ('created_at_display',)
+    
+    def created_at_display(self, obj):
+        return obj.created_at.strftime("%Y-%m-%d %H:%M")
+    created_at_display.short_description = 'Дата создания'
 
 @admin.register(Hobby)
 class HobbyAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('name',)
+    search_fields = ('name',)
 
 @admin.register(Department)
 class DepartmentAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('name',)
+    search_fields = ('name',)
 
 @admin.register(Building)
-class DepartmentAdmin(admin.ModelAdmin):
-    pass
+class BuildingAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    search_fields = ('name',)
 
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('name',)
+    search_fields = ('name',)
 
 @admin.register(ComplaintTypes)
 class ComplaintTypesAdmin(admin.ModelAdmin):
-    pass
-
-@admin.register(ComplaintList)
-class CourseAdmin(admin.ModelAdmin):
-    fields = ('complaint_type',
-              ('author_complaint','imposter_complaint'))
-    readonly_fields = ('imposter_complaint','complaint_type','author_complaint')
-
+    list_display = ('name',)
+    search_fields = ('name',)
 
 @admin.register(InvitationsUser)
 class InvitationUserAdmin(admin.ModelAdmin):
-    fields = ('quantity_activation', 'code')
+    list_display = ('code', 'quantity_activation')
     readonly_fields = ('code',)

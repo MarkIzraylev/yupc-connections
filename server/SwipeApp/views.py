@@ -13,7 +13,7 @@ from rest_framework.views import APIView
 # импортирование для JWT авторизации/регистрации
 from rest_framework_simplejwt.tokens import  RefreshToken
 
-from .models import User, Swipe, ComplaintTypes, Hobby, Department, Building, Course, InvitationsUser
+from .models import User, Swipe, ComplaintTypes, Hobby, Department, Building, Course, InvitationsUser, ComplaintList
 
 from .serializer import (UserSerializerBase, SwipeUserSerializer, MatchListSerializer,
     TargetUserIdSerializer, ComplaintsListSerializer, SendComplaintSerializer, UserFullData, HobbiesListSerializer,
@@ -41,9 +41,9 @@ class UsersAPIView(APIView):
           
             # получение профилей, всех пользователей, кроме нашего и по параметру поиска
             if is_looking_friend:
-                list_users = User.objects.filter(~Q(id=requesting_user.id), is_search_friend=True)
+                list_users = User.objects.filter(~Q(id=requesting_user.id), is_search_friend=True, is_blocked=False)
             else:
-                list_users = User.objects.filter(~Q(id=requesting_user.id), is_boy=not requesting_user.is_boy,is_search_love = True)
+                list_users = User.objects.filter(~Q(id=requesting_user.id), is_boy=not requesting_user.is_boy,is_search_love = True, is_blocked = False)
 
             # конечный массив анкет для пользователя
             list_profiles = []
@@ -89,6 +89,12 @@ class SwipeAPIView(APIView):
     permission_classes = [IsAuthenticated]
     def post(self,request):
         try:
+             # Проверяем не заблокирован ли текущий пользователь
+            if request.user.is_blocked:
+                return Response(
+                    {'error': 'Ваш аккаунт заблокирован. Вы не можете совершать действия'},
+                    status=status.HTTP_403_FORBIDDEN
+                )
             serializer = SwipeUserSerializer(data=request.data, context={"request":request})
             serializer.is_valid(raise_exception=True)
             serializer.save()
@@ -287,17 +293,31 @@ class ComplaintsListAPIView(APIView):
 
 class SendComplaintAPIView(APIView):
     """
-    Отправка жалобы  +
+    Отправка жалобы
     """
     permission_classes = [IsAuthenticated]
+
     def post(self, request):
-       try:
-           serializer = SendComplaintSerializer(data=request.data, context={"request":request})
-           serializer.is_valid(raise_exception=True)
-           serializer.save()
-           return Response( status = status.HTTP_200_OK)
-       except Exception:
-           return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        try:
+            serializer = SendComplaintSerializer(data=request.data, context={"request":request})
+            serializer.is_valid(raise_exception=True)
+            complaint = serializer.save()
+            
+            # Проверяем количество жалоб на пользователя
+            imposter = complaint.imposter_complaint
+            complaint_count = ComplaintList.objects.filter(imposter_complaint=imposter).count()
+            print("количество = ", complaint_count)
+            if complaint_count >= 3:
+                imposter.is_blocked = True
+                imposter.block_reason = f"Автоматическая блокировка за {complaint_count} жалоб"
+                imposter.save()
+                
+                # Можно добавить отправку email уведомления админу
+                # send_block_notification(imposter, complaint_count)
+            
+            return Response(status=status.HTTP_200_OK)
+        except Exception:
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class HobbiesListAPIView(APIView):
     """
@@ -530,43 +550,34 @@ class RegistrationAPIView(APIView):
 
 class LoginAPIView(APIView):
     def post(self,request):
+        username = request.data.get('username')
+        password = request.data.get('password')
 
-        data = request.data
-
-        username = data.get('username', None)
-
-        password = data.get('password', None)
-
-        if username is None or password is None:
-            return Response({'error': 'Нужен и логин, и пароль'},
-
-                            status=status.HTTP_400_BAD_REQUEST)
-
+        if not username or not password:
+            return Response({'error': 'Требуется имя пользователя и пароль'}, 
+                          status=status.HTTP_400_BAD_REQUEST)
 
         user = authenticate(username=username, password=password)
-
-        if user is None or not user.is_active:
-            return Response({'error': 'Неверные данные или аккаунт неактивен'},
-                        status=status.HTTP_401_UNAUTHORIZED)
-
+        
         if user is None:
-            return Response({'error': 'Неверные данные'},
-
-                            status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'error': 'Неверные учетные данные'},
+                          status=status.HTTP_401_UNAUTHORIZED)
+        
+        if user.is_blocked:
+            return Response(
+                {'error': f'Аккаунт заблокирован. Причина: {user.block_reason}'},
+                status=status.HTTP_403_FORBIDDEN
+            )
 
         refresh = RefreshToken.for_user(user)
-
         refresh.payload.update({
             "user_id": user.id,
             "email": user.email
         })
 
         return Response({
-
             'refresh': str(refresh),
-
             'access': str(refresh.access_token),
-
         }, status=status.HTTP_200_OK)
 
 class LogoutAPIView(APIView):

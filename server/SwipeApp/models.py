@@ -55,6 +55,8 @@ class User(AbstractUser):
     tg_contact = models.CharField(max_length=100, default=None, null=True,blank=True)
     hobbies = models.ManyToManyField(Hobby,blank=True)
     is_boy = models.BooleanField(default=True)
+    is_blocked = models.BooleanField(default=False, verbose_name="Заблокирован")
+    block_reason = models.TextField(blank=True, null=True, verbose_name="Причина блокировки")
 
     class Meta:
         verbose_name = 'User' # Название в единственном числе
@@ -65,6 +67,7 @@ class ComplaintList(models.Model):
     complaint_type = models.ForeignKey(ComplaintTypes, on_delete=models.CASCADE)
     author_complaint = models.ForeignKey(User, on_delete=models.CASCADE, related_name='author_complaint')
     imposter_complaint = models.ForeignKey(User, on_delete=models.CASCADE, related_name='imposter_complaint')
+    created_at = models.DateTimeField(default=None)
 
     def __str__(self):
         return f" Жалоба {self.author_complaint} на {self.imposter_complaint}  Причина - {self.complaint_type.name} "
