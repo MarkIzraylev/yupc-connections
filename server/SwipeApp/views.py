@@ -423,7 +423,6 @@ class PersonalAccount(APIView):
             
             for field in user_fields:
                 if field in request.data:
-                    # Для nullable полей
                     if request.data[field] == 'null':
                         setattr(user, field, None)
                     else:
@@ -485,28 +484,8 @@ class PersonalAccount(APIView):
                 user.image = request.data['image']
 
             user.save()
-
-            # Возвращаем обновленные данные
-            serializer = UserDataForPersonalAccount({
-                'id': user.id,
-                'first_name': user.first_name,
-                'last_name': user.last_name,
-                'image': user.image,
-                'description': user.description,
-                'course': user.course_id,
-                'building': user.building_id,
-                'department': user.department_id,
-                'is_search_friend': user.is_search_friend,
-                'is_search_love': user.is_search_love,
-                'is_boy': user.is_boy,
-                'vk_contact': user.vk_contact,
-                'tg_contact': user.tg_contact,
-                'hobbies': user.hobbies,
-                "username": user.username,
-                "email": user.email
-            }).data
             
-            return Response({"user_data": serializer}, status=status.HTTP_200_OK)
+            return Response(status=status.HTTP_200_OK)
             
         except Exception as e:
             return Response(
