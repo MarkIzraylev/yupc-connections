@@ -4,44 +4,62 @@ from django.contrib.auth.models import AbstractUser, AbstractBaseUser
 from django.db import models
 import datetime
 
-# Create your models here.
 
-# Таблица с типами жалоб
 class ComplaintTypes(models.Model):
     name = models.CharField(max_length=100)
 
     def __str__(self):
         return self.name
+    
+    class Meta:  
+        verbose_name = 'Тип жалобы'  
+        verbose_name_plural = 'Типы жалоб' 
 
-# Хобби
+
 class Hobby(models.Model):
     name = models.CharField(max_length=50, default="УЧЕБА В ЯГК")
 
     def __str__(self):
         return self.name
 
-# Модель курса
+    class Meta:  
+        verbose_name = 'Хобби'  
+        verbose_name_plural = 'Хобби' 
+
+
 class Course(models.Model):
     name = models.CharField(max_length=50, default="1 КУРС")
 
     def __str__(self):
         return self.name
 
-# Модель корпуса
+    class Meta:  
+        verbose_name = 'Курс'  
+        verbose_name_plural = 'Курсы' 
+
+
 class Building(models.Model):
     name = models.CharField(max_length=50, default="ОСНОВНОЙ КУРС")
 
     def __str__(self):
         return self.name
 
-# Модель отделения
+    class Meta:  
+        verbose_name = 'Корпус'  
+        verbose_name_plural = 'Корпусы' 
+
+
 class Department(models.Model):
     name = models.CharField(max_length=50, default="ОИТ")
 
     def __str__(self):
         return self.name
+    
+    class Meta:  
+        verbose_name = 'Отделение'  
+        verbose_name_plural = 'Отделения' 
 
-# Переопределенная модель пользователя
+
 class User(AbstractUser):
     email = models.EmailField(max_length=100 , unique=True)
     image = models.ImageField(upload_to='imagesUser/', null=True, blank=True)
@@ -59,10 +77,10 @@ class User(AbstractUser):
     block_reason = models.TextField(blank=True, null=True, verbose_name="Причина блокировки")
 
     class Meta:
-        verbose_name = 'User' # Название в единственном числе
-        verbose_name_plural = 'Users' # название модели в общем списке
+        verbose_name = 'Студент'
+        verbose_name_plural = 'Студенты'
 
-# Модель списка жалоб
+
 class ComplaintList(models.Model):
     complaint_type = models.ForeignKey(ComplaintTypes, on_delete=models.CASCADE)
     author_complaint = models.ForeignKey(User, on_delete=models.CASCADE, related_name='author_complaint')
@@ -71,8 +89,12 @@ class ComplaintList(models.Model):
 
     def __str__(self):
         return f" Жалоба {self.author_complaint} на {self.imposter_complaint}  Причина - {self.complaint_type.name} "
+    
+    class Meta:
+        verbose_name = 'Жалоба'
+        verbose_name_plural = 'Список жалоб'
 
-# Модель всех свайпов
+
 class Swipe(models.Model):
     swiper = models.ForeignKey(User, on_delete=models.CASCADE, related_name='swiper')
     swiped = models.ForeignKey(User, on_delete=models.CASCADE, related_name='swiped')
@@ -82,6 +104,9 @@ class Swipe(models.Model):
     def __str__(self):
         return f"{self.swiper.last_name} свайпнул {self.swiped.last_name}"
 
+    class Meta:
+        verbose_name = 'Свайп'
+        verbose_name_plural = 'Свайпы'
 
 
 class InvitationsUser(models.Model):
@@ -90,3 +115,7 @@ class InvitationsUser(models.Model):
 
     def __str__(self):
         return f"Осталось {self.quantity_activation} активаций приглашения"
+    
+    class Meta:
+        verbose_name = 'Приглашение'
+        verbose_name_plural = 'Приглашения'
