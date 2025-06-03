@@ -160,4 +160,14 @@ class ComplaintTypesAdmin(admin.ModelAdmin):
 @admin.register(InvitationsUser)
 class InvitationUserAdmin(admin.ModelAdmin):
     list_display = ('code', 'quantity_activation')
-    readonly_fields = ('code',)
+    readonly_fields = ('code', 'full_link')
+
+    def full_link(self, obj):
+        return f"http://localhost:3000/signup/{obj.code}"
+    full_link.short_description = "Ссылка-приглашение"
+    
+    fieldsets = (
+        (None, {
+            'fields': ('code', 'quantity_activation', 'full_link')
+        }),
+    )
