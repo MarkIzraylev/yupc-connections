@@ -41,6 +41,8 @@ export default function Match({
   const [matches, setMatches] = useState<any[] | null>(null);
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
   const [openedCard, setOpenedCard] = useState<cardObj | null>(null);
+
+  console.log("check", openedCard);
   const noMatchesMessage = "Мэтчей пока что нет.";
   function getMatches() {
     axios
@@ -78,7 +80,7 @@ export default function Match({
       .post(
         `${API_URL}/getDetailsAboutProfileInMatch/`,
         {
-          target_user_id: target_user_id,
+          target_user_id,
         },
         {
           headers: {
@@ -86,13 +88,14 @@ export default function Match({
           },
         }
       )
-      .then(function (response) {
+      .then(async function (response) {
         console.log("getCard() -> response: ", response);
         if (response.status === 500) {
           // no matches
           setInfoMessage("Ошибка сервера.");
         } else if (response.status === 200) {
-          setOpenedCard(response.data.user_details);
+          const userDetails = await response.data;
+          setOpenedCard({ ...userDetails.user_details });
         }
       })
       .catch(function (error) {
@@ -162,6 +165,8 @@ export default function Match({
   const [cardContentPaddings] = useState(theme.spacing(1.5));
   const [maxCardWidth] = useState(700);
 
+  console.log("openModal", openModal, openedCard);
+
   // cute gif: https://i.pinimg.com/originals/df/6f/ab/df6fabcd43d699238b0a60e085d38fab.gif
   return (
     <div
@@ -176,8 +181,8 @@ export default function Match({
       }}
     >
       <Modal
-        open={openModal === "match"}
-        onClose={() => setOpenModal(null)}
+        open={openedCard !== null}
+        onClose={() => setOpenedCard(null)}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
         style={{ alignSelf: "center", justifySelf: "center" }}
@@ -187,12 +192,12 @@ export default function Match({
         </Box>
       </Modal>
 
-      {openedCard && (
+      {openedCard && openModal === "complaint" && (
         <ComplaintModal
           targetId={openedCard.id}
           openModal={openModal}
           setOpenModal={setOpenModal}
-          performSwipe={removeOpenedMatchFromState}
+          performSwipe={removeMatch}
         />
       )}
 
@@ -262,7 +267,6 @@ export default function Match({
                 return (
                   <Card
                     onClick={() => {
-                      setOpenModal("match");
                       getCard(match.id);
                     }}
                     sx={{
