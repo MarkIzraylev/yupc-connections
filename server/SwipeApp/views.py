@@ -98,7 +98,7 @@ class SwipeAPIView(APIView):
             serializer = SwipeUserSerializer(data=request.data, context={"request":request})
             serializer.is_valid(raise_exception=True)
             serializer.save()
-            return Response(status=status.HTTP_200_OK)
+            return Response({"message": 'Свайп выполнен'}, status=status.HTTP_200_OK)
         except Exception:
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -310,9 +310,6 @@ class SendComplaintAPIView(APIView):
                 imposter.is_blocked = True
                 imposter.block_reason = f"Автоматическая блокировка за {complaint_count} жалоб"
                 imposter.save()
-                
-                # Можно добавить отправку email уведомления админу
-                # send_block_notification(imposter, complaint_count)
             
             return Response(status=status.HTTP_200_OK)
         except Exception as error:
