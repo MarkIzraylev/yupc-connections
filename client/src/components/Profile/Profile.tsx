@@ -50,17 +50,19 @@ export default function Profile({
   const [profileCard, setProfileCard] = useState<cardObj | null>(null);
 
   async function fetchProfile() {
-    // fetch profile data from API
     await axios
       .get(`${API_URL}/profileData/`, {
         headers: {
+          // передача JWT для подтверждения доступа к ресурсу
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
         },
       })
       .then((response) => {
-        console.log("resp in profile:", response);
+        // получение данных профиля
         const profileCard = response.data.user_data;
+        // сохранение данных профиля в состояние
         setProfileCard(profileCard);
+        // выставление значений для окна редактирования профиля
         firstNameInputProps.setValue(profileCard.first_name);
         lastNameInputProps.setValue(profileCard.last_name);
         descriptionInputProps.setValue(profileCard.description);
@@ -71,8 +73,7 @@ export default function Profile({
         vkInputProps.setValue(profileCard.vk_contact);
         emailInputProps.setValue(profileCard.email);
       })
-      .catch((err) => console.log("err in profile:", err));
-    // set profile data to state
+      .catch((err) => console.log("error in profile:", err));
   }
 
   const [validate, setValidate] = useState(true);
@@ -120,15 +121,14 @@ export default function Profile({
     axios
       .get(`${API_URL}/${endPointName}/`)
       .then((response) => {
-        if (response.status != 200) return;
+        if (response.status !== 200) return;
         setState(response.data[fetchingArrName]);
-        if (fetchingArrName == "hobbies") {
+        if (fetchingArrName === "hobbies") {
           setPreselectedHobbies(
             response.data[fetchingArrName].filter((hobby: Hobby) =>
               selectedHobbiesIds.includes(hobby.id)
             )
           );
-          console.log("aaa", selectedHobbiesIds);
         }
       })
       .catch((error) => {
@@ -136,11 +136,13 @@ export default function Profile({
       });
   }
 
+  // определение типа
   interface Hobby {
     name: string;
     id: number;
   }
-  const [allHobbies, setAllHobbies] = useState<Hobby[] | []>([]);
+
+  const [allHobbies, setAllHobbies] = useState<Hobby[]>([]);
   const [selectedHobbiesIds, setSelectedHobbiesIds] = useState<number[]>([]);
   const [preselectedHobbies, setPreselectedHobbies] = useState<Hobby[]>([]);
 
@@ -310,6 +312,7 @@ export default function Profile({
     "Ого, что-то пошло не так с отправкой формы! Проверьте, все ли поля заполнены правильно, и попробуйте снова.";
 
   const handleSubmitForm = (ev: React.FormEvent<HTMLFormElement>) => {
+    // не отправляем данные до валидации
     ev.preventDefault();
     setValidate(true);
 
@@ -322,6 +325,7 @@ export default function Profile({
     if (tgInputProps.value && !tgInputProps.value.startsWith("https://t.me/")) {
       tgInputProps.setError(true);
     }
+
     const formIsValid =
       !emailInputProps.error &&
       !passwordInputProps.error &&
@@ -337,13 +341,14 @@ export default function Profile({
         tgInputProps.value && !tgInputProps.value.startsWith("https://t.me/")
       ) &&
       (vkInputProps.value !== "" || tgInputProps.value !== "") &&
-      courseParams.value != "" &&
-      buildingParams.value != "" &&
-      departmentParams.value != "" &&
+      courseParams.value !== "" &&
+      buildingParams.value !== "" &&
+      departmentParams.value !== "" &&
       (isSearchFriend || isSearchLove) &&
-      selectedHobbiesIds != undefined &&
+      selectedHobbiesIds !== undefined &&
       isBoy != null &&
-      String(profileImage) != "";
+      String(profileImage) !== "";
+
     const data = {
       username: emailInputProps.value,
       email: emailInputProps.value,
@@ -362,6 +367,7 @@ export default function Profile({
       is_boy: isBoy,
       image: profileImage,
     };
+
     const formData = new FormData();
     formData.append("username", emailInputProps.value);
     formData.append("email", emailInputProps.value);

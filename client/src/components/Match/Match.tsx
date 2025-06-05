@@ -209,11 +209,11 @@ export default function Match({
         <Card style={{ outline: "none" }} sx={modalStyle}>
           <CardContent>
             <Typography variant="h6" gutterBottom>
-              Вы точно хотите разорвать метч с пользователем "
+              Вы точно хотите разорвать мэтч с пользователем "
               {`${openedCard?.first_name} ${openedCard?.last_name}`}"?
             </Typography>
             <Typography variant="subtitle1" color="textSecondary">
-              Если разорвать метч, то пользователь больше не сможет видеть ваш
+              Если разорвать мэтч, то пользователь больше не сможет видеть ваш
               профиль на странице метчей.
             </Typography>
           </CardContent>

@@ -20,6 +20,7 @@ import Button from "@mui/material/Button";
 import CardActions from "@mui/material/CardActions";
 import Tooltip from "@mui/material/Tooltip";
 import EditIcon from "@mui/icons-material/Edit";
+import { Theme, useTheme } from "@mui/material/styles";
 
 interface SwipeCardProps {
   name: string;
@@ -77,6 +78,7 @@ const SwipeCard: FC<SwipeCardProps> = ({
       );
     });
   }
+  const theme: Theme & { cardBgColor: string } = useTheme();
   //console.log('social media JSX:', socialMediaJSX, socialMedia)
   const thereIsSocialMedia =
     socialMediaJSX != undefined && socialMediaJSX.length > 0;
@@ -107,7 +109,7 @@ const SwipeCard: FC<SwipeCardProps> = ({
         sx={{
           position: "relative",
           backdropFilter: "blur(30px)",
-          backgroundColor: "var(--cardBgColor)",
+          backgroundColor: theme.cardBgColor,
         }}
       >
         <Box
