@@ -82,7 +82,8 @@ class User(AbstractUser):
 
 
 class ComplaintList(models.Model):
-    complaint_type = models.ForeignKey(ComplaintTypes, on_delete=models.CASCADE)
+    complaint_type = models.ForeignKey(ComplaintTypes, 
+                                       on_delete=models.CASCADE)
     author_complaint = models.ForeignKey(User, on_delete=models.CASCADE, related_name='author_complaint')
     imposter_complaint = models.ForeignKey(User, on_delete=models.CASCADE, related_name='imposter_complaint')
     created_at = models.DateTimeField(default=datetime.datetime.now)
@@ -98,8 +99,8 @@ class ComplaintList(models.Model):
 class Swipe(models.Model):
     swiper = models.ForeignKey(User, on_delete=models.CASCADE, related_name='swiper')
     swiped = models.ForeignKey(User, on_delete=models.CASCADE, related_name='swiped')
-    swiper_is_like = models.BooleanField(default=None, null=True,blank=True) # первый лайкнул или нет
-    swiped_is_like = models.BooleanField(default=None, null=True, blank=True) # второй лайкнул или нет
+    swiper_is_like = models.BooleanField(default=None, null=True,blank=True)
+    swiped_is_like = models.BooleanField(default=None, null=True, blank=True)
 
     def __str__(self):
         return f"{self.swiper.last_name} свайпнул {self.swiped.last_name}"
