@@ -8,8 +8,6 @@ export function cardObjToSwipeCard(
   showSocialMediaLinks: boolean | undefined = false,
   isOwnProfile: boolean | undefined = false
 ) {
-  console.log("openedCard", card);
-
   const intentionTagsArr = [];
   if (card.is_search_friend) {
     intentionTagsArr.push("ИЩУ ДРУЖБУ");
@@ -26,7 +24,6 @@ export function cardObjToSwipeCard(
       socialMedia.set("vk", card.vk_contact);
     }
   }
-  // console.log('-> social media map: ', socialMedia)
   return (
     <SwipeCard
       name={`${card.first_name} ${card.last_name}`}

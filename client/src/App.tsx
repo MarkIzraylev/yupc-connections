@@ -25,7 +25,6 @@ function App() {
   type modalType = string | null;
   const [openModal, setOpenModal] = React.useState<modalType>(null);
   const [loggedIn, setLoggedIn] = React.useState<boolean>(Object.keys(localStorage).includes('accessToken'));
-  console.log('logged in ', loggedIn)
 
   const router = createBrowserRouter([
     {

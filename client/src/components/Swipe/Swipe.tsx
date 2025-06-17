@@ -135,7 +135,6 @@ export default function Swipe({
 
   function handleCardDrag(ev: any) {
     const touchTypes = ["touchstart", "touchmove", "touchend", "touchcancel"];
-    //console.log('dragStart:', dragStart, 'ev.clientX:', ev.clientX, ev)
     const x = touchTypes.includes(ev.type)
       ? ev.changedTouches[0].clientX
       : ev.clientX;
@@ -152,7 +151,6 @@ export default function Swipe({
     })();
 
     if (Math.abs(dragStart - x) >= cardDragThreshold) {
-      // console.log(dragStart, dragCurrent, dragStartAfterThreshold)
       if (dragStart !== dragCurrent && Number.isNaN(dragStartAfterThreshold)) {
         setDragStartAfterThreshold(x);
       }
@@ -172,11 +170,6 @@ export default function Swipe({
     setDragCurrent(ev.changedTouches[0].clientX);
   }
   async function sendSwipe(swipedUserId: number, swipeType: boolean) {
-    console.log(
-      `send '${
-        swipeType ? "accept" : "reject"
-      }' swipe to a user whose id = ${swipedUserId}`
-    );
     setPrevSwipeIsSent(false);
     // post data to server
     return new Promise<void>((resolve, reject) => {
@@ -201,17 +194,13 @@ export default function Swipe({
         .catch(function (error) {
           console.log(error);
           if (error.response.status === 401) {
-            console.log("sendSwipe 401 error");
-
             updateTokens()
               .then((res) => {
                 sendSwipe(swipedUserId, swipeType);
-                console.log("update tokens did not cause an error");
               })
               .catch((err) => {
                 setLoggedIn(false);
                 window.location.assign("/");
-                console.log("update tokens -> error");
               });
           } else {
             reject();
@@ -250,10 +239,8 @@ export default function Swipe({
       ...conditionalArgs
     )
       .then(function (response: any) {
-        console.log("resp", response);
         if (response.status === 200) {
           nextBunchOfCards = response.data.users;
-          console.log(response.data.users);
           nextBunchOfCards.length !== 0
             ? setCurrentBunchOfCards(nextBunchOfCards)
             : setNoCardsLeft(true);
@@ -266,16 +253,13 @@ export default function Swipe({
         if (err.response.status === 404) {
           setInfoMessage(err.response.data.status_message);
         } else if (err.response.status === 401) {
-          console.log("fetchNewBunchOfCards 401 error");
           updateTokens()
             .then((res) => {
               fetchNewBunchOfCards();
-              console.log("continue to fetch data after token refresh");
             })
             .catch((err) => {
               setLoggedIn(false);
               navigate("/");
-              console.log("navigated to home page");
             });
         } else {
           setErrorMessage(
@@ -298,7 +282,6 @@ export default function Swipe({
     }
     sendSwipe(currentBunchOfCards[currentCardId].id, swipeType)
       .then((res) => {
-        console.log("promise has worked! here is res:", res);
         if (currentCardId === currentBunchOfCards.length - 1) {
           // fetch new bunch of cards via API
           fetchNewBunchOfCards();

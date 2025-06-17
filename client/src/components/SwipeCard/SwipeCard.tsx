@@ -79,7 +79,6 @@ const SwipeCard: FC<SwipeCardProps> = ({
     });
   }
   const theme: Theme & { cardBgColor: string } = useTheme();
-  //console.log('social media JSX:', socialMediaJSX, socialMedia)
   const thereIsSocialMedia =
     socialMediaJSX != undefined && socialMediaJSX.length > 0;
   return (

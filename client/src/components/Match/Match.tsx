@@ -42,7 +42,6 @@ export default function Match({
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
   const [openedCard, setOpenedCard] = useState<cardObj | null>(null);
 
-  console.log("check", openedCard);
   const noMatchesMessage = "Мэтчей пока что нет.";
   function getMatches() {
     axios
@@ -57,7 +56,6 @@ export default function Match({
           setInfoMessage(noMatchesMessage);
         } else {
           setMatches(response.data.users);
-          console.log("matches are: ", response);
         }
       })
       .catch(function (error) {
@@ -89,7 +87,6 @@ export default function Match({
         }
       )
       .then(async function (response) {
-        console.log("getCard() -> response: ", response);
         if (response.status === 500) {
           // no matches
           setInfoMessage("Ошибка сервера.");
@@ -138,7 +135,6 @@ export default function Match({
         }
       )
       .then(function (response) {
-        console.log("removeMatch() -> response: ", response);
         // 200 or 400
         if (response.status === 200) {
           removeOpenedMatchFromState();
@@ -164,8 +160,6 @@ export default function Match({
   const [profileImageMargins] = useState(theme.spacing(1.5));
   const [cardContentPaddings] = useState(theme.spacing(1.5));
   const [maxCardWidth] = useState(700);
-
-  console.log("openModal", openModal, openedCard);
 
   // cute gif: https://i.pinimg.com/originals/df/6f/ab/df6fabcd43d699238b0a60e085d38fab.gif
   return (
@@ -261,8 +255,6 @@ export default function Match({
                 );
               })
             : matches.map((match, ind) => {
-                console.log(match);
-
                 // return <div key={match.id}>{match.first_name} {match.last_name} {match.description}</div>
                 return (
                   <Card

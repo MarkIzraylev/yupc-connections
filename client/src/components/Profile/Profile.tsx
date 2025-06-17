@@ -273,9 +273,6 @@ export default function Profile({
 
   useEffect(() => {
     setSearchIntentionError(!isSearchFriend && !isSearchLove);
-    console.log("selectedHobbiesIds", selectedHobbiesIds);
-    console.log("allHobbies", allHobbies);
-    console.log("pRE", preselectedHobbies);
   }, [isSearchFriend, isSearchLove]);
 
   useEffect(() => {
@@ -299,10 +296,6 @@ export default function Profile({
         departmentParams.setOptionId((departmentOption as any).id);
         courseParams.setOptionId((courseOption as any).id);
       }
-      console.log(
-        "???",
-        allHobbies.filter((hobby: Hobby) => selectedIds.includes(hobby.id))
-      );
     }
   }, [allHobbies]);
 
@@ -393,8 +386,6 @@ export default function Profile({
 
     if (formIsValid) {
       setValidationError(false);
-      console.log("form is valid, here is data", data);
-      //console.log(data)
       axios
         .put(`${API_URL}/profileData/`, formData, {
           headers: {
@@ -414,8 +405,6 @@ export default function Profile({
         })
         .catch((error) => {
           console.error(error);
-          console.log(profileImage);
-
           setSnackbar({
             open: true,
             message: error.response.data.error || error.response.data.detail,
@@ -424,8 +413,6 @@ export default function Profile({
         });
     } else {
       console.error("Form is not valid");
-      console.log(data);
-      //console.log(data)
       setValidationError(true);
       setTimeout(() => {
         setValidationError(false);
@@ -611,7 +598,6 @@ export default function Profile({
                   // defaultValue={[allHobbies[0]]}
                   renderInput={(params) => {
                     //setHobbies(hobbiesToIds(params.InputProps.startAdornment?.map(el => el.props['label'])))
-                    console.log("rendering...", preselectedHobbies);
                     if (!selectedHobbiesIds) {
                       if (params.InputProps.startAdornment instanceof Array) {
                         setSelectedHobbiesIds(

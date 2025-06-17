@@ -59,8 +59,6 @@ export default function ComplaintModal({
     }
   }
 
-  console.log(complaintSelectProps);
-
   return (
     <Modal
       open={openModal === "complaint"}

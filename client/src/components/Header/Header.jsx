@@ -63,7 +63,6 @@ export default function Header({
             theme.palette.mode === "light" && theme.palette.primary.light,
         }}
       >
-        {console.log(theme)}
         <Toolbar
           sx={{
             display: "grid",
